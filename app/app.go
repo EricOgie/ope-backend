@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -9,6 +8,7 @@ import (
 	"github.com/EricOgie/ope-be/app/handlers"
 	"github.com/EricOgie/ope-be/domain/repositories"
 	"github.com/EricOgie/ope-be/konstants"
+	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/service"
 	"github.com/gorilla/mux"
 )
@@ -31,7 +31,7 @@ func StartApp() {
 	router.HandleFunc("/users", userH.GetAllUsers).Methods(http.MethodGet)
 
 	// Start server and log error should ther be one
-	fmt.Println(konstants.MSG_START)
+	logger.Info(konstants.MSG_START)
 	log.Fatal(http.ListenAndServe(konstants.LOCAL_ADD, router))
 
 }

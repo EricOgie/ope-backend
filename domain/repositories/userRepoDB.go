@@ -2,11 +2,12 @@ package repositories
 
 import (
 	"database/sql"
-	"log"
 	"time"
 
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
+	"github.com/EricOgie/ope-be/konstants"
+	"github.com/EricOgie/ope-be/logger"
 	_ "github.com/go-sql-driver/mysql"
 )
 
@@ -23,8 +24,8 @@ func (db UserRepositoryDB) FindAll() (*[]models.User, *ericerrors.EricError) {
 
 	// Should err is not null, return Query error
 	if err != nil {
-		log.Println("Query Error: " + err.Error())
-		return nil, ericerrors.New500Error("Unexpected DB Error")
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 
 	// Define user slice and populate with result from query
@@ -33,7 +34,8 @@ func (db UserRepositoryDB) FindAll() (*[]models.User, *ericerrors.EricError) {
 		var user models.User
 		err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Phone, &user.Password)
 		if err != nil {
-			ericerrors.New500Error("Unexpected DB Error")
+			logger.Error(konstants.DB_SCAN_ERROR)
+			ericerrors.New500Error(konstants.MSG_500)
 		}
 
 		// Append iteration result to users slice

@@ -7,7 +7,7 @@ const (
 	TYPE_JSON    string = "application/json"
 	MSG_500      string = "Unexpected Server Error"
 	MSG_START    string = "Starting Appliction ...."
-	LOGGER_TYPE  string = "Logger-Type"
+	LOGGER_TYPE  string = "logger-type"
 	TIME         string = "timestamp"
 	MSG_404      string = "Resource Not Found"
 	QUERY_ERR    string = "Query Error Noticed! Error Msg: "
@@ -16,4 +16,7 @@ const (
 	KEY_DBUSER   string = "DB_PORT"
 	KEY_DB_ADD   string = "DB_ADDR"
 	KEY_DB_NAME  string = "DB_NAME"
+
+	DB_ERROR      string = "Unexpected Database Error"
+	DB_SCAN_ERROR string = "DB Row Scan Error"
 )
