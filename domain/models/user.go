@@ -1,22 +1,36 @@
 package models
 
 import (
-	"time"
-
+	"github.com/EricOgie/ope-be/dto"
 	"github.com/EricOgie/ope-be/ericerrors"
 )
 
 type User struct {
-	Id        string    `db:"id"`
-	FirstName string    `json:"firstname" validate:"required,min=2,max=50" xml:"first_name"`
-	LastName  string    `json:"lastname" validate:"required,min=2,max=50" xml:"last_name"`
-	Email     string    `json:"email" validate:"email,required" xml:"email"`
-	Password  string    `json:"password" xml:"password" validate:"required,min=6"`
-	Phone     string    `json:"phone" validate:"required" xml:"phone"`
-	CreatedAt time.Time `json:"created_at" xml:"created_at"`
+	Id        string `db:"id"`
+	FirstName string `json:"firstname" validate:"required,min=2,max=50" xml:"first_name"`
+	LastName  string `json:"lastname" validate:"required,min=2,max=50" xml:"last_name"`
+	Email     string `json:"email" validate:"email,required" xml:"email"`
+	Password  string `json:"password" xml:"password" validate:"required,min=6"`
+	Phone     string `json:"phone" validate:"required" xml:"phone"`
 }
 
 // Add User adapter port
 type UserRepositoryPort interface {
-	FindAll() (*[]User, *ericerrors.EricError)
+	FindAll() (*[]dto.UserDto, *ericerrors.EricError)
+}
+
+/**
+* When serving user data to client side, it would be bad practice to send
+* sensitive data like hashed user password alongside. Hence, data access object
+* is used here
+ */
+// Getter function to conver User struct to UserDTO struc
+func (user User) ConvertToUserDto(token string) dto.UserDto {
+	return dto.UserDto{
+		Id:        user.Id,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Phone:     user.Phone,
+	}
 }

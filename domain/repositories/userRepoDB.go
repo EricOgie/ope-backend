@@ -1,45 +1,33 @@
 package repositories
 
 import (
-	"database/sql"
 	"time"
 
-	"github.com/EricOgie/ope-be/domain/models"
+	"github.com/EricOgie/ope-be/dto"
 	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 )
 
 // Create UserDB Adapter
 type UserRepositoryDB struct {
-	client *sql.DB
+	client *sqlx.DB
 }
 
 // Plug UserRepositoryStub adapter to UserRepository port
-func (db UserRepositoryDB) FindAll() (*[]models.User, *ericerrors.EricError) {
+func (db UserRepositoryDB) FindAll() (*[]dto.UserDto, *ericerrors.EricError) {
 
-	sqlQuery := "SELECT id, firstname, lastname, email, phone, created_at FROM users"
-	rows, err := db.client.Query(sqlQuery)
+	users := make([]dto.UserDto, 0)
+	sqlQuery := "SELECT id, firstname, lastname, email, phone FROM users"
 
-	// Should err is not null, return Query error
+	// Query and marshal to slice of user struct
+	err := db.client.Select(&users, sqlQuery)
+	// Check error state and responde accordingly
 	if err != nil {
 		logger.Error(konstants.QUERY_ERR + err.Error())
 		return nil, ericerrors.New500Error(konstants.MSG_500)
-	}
-
-	// Define user slice and populate with result from query
-	users := make([]models.User, 0)
-	for rows.Next() {
-		var user models.User
-		err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Phone, &user.Password)
-		if err != nil {
-			logger.Error(konstants.DB_SCAN_ERROR)
-			ericerrors.New500Error(konstants.MSG_500)
-		}
-
-		// Append iteration result to users slice
-		users = append(users, user)
 	}
 
 	return &users, nil
@@ -48,7 +36,7 @@ func (db UserRepositoryDB) FindAll() (*[]models.User, *ericerrors.EricError) {
 // Helper function to instantiate DB
 func NewUserRepoDB() UserRepositoryDB {
 
-	dbClient, err := sql.Open("mysql", "root@tcp(localhost)/ope")
+	dbClient, err := sqlx.Open("mysql", "root@tcp(localhost)/ope")
 	if err != nil {
 		panic(err)
 	}
