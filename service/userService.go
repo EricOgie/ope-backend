@@ -2,11 +2,12 @@ package service
 
 import (
 	"github.com/EricOgie/ope-be/domain/models"
+	"github.com/EricOgie/ope-be/ericerrors"
 )
 
 // Create client side port for User related resource
 type UserServicePort interface {
-	GetAllUsers() ([]models.User, error)
+	GetAllUsers() (*[]models.User, error)
 }
 
 // Define UserService as biz end of User domain
@@ -15,7 +16,7 @@ type UserService struct {
 }
 
 // Plug userService to UserServicePort
-func (s UserService) GetAllUsers() ([]models.User, error) {
+func (s UserService) GetAllUsers() (*[]models.User, *ericerrors.EricError) {
 	return s.repo.FindAll()
 }
 

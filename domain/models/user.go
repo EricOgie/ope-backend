@@ -1,6 +1,10 @@
 package models
 
-import "time"
+import (
+	"time"
+
+	"github.com/EricOgie/ope-be/ericerrors"
+)
 
 type User struct {
 	Id        string    `db:"id"`
@@ -14,5 +18,5 @@ type User struct {
 
 // Add User adapter port
 type UserRepositoryPort interface {
-	FindAll() ([]User, error)
+	FindAll() (*[]User, *ericerrors.EricError)
 }

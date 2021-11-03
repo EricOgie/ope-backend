@@ -10,7 +10,7 @@ import (
 
 func Ping(res http.ResponseWriter, req *http.Request) {
 	pong := models.Pong{Message: "We Are Live!"}
-	helpers.ServeResponse(pong, http.StatusOK, res, req)
+	helpers.ServeResponse(pong, res, nil)
 }
 
 func Greet(res http.ResponseWriter, req *http.Request) {

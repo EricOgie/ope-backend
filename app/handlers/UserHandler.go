@@ -12,6 +12,6 @@ type UserHandler struct {
 }
 
 func (s *UserHandler) GetAllUsers(res http.ResponseWriter, req *http.Request) {
-	Users, _ := s.Service.GetAllUsers()
-	helpers.ServeResponse(Users, http.StatusOK, res, req)
+	Users, err := s.Service.GetAllUsers()
+	helpers.ServeResponse(Users, res, err)
 }
