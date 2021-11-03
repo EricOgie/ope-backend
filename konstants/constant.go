@@ -19,4 +19,7 @@ const (
 
 	DB_ERROR      string = "Unexpected Database Error"
 	DB_SCAN_ERROR string = "DB Row Scan Error"
+	LOCAL_DB_USER string = "root"
+	LOCAL_DB_NAME string = "ope"
+	LOCAL_DB_ADD  string = "localhost"
 )

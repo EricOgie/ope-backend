@@ -10,10 +10,12 @@ import (
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/service"
+	"github.com/EricOgie/ope-be/setup"
 	"github.com/gorilla/mux"
 )
 
 func StartApp() {
+
 	// define mux router
 	router := mux.NewRouter()
 
@@ -31,7 +33,9 @@ func StartApp() {
 	router.HandleFunc("/users", userH.GetAllUsers).Methods(http.MethodGet)
 
 	// Start server and log error should ther be one
-	logger.Info(konstants.MSG_START)
-	log.Fatal(http.ListenAndServe(konstants.LOCAL_ADD, router))
+	env := setup.GetSetENVs()
+	logger.Info(konstants.MSG_START + " Address and Port set to " + env.ServerAddress)
+
+	log.Fatal(http.ListenAndServe(env.ServerAddress, router))
 
 }
