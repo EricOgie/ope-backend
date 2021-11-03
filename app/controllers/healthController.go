@@ -8,7 +8,7 @@ import (
 
 // Greet function callable for liveAPP test
 func Greet(res http.ResponseWriter, req *http.Request) {
-	serveController.Greet(res, req)
+	serveController.Greet(res)
 }
 
 // Ping should respond with a Pong msg just to hint that application is live

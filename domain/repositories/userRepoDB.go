@@ -21,27 +21,22 @@ func (db UserRepositoryDB) FindAll() (*[]models.User, *ericerrors.EricError) {
 	sqlQuery := "SELECT id, firstname, lastname, email, phone, created_at FROM users"
 	rows, err := db.client.Query(sqlQuery)
 
+	// Should err is not null, return Query error
 	if err != nil {
 		log.Println("Query Error: " + err.Error())
-		return nil, ericerrors.New404Error("No Resource Found")
+		return nil, ericerrors.New500Error("Unexpected DB Error")
 	}
+
+	// Define user slice and populate with result from query
 	users := make([]models.User, 0)
 	for rows.Next() {
 		var user models.User
 		err := rows.Scan(&user.Id, &user.FirstName, &user.LastName, &user.Email, &user.Phone, &user.Password)
-
 		if err != nil {
-			// Two error cases can result in this case; 500 and 404 type errors
-			// We will check for a 404 type
-			if err == sql.ErrNoRows {
-				return nil, ericerrors.New404Error("No Resource Found")
-			} else {
-				log.Println("Scan Error: " + err.Error())
-				return nil, ericerrors.New500Error("Unexpected Server Error")
-			}
-
+			ericerrors.New500Error("Unexpected DB Error")
 		}
 
+		// Append iteration result to users slice
 		users = append(users, user)
 	}
 
