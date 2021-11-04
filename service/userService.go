@@ -5,6 +5,7 @@ import (
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
 	responsedto "github.com/EricOgie/ope-be/dto/responseDto"
 	"github.com/EricOgie/ope-be/ericerrors"
+	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/security"
 )
 
@@ -12,6 +13,7 @@ import (
 type UserServicePort interface {
 	GetAllUsers() (*[]responsedto.UserDto, error)
 	RegisterUser(requestdto.RegisterRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
+	Login(requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
 }
 
 // Define UserService as biz end of User domain
@@ -36,10 +38,8 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 	if err != nil {
 		return nil, err
 	}
-
-	userResponseDTO := newUser.ConvertToOneUserDto("")
-	token := security.GenerateToken(userResponseDTO)
-	userResponseDTOWithToken := newUser.ConvertToOneUserDto(token)
+	// Add signed token to user struct and return
+	userResponseDTOWithToken := getUserWithToken(newUser)
 	return &userResponseDTOWithToken, nil
 }
 
@@ -47,4 +47,33 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 //The fnction will create and return an instance of Uservice
 func NewUserService(repo models.UserRepositoryPort) UserService {
 	return UserService{repo}
+}
+
+func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError) {
+	// Validate request
+	err := req.ValidateRequest()
+	if err != nil {
+		return nil, err
+	}
+
+	userLogin := models.UserLogin{Email: req.Email, Password: req.Password}
+	dBUser, err := s.repo.Login(userLogin)
+
+	if err != nil {
+		return nil, err
+	}
+	// Check if User pasword matches
+	security.CheckUserPassword(req.Password, dBUser.Password)
+	logger.Debug("HASH PWORD = " + dBUser.Password)
+	// add token to user struct and return
+	userResponseDTOWithToken := getUserWithToken(dBUser)
+	return &userResponseDTOWithToken, nil
+}
+
+//   ----------------------- PRIVATE METHOD ---------------------------- //
+func getUserWithToken(user *models.User) responsedto.OneUserDto {
+	userResponseDTO := user.ConvertToOneUserDto("")
+	token := security.GenerateToken(userResponseDTO)
+	userResponseDTOWithToken := user.ConvertToOneUserDto(token)
+	return userResponseDTOWithToken
 }

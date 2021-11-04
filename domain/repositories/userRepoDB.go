@@ -22,8 +22,14 @@ func NewUserRepoDB(dbClient *sqlx.DB) UserRepositoryDB {
 	return UserRepositoryDB{dbClient}
 }
 
-// Interface implementation here correspond to Plugging  UserRepositoryDB adapter to UserRepository p
-// Find all Users only callable when active user is an ADMIN
+/**
+* @FINDALL
+* METHOD implemetation of UserRepositoryPort as an interface
+* Interface implementation here correspond to Plugging  UserRepositoryDB
+* adapter to UserRepositoryPort
+* Only callable when active user is an ADMIN
+ */
+
 func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricError) {
 
 	users := make([]responsedto.UserDto, 0)
@@ -39,7 +45,11 @@ func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricEr
 	return &users, nil
 }
 
-// Register a New User
+/**
+* @CREATE
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called upon REGISTER user Request
+ */
 func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.EricError) {
 	// Define Query
 	insertQuery := "INSERT INTO users (firstname, lastname, email, phone, password, created_at) " +
@@ -67,4 +77,23 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
 	// return newly created user
 	return &u, nil
 
+}
+
+/**
+* @LOGIN
+* To be called upon Login Request
+ */
+
+func (db UserRepositoryDB) Login(u models.UserLogin) (*models.User, *ericerrors.EricError) {
+	// Define Query
+	querySQL := "SELECT id, firstname, lastname, email, phone, created_at FROM users WHERE email='" + u.Email + "'"
+	var user models.User
+	err := db.client.Get(&user, querySQL)
+	// Check error state and responde accordingly
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	return &user, nil
 }

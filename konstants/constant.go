@@ -19,6 +19,11 @@ const (
 	KEY_DB_ADD   string = "DB_ADDR"
 	KEY_DB_NAME  string = "DB_NAME"
 
+	INVALID_EMAIL  string = "Invalid Email Addrees. Email should follow correct email format"
+	INVALID_PWORD  string = "Password must be 6 or more charracters long"
+	PHONE_ERR      string = "Phone number must be 11 numbers long"
+	NAME_TOO_SHORT string = "One or two of your names is too short. Name should be 3 or more char long"
+
 	EXP_TIME = int64(time.Hour)
 
 	DB_ERROR      string = "Unexpected Database Error"

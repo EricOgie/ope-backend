@@ -43,26 +43,30 @@ func isValidEmail(email string) bool {
 	return err == nil
 }
 
+func isValidPword(pword string) bool {
+	return len(pword) >= 6
+}
+
 // Request Validation function
 func (req RegisterRequest) ValidateRequest() *ericerrors.EricError {
 	if len(req.FirstName) < 2 || len(req.FirstName) > 20 {
-		return ericerrors.New422Error("firstname char count must be 2 -20 ranged")
+		return ericerrors.New422Error(konstants.NAME_TOO_SHORT)
 	}
 
 	if len(req.LastName) < 2 {
-		return ericerrors.New422Error("lastname char count must be 2 -20 ranged")
+		return ericerrors.New422Error(konstants.NAME_TOO_SHORT)
 	}
 
 	if !isValidEmail(req.Email) {
-		return ericerrors.New422Error("Invalid Email Addrees")
+		return ericerrors.New422Error(konstants.INVALID_EMAIL)
 	}
 
 	if len(req.Phone) != 11 {
-		return ericerrors.New422Error("phone char count must equal 11")
+		return ericerrors.New422Error(konstants.PHONE_ERR)
 	}
 
-	if len(req.Password) < 6 {
-		return ericerrors.New422Error("password char count must be > 6")
+	if !isValidPword(req.Password) {
+		return ericerrors.New422Error(konstants.INVALID_PWORD)
 	}
 
 	return nil

@@ -12,14 +12,20 @@ type User struct {
 	Email     string `json:"email" validate:"email,required" xml:"email"`
 	Phone     string `json:"phone" validate:"required" xml:"phone"`
 	Password  string `json:"password" xml:"password" validate:"required,min=6"`
-	CreatedAt string `json:"created_at" validate:"required" xml:"created_at"`
-	UpdatedAt string `json:"update_at" validate:"required" xml:"updated_at"`
+	CreatedAt string `db:"created_at"`
+	UpdatedAt string `db:"updated_at"`
+}
+
+type UserLogin struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 // Add User adapter port
 type UserRepositoryPort interface {
 	FindAll() (*[]responsedto.UserDto, *ericerrors.EricError)
 	Create(User) (*User, *ericerrors.EricError)
+	Login(UserLogin) (*User, *ericerrors.EricError)
 }
 
 /**
@@ -50,5 +56,4 @@ func (user User) ConvertToOneUserDto(token string) responsedto.OneUserDto {
 		CreatedAt: user.CreatedAt,
 		Token:     token,
 	}
-
 }

@@ -38,11 +38,11 @@ func StartApp() {
 
 	// User related routes
 	router.HandleFunc("/users", userH.GetAllUsers).Methods(http.MethodGet)
-	router.HandleFunc("/register-users", userH.CreateUser).Methods(http.MethodPost)
+	router.HandleFunc("/register", userH.CreateUser).Methods(http.MethodPost)
+	router.HandleFunc("/login", userH.Login).Methods(http.MethodPost)
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
-
 	log.Fatal(http.ListenAndServe(config.ServerAddress, router))
 
 }
