@@ -6,7 +6,6 @@ import (
 
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
 	"github.com/EricOgie/ope-be/ericerrors"
-	"github.com/EricOgie/ope-be/logger"
 	response "github.com/EricOgie/ope-be/responses"
 	"github.com/EricOgie/ope-be/service"
 )
@@ -30,9 +29,7 @@ func (s *UserHandler) CreateUser(res http.ResponseWriter, req *http.Request) {
 		// end process and send 400 error code to client
 		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: "Bad Request"}
 		response.ServeResponse("Error", "me", res, eError)
-		// response.ServeError(http.StatusBadRequest, err.Error(), res)
 	} else {
-		logger.Debug("H1")
 		newUser, eError := s.Service.RegisterUser(request)
 		// Send response and Error to Response handler layer and allow
 		//it serve the appropriate response to client

@@ -5,6 +5,7 @@ import (
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
 	responsedto "github.com/EricOgie/ope-be/dto/responseDto"
 	"github.com/EricOgie/ope-be/ericerrors"
+	"github.com/EricOgie/ope-be/security"
 )
 
 // Create client side port for User related resource
@@ -36,8 +37,10 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 		return nil, err
 	}
 
-	userResponseDTO := newUser.ConvertToOneUserDto("eb267shmdh8.9283hdg76.8769")
-	return &userResponseDTO, nil
+	userResponseDTO := newUser.ConvertToOneUserDto("")
+	token := security.GenerateToken(userResponseDTO)
+	userResponseDTOWithToken := newUser.ConvertToOneUserDto(token)
+	return &userResponseDTOWithToken, nil
 }
 
 // Helper function to instatiate UserService

@@ -1,5 +1,7 @@
 package konstants
 
+import "time"
+
 const (
 	LOCAL_ADD    string = "localhost:8000"
 	CONTENT_TYPE string = "Content-Type"
@@ -16,6 +18,8 @@ const (
 	KEY_DBUSER   string = "DB_PORT"
 	KEY_DB_ADD   string = "DB_ADDR"
 	KEY_DB_NAME  string = "DB_NAME"
+
+	EXP_TIME = int64(time.Hour)
 
 	DB_ERROR      string = "Unexpected Database Error"
 	DB_SCAN_ERROR string = "DB Row Scan Error"

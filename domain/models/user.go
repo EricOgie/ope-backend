@@ -48,6 +48,7 @@ func (user User) ConvertToOneUserDto(token string) responsedto.OneUserDto {
 		Email:     user.Email,
 		Phone:     user.Phone,
 		CreatedAt: user.CreatedAt,
+		Token:     token,
 	}
 
 }
