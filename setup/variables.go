@@ -5,7 +5,6 @@ import (
 	"os"
 
 	"github.com/EricOgie/ope-be/konstants"
-	"github.com/EricOgie/ope-be/logger"
 )
 
 type ENV struct {
@@ -25,18 +24,6 @@ func GetSetENVs() ENV {
 		DBPort:        getDBPort(),
 		DBName:        getDBName(),
 	}
-}
-
-// ENV SET CHECK
-
-func ENVSetCheck() {
-
-	if os.Getenv("SERVER_PORT") == "" {
-		logger.Debug("SERVER_ADDRESS is Not Set")
-	} else if os.Getenv("SERVER_PORT") == "" {
-		logger.Debug("SERVER_ADDRESS is Not Set")
-	}
-
 }
 
 // ---------------------  PRIVATE HELPER FUNCTIONS --------------------------- //

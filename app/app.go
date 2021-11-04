@@ -6,11 +6,12 @@ import (
 
 	"github.com/EricOgie/ope-be/app/controllers"
 	"github.com/EricOgie/ope-be/app/handlers"
+	"github.com/EricOgie/ope-be/databases"
 	"github.com/EricOgie/ope-be/domain/repositories"
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/service"
-	"github.com/EricOgie/ope-be/setup"
+	"github.com/EricOgie/ope-be/utils"
 	"github.com/gorilla/mux"
 )
 
@@ -18,10 +19,16 @@ func StartApp() {
 
 	// define mux router
 	router := mux.NewRouter()
+	// Load config data
+	config, err := utils.LoadConfig(".")
+	// Create an instance of DBClient
+	dbClient := databases.GetRDBClient()
+	// Sanity Check
+	utils.RunSanityCheck(err)
 
 	// ------------------------   WIRING AND CONNECTIONS --------------------------
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
-	userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB())}
+	userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient))}
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
 
@@ -33,9 +40,8 @@ func StartApp() {
 	router.HandleFunc("/users", userH.GetAllUsers).Methods(http.MethodGet)
 
 	// Start server and log error should ther be one
-	env := setup.GetSetENVs()
-	logger.Info(konstants.MSG_START + " Address and Port set to " + env.ServerAddress)
+	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
 
-	log.Fatal(http.ListenAndServe(env.ServerAddress, router))
+	log.Fatal(http.ListenAndServe(config.ServerAddress, router))
 
 }
