@@ -24,3 +24,11 @@ func New500Error(msg string) *EricError {
 		Message: msg,
 	}
 }
+
+// Custom 422  error
+func New422Error(msg string) *EricError {
+	return &EricError{
+		Code:    http.StatusUnprocessableEntity,
+		Message: msg,
+	}
+}

@@ -31,6 +31,13 @@ func ServeResponse(collection string, resource interface{},
 
 }
 
+func ServeError(code int, errorMsg string, res http.ResponseWriter) {
+	res.WriteHeader(http.StatusBadRequest)
+	errRes := ErrorResponse{Code: code, Status: "Error", Message: errorMsg}
+	json.NewEncoder(res).Encode(errRes)
+
+}
+
 type Response struct {
 	Status     string      `json:"status" xml:"status"`
 	Collection string      `json:"collection" xml:"collection"`

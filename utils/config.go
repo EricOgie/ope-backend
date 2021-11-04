@@ -15,21 +15,21 @@ type Config struct {
 
 	SigningKey string `mapstructure:"JWT_SECRETE"`
 
-	DBDriver   string      `mapstructure:"DB_DRIVER"`
-	DBUser     string      `mapstructure:"DB_USER"`
-	DBAddress  string      `mapstructure:"DB_ADDR"`
-	DBPort     string      `mapstructure:"DB_PORT"`
-	DBName     string      `mapstructure:"DB_NAME"`
-	DBPassword interface{} `mapstructure:"DB_PASSWORD"`
+	DBDriver   string `mapstructure:"DB_DRIVER"`
+	DBUser     string `mapstructure:"DB_USER"`
+	DBAddress  string `mapstructure:"DB_ADDR"`
+	DBPort     string `mapstructure:"DB_PORT"`
+	DBName     string `mapstructure:"DB_NAME"`
+	DBPassword string `mapstructure:"DB_PASSWORD"`
 
-	Mailer          string      `mapstructure:"MAIL_MAILER"`
-	MailHost        string      `mapstructure:"MAIL_HOST"`
-	MailPort        string      `mapstructure:"MAIL_PORT"`
-	MailUserName    string      `mapstructure:"MAIL_USERNAME"`
-	MailPassword    string      `mapstructure:"MAIL_PASSWORD"`
-	MailEncryption  interface{} `mapstructure:"MAIL_ENCRYPTION"`
-	MailFromAddress string      `mapstructure:"MAIL_FROM_ADDRESS"`
-	MailFromName    string      `mapstructure:"MAIL_FROM_NAME"`
+	Mailer          string `mapstructure:"MAIL_MAILER"`
+	MailHost        string `mapstructure:"MAIL_HOST"`
+	MailPort        string `mapstructure:"MAIL_PORT"`
+	MailUserName    string `mapstructure:"MAIL_USERNAME"`
+	MailPassword    string `mapstructure:"MAIL_PASSWORD"`
+	MailEncryption  string `mapstructure:"MAIL_ENCRYPTION"`
+	MailFromAddress string `mapstructure:"MAIL_FROM_ADDRESS"`
+	MailFromName    string `mapstructure:"MAIL_FROM_NAME"`
 }
 
 // Helper func that exposes the Config struct

@@ -5,7 +5,7 @@ const (
 	CONTENT_TYPE string = "Content-Type"
 	TYPE_XML     string = "application/xml"
 	TYPE_JSON    string = "application/json"
-	MSG_500      string = "Unexpected Server Error"
+	MSG_500      string = "Unexpected Server Error!"
 	MSG_START    string = "Starting Appliction ...."
 	LOGGER_TYPE  string = "logger-type"
 	TIME         string = "timestamp"
@@ -22,4 +22,9 @@ const (
 	LOCAL_DB_USER string = "root"
 	LOCAL_DB_NAME string = "ope"
 	LOCAL_DB_ADD  string = "localhost"
+
+	T_FORMAT string = "2006-01-02 15:04:05"
+
+	DB_INSERT_ERR string = "DB/User Insert Error. Err: "
+	DB_ID_ERR     string = "DB/Last Inser ID retrieval Error. Err: "
 )
