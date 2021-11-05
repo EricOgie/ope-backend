@@ -7,7 +7,7 @@ type OneUserDto struct {
 	LastName  string `json:"lastname" xml:"last_name"`
 	Email     string `json:"email" xml:"email"`
 	Phone     string `json:"phone" xml:"phone"`
-	CreatedAt string `db:"created_at"`
+	CreatedAt string `db:"created_at" json:"created_at"`
 	Token     string `json:"token" xml:"token"`
 }
 
@@ -18,6 +18,6 @@ type UserDto struct {
 	LastName  string `json:"lastname" xml:"last_name"`
 	Email     string `json:"email" xml:"email"`
 	Phone     string `json:"phone" xml:"phone"`
-	CreatedAt string `db:"created_at"`
+	CreatedAt string `db:"created_at" json:"created_at"`
 	UpdatedAt string `json:"updated_at" xml:"updated_at"`
 }

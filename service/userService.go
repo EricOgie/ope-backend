@@ -21,9 +21,10 @@ type UserService struct {
 	repo models.UserRepositoryPort
 }
 
-// Plug userService to UserServicePort
-func (s UserService) GetAllUsers() (*[]responsedto.UserDto, *ericerrors.EricError) {
-	return s.repo.FindAll()
+// Helper function to instatiate UserService
+//The fnction will create and return an instance of Uservice
+func NewUserService(repo models.UserRepositoryPort) UserService {
+	return UserService{repo}
 }
 
 // Plug userService to UserServicePort via RegisterUser interface implementation
@@ -41,12 +42,6 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 	// Add signed token to user struct and return
 	userResponseDTOWithToken := getUserWithToken(newUser)
 	return &userResponseDTOWithToken, nil
-}
-
-// Helper function to instatiate UserService
-//The fnction will create and return an instance of Uservice
-func NewUserService(repo models.UserRepositoryPort) UserService {
-	return UserService{repo}
 }
 
 func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError) {
@@ -68,6 +63,11 @@ func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto
 	// add token to user struct and return
 	userResponseDTOWithToken := getUserWithToken(dBUser)
 	return &userResponseDTOWithToken, nil
+}
+
+// Plug userService to UserServicePort
+func (s UserService) GetAllUsers() (*[]responsedto.UserDto, *ericerrors.EricError) {
+	return s.repo.FindAll()
 }
 
 //   ----------------------- PRIVATE METHOD ---------------------------- //

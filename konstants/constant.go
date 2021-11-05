@@ -27,6 +27,7 @@ const (
 	EXP_TIME = int64(time.Hour)
 
 	DB_ERROR      string = "Unexpected Database Error"
+	NO_DER_ERR    string = "User no dey. Err = "
 	DB_SCAN_ERROR string = "DB Row Scan Error"
 	LOCAL_DB_USER string = "root"
 	LOCAL_DB_NAME string = "ope"
@@ -34,6 +35,8 @@ const (
 
 	T_FORMAT string = "2006-01-02 15:04:05"
 
-	DB_INSERT_ERR string = "DB/User Insert Error. Err: "
-	DB_ID_ERR     string = "DB/Last Inser ID retrieval Error. Err: "
+	HASH_ERR       string = "Password Hash Error. Err : "
+	DB_INSERT_ERR  string = "DB/User Insert Error. Err: "
+	DB_ID_ERR      string = "DB/Last Inserted ID retrieval Error. Err: "
+	CREDENTIAL_ERR string = "Wrong Email or Password"
 )

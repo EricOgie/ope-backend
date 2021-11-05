@@ -25,6 +25,14 @@ func New500Error(msg string) *EricError {
 	}
 }
 
+// Custom 500 server error
+func NewCredentialError(msg string) *EricError {
+	return &EricError{
+		Code:    http.StatusNotAcceptable,
+		Message: msg,
+	}
+}
+
 // Custom 422  error
 func New422Error(msg string) *EricError {
 	return &EricError{

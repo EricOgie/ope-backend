@@ -7,8 +7,6 @@ import (
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/konstants"
-	"github.com/EricOgie/ope-be/logger"
-	"github.com/EricOgie/ope-be/security"
 )
 
 type RegisterRequest struct {
@@ -20,19 +18,14 @@ type RegisterRequest struct {
 }
 
 // Helper to build User Sruct from RegisterRequest
-
 func BuildUser(r RegisterRequest) models.User {
-	hasedPword, err := security.HashPword(r.Password)
-	if err != nil {
-		logger.Error("PasswordHash Eror: " + err.Error())
-	}
 	return models.User{
 		Id:        "",
 		FirstName: r.FirstName,
 		LastName:  r.LastName,
 		Email:     r.Email,
 		Phone:     r.Phone,
-		Password:  hasedPword,
+		Password:  r.Password,
 		CreatedAt: time.Now().Format(konstants.T_FORMAT),
 		UpdatedAt: "",
 	}
