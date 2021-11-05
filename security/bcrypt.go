@@ -24,5 +24,4 @@ func GenHashedPwd(pword string) string {
 	} else {
 		return pWord
 	}
-
 }

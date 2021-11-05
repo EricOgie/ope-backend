@@ -18,6 +18,10 @@ const (
 	KEY_DBUSER   string = "DB_PORT"
 	KEY_DB_ADD   string = "DB_ADDR"
 	KEY_DB_NAME  string = "DB_NAME"
+	AUTH         string = "Authorization"
+
+	ERR_REQ_SEND string = "Error while sending req. Err: "
+	ERR_DECODE   string = "ERROR while decoding response. e: "
 
 	INVALID_EMAIL  string = "Invalid Email Addrees. Email should follow correct email format"
 	INVALID_PWORD  string = "Password must be 6 or more charracters long"
@@ -39,4 +43,7 @@ const (
 	DB_INSERT_ERR  string = "DB/User Insert Error. Err: "
 	DB_ID_ERR      string = "DB/Last Inserted ID retrieval Error. Err: "
 	CREDENTIAL_ERR string = "Wrong Email or Password"
+
+	UAUTH_ERR string = "Unauthorized"
+	NO_AUTH   string = "Missing auth token"
 )

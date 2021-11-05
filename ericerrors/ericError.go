@@ -40,3 +40,10 @@ func New422Error(msg string) *EricError {
 		Message: msg,
 	}
 }
+
+func NewError(code int, msg string) *EricError {
+	return &EricError{
+		Code:    code,
+		Message: msg,
+	}
+}
