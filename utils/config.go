@@ -32,7 +32,9 @@ type Config struct {
 	MailFromName    string `mapstructure:"MAIL_FROM_NAME"`
 }
 
-// Helper func that exposes the Config struct
+// LoadConfig reads/loads environment variables into config struct.
+// It returns a Config struct with all loaded envs as attributes.
+// Each env can then be accessed by the DOT notation on the Config struct like so: config.DBAddress
 func LoadConfig(path string) (config Config, err error) {
 	// Set config file path to env fle
 	viper.AddConfigPath(path)
@@ -55,7 +57,8 @@ func LoadConfig(path string) (config Config, err error) {
 
 }
 
-// Kill the system if it can not read set variables from config
+// RunSanityCheck runs a check on the system to ensure all essential variables are properly read from env.
+// It will KILL the system if it can not read set variables from config
 func RunSanityCheck(err error) {
 	if err != nil {
 		logger.Debug("Error While loading Config. ErrorMsg: " + err.Error())

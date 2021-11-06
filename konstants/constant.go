@@ -30,6 +30,8 @@ const (
 
 	EXP_TIME = int64(time.Hour)
 
+	DB_CON_OK     string = "Database Connection is Successful"
+	DB_CON_ERR    string = "Database Connection Error. Err: "
 	DB_ERROR      string = "Unexpected Database Error"
 	NO_DER_ERR    string = "User no dey. Err = "
 	DB_SCAN_ERROR string = "DB Row Scan Error"

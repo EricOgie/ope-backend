@@ -14,6 +14,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
+// Create an instance of a complete port-port wired AuthMiddleWare.
+// i.e, It has a complete to-fro implementation from serviceport layer to RepositoryPort layer
 type AuthMiddlewareService struct {
 	Repo repositories.MiddleWareRepo
 }
@@ -22,7 +24,7 @@ type AuthMiddlewareService struct {
 * @AUTHHANDLER
 * authHnaler function implentaton on AUthMiddleware struct
  */
-
+// AuthMiddleware will validate client authorization/access on all routes that call it usege
 func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http.Handler) http.Handler {
 	return func(nxtHandler http.Handler) http.Handler {
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
@@ -77,7 +79,6 @@ func getTokenInHeader(header string) string {
 		the header comes in the format below
 		Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY...
 	*/
-	logger.Error("Token = " + header)
 	arr := strings.Split(header, " ")
 	return arr[1]
 }

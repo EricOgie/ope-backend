@@ -9,9 +9,9 @@ import (
 )
 
 // ServeResponse serves the correct response to client depending on the result and
-//response type preferences. it takes the response resource, statusCode, ResponseWriter,
-// and *http.Request
-
+//response type preferences. it takes the resource type/collection, an interface,
+// http.ResponseWriter, and a custom error object, *ericerrors.EricError.
+//It uses the args to construct JSON responses that could either be error or requested Resource
 func ServeResponse(collection string, resource interface{},
 	res http.ResponseWriter, error *ericerrors.EricError) {
 

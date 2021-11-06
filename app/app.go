@@ -24,11 +24,11 @@ func StartApp() {
 	// Load config data
 	config, err := utils.LoadConfig(".")
 	// Create an instance of DBClient
-	dbClient := databases.GetRDBClient()
+	dbClient := databases.GetRDBClient(config)
 	// Sanity Check
 	utils.RunSanityCheck(err)
 	midWare := service.AuthMiddlewareService{repositories.MiddleWareRepo{dbClient}}
-	// Apply Auth Middleware one router
+	// Apply Auth Middleware on router
 	router.Use(midWare.AuthMiddleware(config))
 
 	// ------------------------   WIRING AND CONNECTIONS --------------------------
