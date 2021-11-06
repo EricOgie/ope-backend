@@ -28,11 +28,11 @@ func GenerateToken(payload responsedto.OneUserDto) string {
 
 func genUserClaim(payload responsedto.OneUserDto) jwt.MapClaims {
 	return jwt.MapClaims{
-		"user_id":  payload.Id,
-		"fullname": payload.FirstName,
-		"lastname": payload.LastName,
-		"email":    payload.Email,
-		"when":     payload.CreatedAt,
-		"exp":      time.Now().Add(time.Duration(konstants.EXP_TIME)).Unix(),
+		"id":        payload.Id,
+		"firstname": payload.FirstName,
+		"lastname":  payload.LastName,
+		"email":     payload.Email,
+		"when":      payload.CreatedAt,
+		"exp":       time.Now().Add(time.Duration(konstants.EXP_TIME)).Unix(),
 	}
 }

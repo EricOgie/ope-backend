@@ -46,4 +46,5 @@ const (
 
 	UAUTH_ERR string = "Unauthorized"
 	NO_AUTH   string = "Missing auth token"
+	EXP_TOKEN string = "Aauthorization has expired"
 )
