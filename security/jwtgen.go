@@ -10,8 +10,8 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-func GenerateToken(payload responsedto.OneUserDto) string {
-
+// GenerateToken takes responsedto.OneUserDto as aurg and return a string crtographed token
+func GenerateToken(payload responsedto.OneUserDtoWithOtp) string {
 	config, _ := utils.LoadConfig(".")
 	claim := genUserClaim(payload)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
@@ -26,12 +26,13 @@ func GenerateToken(payload responsedto.OneUserDto) string {
 	}
 }
 
-func genUserClaim(payload responsedto.OneUserDto) jwt.MapClaims {
+func genUserClaim(payload responsedto.OneUserDtoWithOtp) jwt.MapClaims {
 	return jwt.MapClaims{
 		"id":        payload.Id,
 		"firstname": payload.FirstName,
 		"lastname":  payload.LastName,
 		"email":     payload.Email,
+		"otp":       payload.OTP,
 		"when":      payload.CreatedAt,
 		"exp":       time.Now().Add(time.Duration(konstants.EXP_TIME)).Unix(),
 	}

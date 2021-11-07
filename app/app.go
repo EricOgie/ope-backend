@@ -19,27 +19,31 @@ func StartApp() {
 
 	// define mux router
 	router := mux.NewRouter()
-	router.PathPrefix("api")
-
 	// Load config data
 	config, err := utils.LoadConfig(".")
-	// Create an instance of DBClient
-	dbClient := databases.GetRDBClient(config)
 	// Sanity Check
 	utils.RunSanityCheck(err)
+	// Create an instance of DBClient
+	dbClient := databases.GetRDBClient(config)
+	// Create an instance of SMTPClient that will be use for mailing
+	// This way, we don get to create multiple smtp connections because we just
+	// have one instance and pass it along when and where it is needed
+	smptClient := utils.GetEmailClient(config)
+
 	midWare := service.AuthMiddlewareService{repositories.MiddleWareRepo{dbClient}}
 	// Apply Auth Middleware on router
 	router.Use(midWare.AuthMiddleware(config))
 
 	// ------------------------   WIRING AND CONNECTIONS --------------------------
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
-	authH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient))}
+	authH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, smptClient, config))}
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
 
 	// Health check routs
 	router.HandleFunc("/", controllers.Greet).Methods(http.MethodGet).Name("Home")
 	router.HandleFunc("/ping", controllers.Ping).Methods(http.MethodGet).Name("Ping")
+	router.HandleFunc("/verify", controllers.ServeHTMLTemplate).Methods(http.MethodGet).Name("Verify")
 
 	// User related routes
 	router.HandleFunc("/users", authH.GetAllUsers).Methods(http.MethodGet).Name("GetAllUser")

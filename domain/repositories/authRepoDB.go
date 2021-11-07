@@ -10,18 +10,22 @@ import (
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/security"
+	"github.com/EricOgie/ope-be/utils"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	mail "github.com/xhit/go-simple-mail/v2"
 )
 
 // Create UserDB Adapter
 type UserRepositoryDB struct {
-	client *sqlx.DB
+	client     *sqlx.DB
+	smptClient *mail.SMTPClient
+	env        utils.Config
 }
 
 // Helper function to instantiate DB
-func NewUserRepoDB(dbClient *sqlx.DB) UserRepositoryDB {
-	return UserRepositoryDB{dbClient}
+func NewUserRepoDB(dbClient *sqlx.DB, smtpClient *mail.SMTPClient, env utils.Config) UserRepositoryDB {
+	return UserRepositoryDB{dbClient, smtpClient, env}
 }
 
 /**
@@ -76,6 +80,8 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 
+	// User registered successfully. Send Mail to user
+
 	// merge ID from Db with UserObject
 	u.Id = strconv.Itoa(int(newId))
 	// return newly created user
@@ -117,6 +123,8 @@ func isValidCrentials(u models.UserLogin, client UserRepositoryDB) bool {
 		} else {
 			logger.Error(konstants.DB_ERROR + err.Error())
 		}
+
+		return false
 	}
 	return security.CheckUserPassword(u.Password, data)
 }

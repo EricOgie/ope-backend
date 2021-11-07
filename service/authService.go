@@ -5,8 +5,10 @@ import (
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
 	responsedto "github.com/EricOgie/ope-be/dto/responseDto"
 	"github.com/EricOgie/ope-be/ericerrors"
+	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/security"
+	"github.com/EricOgie/ope-be/utils"
 )
 
 // Create client side port for User related resource
@@ -32,6 +34,9 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 	// Validate request
 	err := req.ValidateRequest()
 	if err != nil {
+		// hhh
+
+		//jjj
 		return nil, err
 	}
 	userConstruct := requestdto.BuildUser(req)
@@ -40,7 +45,8 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 		return nil, err
 	}
 	// Add signed token to user struct and return
-	userResponseDTOWithToken := getUserWithToken(newUser)
+	userResponseDTOWithToken, resDTOWithToken := getUserWithToken(newUser)
+	utils.SendVerificationMail(resDTOWithToken)
 	return &userResponseDTOWithToken, nil
 }
 
@@ -55,14 +61,21 @@ func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto
 	dBUser, err := s.repo.Login(userLogin)
 
 	if err != nil {
+		logger.Error("login Err  = " + err.Message)
 		return nil, err
 	}
 	// Check if User pasword matches
-	security.CheckUserPassword(req.Password, dBUser.Password)
-	logger.Debug("HASH PWORD = " + dBUser.Password)
-	// add token to user struct and return
-	userResponseDTOWithToken := getUserWithToken(dBUser)
-	return &userResponseDTOWithToken, nil
+
+	isValidCrentials := security.CheckUserPassword(req.Password, dBUser.Password)
+	if !isValidCrentials {
+		return nil, ericerrors.NewCredentialError(konstants.CREDENTIAL_ERR)
+	}
+	// Construct responseDTOWithToken and responseWithOTP
+	resDTOWithToken, userDTOWithOTP := getUserWithToken(dBUser)
+	// Since all is well, send 2FA otp to user
+	utils.SendVerificationMail(userDTOWithOTP)
+
+	return &resDTOWithToken, nil
 }
 
 // Plug userService to UserServicePort
@@ -71,9 +84,15 @@ func (s UserService) GetAllUsers() (*[]responsedto.UserDto, *ericerrors.EricErro
 }
 
 //   ----------------------- PRIVATE METHOD ---------------------------- //
-func getUserWithToken(user *models.User) responsedto.OneUserDto {
-	userResponseDTO := user.ConvertToOneUserDto("")
-	token := security.GenerateToken(userResponseDTO)
-	userResponseDTOWithToken := user.ConvertToOneUserDto(token)
-	return userResponseDTOWithToken
+func getUserWithToken(user *models.User) (responsedto.OneUserDto, responsedto.OneUserDtoWithOtp) {
+	// Gen OTP
+	otp := security.GenerateOTP()
+	// Construct UserDTOwithOTP from user
+	userDTOWithOTP := user.ConvertToOneUserDtoWithOtp(otp)
+	// Gen Token
+	token := security.GenerateToken(userDTOWithOTP)
+	// Contruct UserDTOwithToken
+	userResponseDTOWithToken := user.ConvertToOneUserDto(token) //user.ConvertToOneUserDto(token)
+
+	return userResponseDTOWithToken, userDTOWithOTP
 }

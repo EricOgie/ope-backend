@@ -12,15 +12,18 @@ type Claim struct {
 	Lastname   string
 	Email      string
 	Created_at string
+	OTP        int
 	When       string
 }
 
 func makeClaim(claim jwt.MapClaims) Claim {
+
 	return Claim{
 		Id:        fmt.Sprintf("%v", claim["id"]),
 		Firstname: fmt.Sprintf("%v", claim["firstname"]),
 		Lastname:  fmt.Sprintf("%v", claim["lastname"]),
 		Email:     fmt.Sprintf("%v", claim["email"]),
 		When:      fmt.Sprintf("%v", claim["when"]),
+		OTP:       claim["when"].(int),
 	}
 }

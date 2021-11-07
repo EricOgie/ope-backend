@@ -49,4 +49,14 @@ const (
 	UAUTH_ERR string = "Unauthorized"
 	NO_AUTH   string = "Missing auth token"
 	EXP_TOKEN string = "Aauthorization has expired"
+
+	Mail_CON_ERR   string = "Mail Server Connection Error. Err: "
+	MAIL_DEL_ERR   string = "Mail Sending Err: "
+	MAIL_PARSE_ERR string = "ParseFiles Err"
+	VERIFY_SUB     string = "Verify Your Ope Account"
+	YAHOO          string = "ericogia@yahoo.com"
+
+	FROM_PREFIX string = "Ope"
+
+	VERIFY_URL string = "http://localhost:8080/verify" //
 )

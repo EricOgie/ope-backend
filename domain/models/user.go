@@ -57,3 +57,15 @@ func (user User) ConvertToOneUserDto(token string) responsedto.OneUserDto {
 		Token:     token,
 	}
 }
+
+func (user User) ConvertToOneUserDtoWithOtp(otp int) responsedto.OneUserDtoWithOtp {
+	return responsedto.OneUserDtoWithOtp{
+		Id:        user.Id,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		Phone:     user.Phone,
+		OTP:       otp,
+		CreatedAt: user.CreatedAt,
+	}
+}
