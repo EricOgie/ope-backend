@@ -40,7 +40,7 @@ func StartApp() {
 	authH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
-	port := ":" + os.Getenv("PORT")
+	port := os.Getenv("PORT")
 	// PUBLIC ROUTES
 	router.HandleFunc("/", controllers.Greet).Methods(http.MethodGet).Name("Home")
 	router.HandleFunc("/ping", controllers.Ping).Methods(http.MethodGet).Name("Ping")
@@ -54,6 +54,6 @@ func StartApp() {
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
-	log.Fatal(http.ListenAndServe(port, router))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 
 }
