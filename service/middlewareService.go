@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -33,8 +35,16 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 			routeInFocus := mux.CurrentRoute(req)
 
 			if !needsAuthorization(routeInFocus.GetName()) {
-				logger.Info("No Auth is needed for " + routeInFocus.GetName() + " route")
-				nxtHandler.ServeHTTP(res, req)
+				// Check if token in url, a case of email verification
+				if isTokenInURL(req, envs) {
+					// extract claim data and pass along with reqreq
+					claim := getClaim(req, envs, res)
+					ctx := context.WithValue(req.Context(), konstants.DT_KEY, claim)
+					nxtHandler.ServeHTTP(res, req.WithContext(ctx))
+				} else {
+					nxtHandler.ServeHTTP(res, req)
+				}
+
 			} else {
 
 				// Obtain AuthorizationHeader if available
@@ -43,8 +53,7 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 				if authorization == "" {
 					logger.Error("EMPTY HEADER")
 					response.ServeResponse(
-						"Error", "",
-						res,
+						"Error", "", res,
 						&ericerrors.EricError{Code: http.StatusUnauthorized, Message: konstants.NO_AUTH})
 				} else {
 					// Process authoriztion in header
@@ -115,5 +124,32 @@ func needsAuthorization(routeName string) bool {
 		"GetAllUser":   true,
 	}
 	return auth[routeName]
+
+}
+
+func isTokenInURL(req *http.Request, env utils.Config) bool {
+	tok := req.URL.Query().Get("k")
+	return len(tok) > 0
+}
+
+func getClaim(req *http.Request, env utils.Config, res http.ResponseWriter) models.Claim {
+	tokString := req.URL.Query().Get("k")
+
+	// convert to JWT
+	tokJwt, e := jwtTokenFromString(tokString, env)
+	if e != nil {
+		logger.Error("JWT EXTRACT ERR : " + e.Error())
+	}
+
+	if !tokJwt.Valid {
+		response.ServeResponse("Error", "", res,
+			&ericerrors.EricError{Code: http.StatusUnauthorized, Message: konstants.NO_AUTH})
+	}
+
+	jwtMapClaim := tokJwt.Claims.(jwt.MapClaims)
+	claimObj := models.MakeClaim(jwtMapClaim)
+	fmt.Println(fmt.Sprintf("%#v", claimObj))
+
+	return claimObj
 
 }

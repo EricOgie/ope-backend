@@ -13,19 +13,16 @@ import (
 	"github.com/EricOgie/ope-be/utils"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	mail "github.com/xhit/go-simple-mail/v2"
 )
 
 // Create UserDB Adapter
 type UserRepositoryDB struct {
-	client     *sqlx.DB
-	smptClient *mail.SMTPClient
-	env        utils.Config
+	client *sqlx.DB
 }
 
 // Helper function to instantiate DB
-func NewUserRepoDB(dbClient *sqlx.DB, smtpClient *mail.SMTPClient, env utils.Config) UserRepositoryDB {
-	return UserRepositoryDB{dbClient, smtpClient, env}
+func NewUserRepoDB(dbClient *sqlx.DB, env utils.Config) UserRepositoryDB {
+	return UserRepositoryDB{dbClient}
 }
 
 /**
@@ -110,6 +107,20 @@ func (db UserRepositoryDB) Login(u models.UserLogin) (*models.User, *ericerrors.
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 	return &user, nil
+}
+
+func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User, *ericerrors.EricError) {
+	query := "UPDATE users SET verified = ? WHERE email = ?"
+	_, err := db.client.Exec(query, "true", v.Email)
+	if err != nil {
+		logger.Error(konstants.VET_ACC_ERR + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	user := v.GetUserFromVerify()
+
+	return &user, nil
+
 }
 
 // ---------------------- PRIVATE METHODS ------------------------//

@@ -21,11 +21,26 @@ type UserLogin struct {
 	Password string `json:"password"`
 }
 
+type VerifyUser struct {
+	Id        string
+	FirstName string
+	LastName  string
+	Email     string
+	CreatedAt string
+}
+
+type VerifyUserResponse struct {
+	Id    string `roken:"email"`
+	Email string
+	Token string `roken:"email"`
+}
+
 // Add User adapter port
 type UserRepositoryPort interface {
 	FindAll() (*[]responsedto.UserDto, *ericerrors.EricError)
 	Create(User) (*User, *ericerrors.EricError)
 	Login(UserLogin) (*User, *ericerrors.EricError)
+	VerifyUserAccount(VerifyUser) (*User, *ericerrors.EricError)
 }
 
 /**
@@ -67,5 +82,23 @@ func (user User) ConvertToOneUserDtoWithOtp(otp int) responsedto.OneUserDtoWithO
 		Phone:     user.Phone,
 		OTP:       otp,
 		CreatedAt: user.CreatedAt,
+	}
+}
+
+func (user User) ConvertToVeriyResponse() responsedto.VerifiedRESPONSE {
+	return responsedto.VerifiedRESPONSE{
+		Id:     user.Id,
+		Email:  user.Email,
+		Status: "Verified",
+	}
+}
+
+func (v VerifyUser) GetUserFromVerify() User {
+	return User{
+		Id:        v.Id,
+		FirstName: v.FirstName,
+		LastName:  v.LastName,
+		Email:     v.Email,
+		CreatedAt: v.CreatedAt,
 	}
 }

@@ -43,8 +43,12 @@ const (
 
 	HASH_ERR       string = "Password Hash Error. Err : "
 	DB_INSERT_ERR  string = "DB/User Insert Error. Err: "
+	DB_UPDATE_ERR  string = "DB/row update error. Err: "
 	DB_ID_ERR      string = "DB/Last Inserted ID retrieval Error. Err: "
 	CREDENTIAL_ERR string = "Wrong Email or Password"
+
+	VET_ACC_ERR string = "Verify Err: "
+	LOGIN_ERR   string = "Login Err: "
 
 	UAUTH_ERR string = "Unauthorized"
 	NO_AUTH   string = "Missing auth token"
@@ -59,4 +63,7 @@ const (
 	FROM_PREFIX string = "Ope"
 
 	VERIFY_URL string = "http://localhost:8080/verify" //
+
+	DT_KEY    string = "props"
+	CLAIM_ERR string = "ERROR while trying to extract claims from request context. Err: "
 )

@@ -9,7 +9,9 @@ import (
 
 // Greet function callable for liveAPP test
 func Greet(res http.ResponseWriter, req *http.Request) {
-	serveController.Greet(res)
+	p := Content{"WELCOME TO GO !", "THIS IS JUST A TEST", "ANOTHER"}
+	temp, _ := template.ParseFiles("view/Home.html")
+	temp.Execute(res, p)
 }
 
 // Ping should respond with a Pong msg just to hint that application is live
@@ -19,7 +21,7 @@ func Ping(res http.ResponseWriter, req *http.Request) {
 
 func ServeHTMLTemplate(res http.ResponseWriter, req *http.Request) {
 	p := Content{"WELCOME TO GO !", "THIS IS JUST A TEST", "ANOTHER"}
-	temp, _ := template.ParseFiles("template.html")
+	temp, _ := template.ParseFiles("view/Verify.html")
 	temp.Execute(res, p)
 	// var body bytes.Buffer
 

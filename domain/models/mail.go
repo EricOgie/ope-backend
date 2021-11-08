@@ -8,5 +8,5 @@ type Emailable struct {
 	IsWithButton   bool
 	ButtonText     string
 	RedirectUrl    string
-	OTP            interface{}
+	OTP            int
 }

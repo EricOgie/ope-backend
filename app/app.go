@@ -28,7 +28,7 @@ func StartApp() {
 	// Create an instance of SMTPClient that will be use for mailing
 	// This way, we don get to create multiple smtp connections because we just
 	// have one instance and pass it along when and where it is needed
-	smptClient := utils.GetEmailClient(config)
+	// smptClient := utils.GetEmailClient(config)
 
 	midWare := service.AuthMiddlewareService{repositories.MiddleWareRepo{dbClient}}
 	// Apply Auth Middleware on router
@@ -36,7 +36,7 @@ func StartApp() {
 
 	// ------------------------   WIRING AND CONNECTIONS --------------------------
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
-	authH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, smptClient, config))}
+	authH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
 

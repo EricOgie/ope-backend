@@ -49,35 +49,19 @@ func GetEmailClient(env Config) *mail.SMTPClient {
 	return smtpClient
 }
 
-func SendVerificationMail(data responsedto.OneUserDtoWithOtp) {
+// SendVerificationMail is callable when a verification mail mail needs to be sent
+// It require an instance of responsedto.OneUserDtoWithOtp, and a token string to construct the required mailable
+func SendVerificationMail(data responsedto.OneUserDtoWithOtp, token string) {
 	env, loadErr := LoadConfig("*")
 	if loadErr != nil {
 		logger.Error("ENV_LOAD_ERR : " + loadErr.Error())
 	}
-	// charset=\"UTF-8\";\n\n
-	var body bytes.Buffer
-	// mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; "
-	body.Write([]byte(fmt.Sprintf("Subject: Verify Your Ope Account \n%s\n\n")))
 
-	temp, err := template.ParseFiles("verification.html")
-	if err != nil {
-		logger.Error(konstants.MAIL_PARSE_ERR + err.Error())
-	}
-
-	emailStruct := makeMailable(data)
+	emailStruct := makeMailable(data, token)
 	client := GetEmailClient(env)
-	temp.Execute(&body, emailStruct)
 
-	// Create email
-	email := mail.NewMSG()
-	email.SetFrom(konstants.FROM_PREFIX + "<" + env.MailFromAddress + ">")
-	email.AddTo(emailStruct.RecipientEmail)
-	email.AddCc(konstants.YAHOO)
-	email.SetSubject(konstants.VERIFY_SUB)
-
-	email.SetBody(mail.TextHTML, string(body.Bytes()))
-
-	err = email.Send(client)
+	email := getEmail(emailStruct, env)
+	err := email.Send(client)
 	if err != nil {
 		logger.Error(konstants.MAIL_DEL_ERR + err.Error())
 		return
@@ -85,7 +69,27 @@ func SendVerificationMail(data responsedto.OneUserDtoWithOtp) {
 
 }
 
-func makeMailable(data responsedto.OneUserDtoWithOtp) models.Emailable {
+// SendOTP is callable when OTP needs to be sent either for a 2FA fulfillment or other wise
+// It require an instance of responsedto.OneUserDtoWithOtp to construct the required mailable
+func SendOTP(data responsedto.OneUserDtoWithOtp) {
+	env, loadErr := LoadConfig("*")
+	if loadErr != nil {
+		logger.Error("ENV_LOAD_ERR : " + loadErr.Error())
+	}
+
+	emailStruct := makeOTPMailable(data)
+	client := GetEmailClient(env)
+	email := getEmail(emailStruct, env)
+	err := email.Send(client)
+	if err != nil {
+		logger.Error(konstants.MAIL_DEL_ERR + err.Error())
+		return
+	}
+
+}
+
+func makeMailable(data responsedto.OneUserDtoWithOtp, token string) models.Emailable {
+	redirURL := konstants.VERIFY_URL + "?k=" + token
 	return models.Emailable{
 		RecipientName:  data.FirstName,
 		RecipientEmail: data.Email,
@@ -93,7 +97,39 @@ func makeMailable(data responsedto.OneUserDtoWithOtp) models.Emailable {
 		Body:           "Verify your Ope account",
 		IsWithButton:   true,
 		ButtonText:     "Verify Your Account",
-		RedirectUrl:    konstants.VERIFY_URL,
+		RedirectUrl:    redirURL,
 		OTP:            data.OTP,
 	}
+}
+
+func makeOTPMailable(data responsedto.OneUserDtoWithOtp) models.Emailable {
+	return models.Emailable{
+		RecipientName:  data.FirstName,
+		RecipientEmail: data.Email,
+		OTP:            data.OTP,
+	}
+}
+
+// ---------------- PRIVATE METHODS ---------------------//
+func getEmail(emailStruct models.Emailable, env Config) *mail.Email {
+	var body bytes.Buffer
+	// mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; "
+	body.Write([]byte(fmt.Sprintf("")))
+
+	temp, err := template.ParseFiles("mailables/verification.html")
+	if err != nil {
+		logger.Error(konstants.MAIL_PARSE_ERR + err.Error())
+	}
+
+	temp.Execute(&body, emailStruct)
+	// Create email
+	email := mail.NewMSG()
+	email.SetFrom(konstants.FROM_PREFIX + "<" + env.MailFromAddress + ">")
+	email.AddTo(emailStruct.RecipientEmail)
+	// email.AddCc(konstants.YAHOO)
+	email.SetSubject(konstants.VERIFY_SUB)
+
+	email.SetBody(mail.TextHTML, string(body.Bytes()))
+
+	return email
 }

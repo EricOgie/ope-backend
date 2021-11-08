@@ -4,8 +4,10 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/EricOgie/ope-be/domain/models"
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
 	"github.com/EricOgie/ope-be/ericerrors"
+	"github.com/EricOgie/ope-be/konstants"
 	response "github.com/EricOgie/ope-be/responses"
 	"github.com/EricOgie/ope-be/service"
 )
@@ -50,5 +52,32 @@ func (s *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
 		// Send response and Error to Response handler layer and allow
 		//it serve the appropriate response to client
 		response.ServeResponse("User", newUser, res, eError)
+	}
+}
+
+func (s *UserHandler) VerifyUserAcc(res http.ResponseWriter, req *http.Request) {
+	// access the intent claim from the request
+	claim, _ := req.Context().Value(konstants.DT_KEY).(models.Claim)
+	// construct a verifyRequest from models.Claim
+	verifyRequest := makeVerifyReqDTO(claim)
+	//make request along the wiring chain
+	result, err := s.Service.VerifyAcc(verifyRequest)
+
+	if err != nil {
+		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: "Bad Request"}
+		response.ServeResponse("Error", "", res, eError)
+	}
+
+	response.ServeResponse("User", result, res, nil)
+}
+
+func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
+	return requestdto.VerifyRequest{
+		Id:         claim.Id,
+		FirstName:  claim.Firstname,
+		Lastname:   claim.Lastname,
+		Email:      claim.Email,
+		Created_at: claim.When,
+		When:       claim.When,
 	}
 }

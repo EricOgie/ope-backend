@@ -32,3 +32,9 @@ type UserDto struct {
 	CreatedAt string `db:"created_at" json:"created_at"`
 	UpdatedAt string `json:"updated_at" xml:"updated_at"`
 }
+
+type VerifiedRESPONSE struct {
+	Id     string `json:"user_id"`
+	Email  string `json:"email" xml:"email"`
+	Status string `json:"status" xml:"status"`
+}

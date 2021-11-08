@@ -16,6 +16,7 @@ type UserServicePort interface {
 	GetAllUsers() (*[]responsedto.UserDto, error)
 	RegisterUser(requestdto.RegisterRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
 	Login(requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
+	VerifyAcc(requestdto.VerifyRequest) (*responsedto.VerifiedRESPONSE, *ericerrors.EricError)
 }
 
 // Define UserService as biz end of User domain
@@ -46,7 +47,7 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 	}
 	// Add signed token to user struct and return
 	userResponseDTOWithToken, resDTOWithToken := getUserWithToken(newUser)
-	utils.SendVerificationMail(resDTOWithToken)
+	utils.SendVerificationMail(resDTOWithToken, userResponseDTOWithToken.Token)
 	return &userResponseDTOWithToken, nil
 }
 
@@ -61,7 +62,7 @@ func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto
 	dBUser, err := s.repo.Login(userLogin)
 
 	if err != nil {
-		logger.Error("login Err  = " + err.Message)
+		logger.Error(konstants.LOGIN_ERR + err.Message)
 		return nil, err
 	}
 	// Check if User pasword matches
@@ -73,7 +74,7 @@ func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto
 	// Construct responseDTOWithToken and responseWithOTP
 	resDTOWithToken, userDTOWithOTP := getUserWithToken(dBUser)
 	// Since all is well, send 2FA otp to user
-	utils.SendVerificationMail(userDTOWithOTP)
+	utils.SendOTP(userDTOWithOTP)
 
 	return &resDTOWithToken, nil
 }
@@ -81,6 +82,26 @@ func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto
 // Plug userService to UserServicePort
 func (s UserService) GetAllUsers() (*[]responsedto.UserDto, *ericerrors.EricError) {
 	return s.repo.FindAll()
+}
+
+func (s UserService) VerifyAcc(vr requestdto.VerifyRequest) (*responsedto.VerifiedRESPONSE, *ericerrors.EricError) {
+	verifyUser := models.VerifyUser{
+		Id:        vr.Id,
+		FirstName: vr.FirstName,
+		LastName:  vr.Lastname,
+		Email:     vr.Email,
+		CreatedAt: vr.Created_at,
+	}
+
+	result, err := s.repo.VerifyUserAccount(verifyUser)
+	// Handle error
+	if err != nil {
+		logger.Error(konstants.VET_ACC_ERR + err.Message)
+		return nil, err
+	}
+
+	res := result.ConvertToVeriyResponse()
+	return &res, nil
 }
 
 //   ----------------------- PRIVATE METHOD ---------------------------- //
