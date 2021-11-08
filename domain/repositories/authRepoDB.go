@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"database/sql"
 	"strconv"
 
 	"github.com/EricOgie/ope-be/domain/models"
@@ -92,13 +91,7 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
  */
 
 func (db UserRepositoryDB) Login(u models.UserLogin) (*models.User, *ericerrors.EricError) {
-	if !isValidCrentials(u, db) {
-		// User either does not exist or Email-Password does not match
-		logger.Error(konstants.CREDENTIAL_ERR)
-		return nil, ericerrors.NewCredentialError(konstants.CREDENTIAL_ERR)
-	}
-	// Define Query
-	querySQL := "SELECT id, firstname, lastname, email, phone, created_at FROM users WHERE email = ?"
+	querySQL := "SELECT id, firstname, lastname, email, phone, password, created_at FROM users WHERE email = ?"
 	var user models.User
 	err := db.client.Get(&user, querySQL, u.Email)
 	// Check error state and responde accordingly
@@ -124,18 +117,3 @@ func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User,
 }
 
 // ---------------------- PRIVATE METHODS ------------------------//
-func isValidCrentials(u models.UserLogin, client UserRepositoryDB) bool {
-	stm := "SELECT password FROM users WHERE email = ?"
-	data := ""
-	err := client.client.Get(&data, stm, u.Email)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			logger.Error(konstants.NO_DER_ERR + err.Error())
-		} else {
-			logger.Error(konstants.DB_ERROR + err.Error())
-		}
-
-		return false
-	}
-	return security.CheckUserPassword(u.Password, data)
-}

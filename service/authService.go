@@ -66,9 +66,10 @@ func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto
 		return nil, err
 	}
 	// Check if User pasword matches
-
+	logger.Info("SEE= " + req.Password + "/" + dBUser.Password)
 	isValidCrentials := security.CheckUserPassword(req.Password, dBUser.Password)
 	if !isValidCrentials {
+		logger.Error(konstants.LOGIN_ERR)
 		return nil, ericerrors.NewCredentialError(konstants.CREDENTIAL_ERR)
 	}
 	// Construct responseDTOWithToken and responseWithOTP

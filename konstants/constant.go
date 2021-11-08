@@ -66,4 +66,9 @@ const (
 
 	DT_KEY    string = "props"
 	CLAIM_ERR string = "ERROR while trying to extract claims from request context. Err: "
+
+	MAIL_VET_PATH string = "mailables/verification.html"
+	MAIL_OTP_PATH string = "mailables/otp.html"
+
+	MAIL_ACT_NOTICED string = "We Notice traffic on your account.Enter the OTP below to confirm your operation on Ope app"
 )

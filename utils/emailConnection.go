@@ -69,7 +69,7 @@ func SendVerificationMail(data responsedto.OneUserDtoWithOtp, token string) {
 
 }
 
-// SendOTP is callable when OTP needs to be sent either for a 2FA fulfillment or other wise
+// SendOTP is callable when OTP needs to be sent either for a 2FA fulfillment or
 // It require an instance of responsedto.OneUserDtoWithOtp to construct the required mailable
 func SendOTP(data responsedto.OneUserDtoWithOtp) {
 	env, loadErr := LoadConfig("*")
@@ -79,7 +79,7 @@ func SendOTP(data responsedto.OneUserDtoWithOtp) {
 
 	emailStruct := makeOTPMailable(data)
 	client := GetEmailClient(env)
-	email := getEmail(emailStruct, env)
+	email := getOTPMail(emailStruct, env)
 	err := email.Send(client)
 	if err != nil {
 		logger.Error(konstants.MAIL_DEL_ERR + err.Error())
@@ -98,15 +98,17 @@ func makeMailable(data responsedto.OneUserDtoWithOtp, token string) models.Email
 		IsWithButton:   true,
 		ButtonText:     "Verify Your Account",
 		RedirectUrl:    redirURL,
-		OTP:            data.OTP,
+		OTP:            strconv.Itoa(data.OTP),
 	}
 }
 
 func makeOTPMailable(data responsedto.OneUserDtoWithOtp) models.Emailable {
+	logger.Error(data.FirstName + "/" + strconv.Itoa(data.OTP))
 	return models.Emailable{
 		RecipientName:  data.FirstName,
 		RecipientEmail: data.Email,
-		OTP:            data.OTP,
+		Body:           konstants.MAIL_ACT_NOTICED,
+		OTP:            strconv.Itoa(data.OTP),
 	}
 }
 
@@ -117,6 +119,29 @@ func getEmail(emailStruct models.Emailable, env Config) *mail.Email {
 	body.Write([]byte(fmt.Sprintf("")))
 
 	temp, err := template.ParseFiles("mailables/verification.html")
+	if err != nil {
+		logger.Error(konstants.MAIL_PARSE_ERR + err.Error())
+	}
+
+	temp.Execute(&body, emailStruct)
+	// Create email
+	email := mail.NewMSG()
+	email.SetFrom(konstants.FROM_PREFIX + "<" + env.MailFromAddress + ">")
+	email.AddTo(emailStruct.RecipientEmail)
+	// email.AddCc(konstants.YAHOO)
+	email.SetSubject(konstants.VERIFY_SUB)
+
+	email.SetBody(mail.TextHTML, string(body.Bytes()))
+
+	return email
+}
+
+func getOTPMail(emailStruct models.Emailable, env Config) *mail.Email {
+	var body bytes.Buffer
+	// mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; "
+	body.Write([]byte(fmt.Sprintf("")))
+
+	temp, err := template.ParseFiles("mailables/twofaemail.html")
 	if err != nil {
 		logger.Error(konstants.MAIL_PARSE_ERR + err.Error())
 	}
