@@ -1,5 +1,6 @@
 module github.com/EricOgie/ope-be
 
+// +heroku goVersion go1.16
 go 1.16
 
 require (
