@@ -32,7 +32,7 @@ type Config struct {
 // LoadConfig reads/loads environment variables into config struct.
 // It returns a Config struct with all loaded envs as attributes.
 // Each env can then be accessed by the DOT notation on the Config struct like so: config.DBAddress
-func LoadConfig(path string) (config Config) {
+func LoadConfig() Config {
 	// Set config file path to env fle
 	// viper.AddConfigPath(path) //
 	// // define what file to be looked with config name
