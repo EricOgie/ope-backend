@@ -16,6 +16,15 @@ type User struct {
 	UpdatedAt string `db:"updated_at"`
 }
 
+type CompleteUser struct {
+	Id        string `db:"id"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	CreatedAt string `db:"created_at"`
+	Portfolio []Stock
+}
+
 type UserLogin struct {
 	Email    string `json:"email"`
 	Password string `json:"password"`
@@ -39,8 +48,9 @@ type VerifyUserResponse struct {
 type UserRepositoryPort interface {
 	FindAll() (*[]responsedto.UserDto, *ericerrors.EricError)
 	Create(User) (*User, *ericerrors.EricError)
-	Login(UserLogin) (*User, *ericerrors.EricError)
 	VerifyUserAccount(VerifyUser) (*User, *ericerrors.EricError)
+	Login(UserLogin) (*User, *ericerrors.EricError)
+	CompleteLogin(Claim) (*CompleteUser, *ericerrors.EricError)
 }
 
 /**
@@ -90,6 +100,18 @@ func (user User) ConvertToVeriyResponse() responsedto.VerifiedRESPONSE {
 		Id:     user.Id,
 		Email:  user.Email,
 		Status: "Verified",
+	}
+}
+
+func (user CompleteUser) ConvertToCompleteUserDTO(tokenString string) responsedto.CompleteUserDTO {
+	return responsedto.CompleteUserDTO{
+		Id:        user.Id,
+		FirstName: user.FirstName,
+		LastName:  user.LastName,
+		Email:     user.Email,
+		CreatedAt: user.CreatedAt,
+		Token:     tokenString,
+		Portfolio: user.Portfolio,
 	}
 }
 

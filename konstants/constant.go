@@ -20,6 +20,8 @@ const (
 	KEY_DB_NAME  string = "DB_NAME"
 	AUTH         string = "Authorization"
 
+	REQ_VALIDITY_ERR string = "422 Validiity Error"
+
 	ERR_REQ_SEND string = "Error while sending req. Err: "
 	ERR_DECODE   string = "ERROR while decoding response. e: "
 
@@ -39,6 +41,16 @@ const (
 	LOCAL_DB_NAME string = "ope"
 	LOCAL_DB_ADD  string = "localhost"
 
+	STRING_INT_ERR    string = "String To Int Conversion Err: "
+	INT_TO_STRING_ERR string = "Int To String Conversion Err: "
+
+	ERR  string = "Error"
+	USER string = "User"
+
+	BAD_REQ   string = "Bad Request"
+	USER_COLL string = "Users Collection"
+	LOGIN     string = "Login Token"
+
 	T_FORMAT string = "2006-01-02 15:04:05"
 
 	HASH_ERR       string = "Password Hash Error. Err : "
@@ -46,6 +58,7 @@ const (
 	DB_UPDATE_ERR  string = "DB/row update error. Err: "
 	DB_ID_ERR      string = "DB/Last Inserted ID retrieval Error. Err: "
 	CREDENTIAL_ERR string = "Wrong Email or Password"
+	FORBIDDEN      string = "Forbidden"
 
 	VET_ACC_ERR string = "Verify Err: "
 	LOGIN_ERR   string = "Login Err: "
@@ -63,6 +76,7 @@ const (
 	FROM_PREFIX string = "Ope"
 
 	VERIFY_URL string = "http://localhost:8080/verify" //
+	HOME_URL   string = "https://loaner-two.vercel.app/login"
 
 	DT_KEY    string = "props"
 	CLAIM_ERR string = "ERROR while trying to extract claims from request context. Err: "

@@ -35,9 +35,9 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 			routeInFocus := mux.CurrentRoute(req)
 
 			if !needsAuthorization(routeInFocus.GetName()) {
-				// Check if token in url, a case of email verification
+				// Check if token in url, It might just be a case of email verification
 				if isTokenInURL(req, envs) {
-					// extract claim data and pass along with reqreq
+					// extract claim data and pass along with request
 					claim := getClaim(req, envs, res)
 					ctx := context.WithValue(req.Context(), konstants.DT_KEY, claim)
 					nxtHandler.ServeHTTP(res, req.WithContext(ctx))
@@ -53,23 +53,24 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 				if authorization == "" {
 					logger.Error("EMPTY HEADER")
 					response.ServeResponse(
-						"Error", "", res,
+						konstants.ERR, "", res,
 						&ericerrors.EricError{Code: http.StatusUnauthorized, Message: konstants.NO_AUTH})
 				} else {
 					// Process authoriztion in header
 					// pass result to the next handler or abort with a 401 msg
 					requestToken := getTokenInHeader(authorization)
+
 					jwtToken, err := jwtTokenFromString(requestToken, envs)
 
 					if err != nil {
 						ericErr := ericerrors.NewError(http.StatusForbidden, konstants.UAUTH_ERR)
-						response.ServeResponse("Error", "", res, ericErr)
+						response.ServeResponse(konstants.ERR, "", res, ericErr)
 					}
 
 					if !jwtToken.Valid {
 						logger.Error(konstants.EXP_TOKEN)
 						ericErr := ericerrors.NewError(http.StatusForbidden, konstants.EXP_TOKEN)
-						response.ServeResponse("Error", "", res, ericErr)
+						response.ServeResponse(konstants.ERR, "", res, ericErr)
 					}
 
 					// Reconstruct Claims from token
@@ -78,10 +79,15 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 
 					// Check Autjorization and respond accordingly
 					if authMid.Repo.IsAuthorized(claimObj) == true {
-						nxtHandler.ServeHTTP(res, req)
+						// Embed claim in request context
+						ctx := context.WithValue(req.Context(), konstants.DT_KEY, claimObj)
+						// send claim through nextHnadler function
+						nxtHandler.ServeHTTP(res, req.WithContext(ctx))
+
 					} else {
+						logger.Info("ERERE")
 						ericErr := ericerrors.NewError(http.StatusForbidden, konstants.UAUTH_ERR)
-						response.ServeResponse("Error", "", res, ericErr)
+						response.ServeResponse(konstants.ERR, "", res, ericErr)
 					}
 				}
 			}
@@ -116,12 +122,13 @@ func jwtTokenFromString(tokenString string, ens utils.Config) (*jwt.Token, error
 // This will check the active or in focus route if listed among the authenticatable routes
 func needsAuthorization(routeName string) bool {
 	auth := map[string]bool{
-		"Home":         false,
-		"Ping":         false,
-		"Verify":       false,
-		"Login":        false,
-		"RegisterUser": false,
-		"GetAllUser":   true,
+		"Home":           false,
+		"Ping":           false,
+		"Verify":         false,
+		"Login":          false,
+		"RegisterUser":   false,
+		"GetAllUser":     true,
+		"Complete-Login": true,
 	}
 	return auth[routeName]
 
@@ -143,7 +150,7 @@ func getClaim(req *http.Request, env utils.Config, res http.ResponseWriter) mode
 
 	if !tokJwt.Valid {
 		response.ServeResponse("Error", "", res,
-			&ericerrors.EricError{Code: http.StatusUnauthorized, Message: konstants.NO_AUTH})
+			&ericerrors.EricError{Code: http.StatusUnauthorized, Message: "Expired Authorization"})
 	}
 
 	jwtMapClaim := tokJwt.Claims.(jwt.MapClaims)

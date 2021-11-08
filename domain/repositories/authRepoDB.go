@@ -116,4 +116,27 @@ func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User,
 
 }
 
+func (db UserRepositoryDB) CompleteLogin(claim models.Claim) (*models.CompleteUser, *ericerrors.EricError) {
+	userId, err := strconv.Atoi(claim.Id)
+
+	if err != nil {
+		logger.Error(konstants.STRING_INT_ERR + err.Error())
+	}
+
+	sqlQuery := "SELECT id, symbol, image, total_quantity, unit_price, equity_value, fluctuation FROM stocks WHERE user_id = ?"
+	userStocks := make([]models.Stock, 0)
+	// Query and marshal to slice of stock-struct
+	qErr := db.client.Select(&userStocks, sqlQuery, userId)
+	// Handle possible query error
+	if qErr != nil {
+		logger.Error(konstants.QUERY_ERR + qErr.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	// Cretate a complete-user by merging the user struct in the claim passed into function with
+	// the slice of user stocks gotten from the DB. This will serve a user with his/her stock portfolio
+	completeUser := models.MakeCompleteUser(claim, userStocks)
+	return &completeUser, nil
+}
+
 // ---------------------- PRIVATE METHODS ------------------------//

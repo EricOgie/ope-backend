@@ -15,8 +15,9 @@ import (
 type UserServicePort interface {
 	GetAllUsers() (*[]responsedto.UserDto, error)
 	RegisterUser(requestdto.RegisterRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
+	VerifyAcc(requestdto.VerifyRequest) (*responsedto.LoginResponseDTO, *ericerrors.EricError)
 	Login(requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
-	VerifyAcc(requestdto.VerifyRequest) (*responsedto.VerifiedRESPONSE, *ericerrors.EricError)
+	CompleteLoginProcess(models.Claim) (*responsedto.CompleteUserDTO, *ericerrors.EricError)
 }
 
 // Define UserService as biz end of User domain
@@ -35,9 +36,7 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 	// Validate request
 	err := req.ValidateRequest()
 	if err != nil {
-		// hhh
-
-		//jjj
+		logger.Error(konstants.REQ_VALIDITY_ERR)
 		return nil, err
 	}
 	userConstruct := requestdto.BuildUser(req)
@@ -51,10 +50,11 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 	return &userResponseDTOWithToken, nil
 }
 
-func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError) {
+func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.LoginResponseDTO, *ericerrors.EricError) {
 	// Validate request
 	err := req.ValidateRequest()
 	if err != nil {
+		logger.Error(konstants.REQ_VALIDITY_ERR)
 		return nil, err
 	}
 
@@ -66,18 +66,18 @@ func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.OneUserDto
 		return nil, err
 	}
 	// Check if User pasword matches
-	logger.Info("SEE= " + req.Password + "/" + dBUser.Password)
 	isValidCrentials := security.CheckUserPassword(req.Password, dBUser.Password)
 	if !isValidCrentials {
 		logger.Error(konstants.LOGIN_ERR)
 		return nil, ericerrors.NewCredentialError(konstants.CREDENTIAL_ERR)
 	}
 	// Construct responseDTOWithToken and responseWithOTP
-	resDTOWithToken, userDTOWithOTP := getUserWithToken(dBUser)
+	userDTOWithToken, userDTOWithOTP := getUserWithToken(dBUser)
 	// Since all is well, send 2FA otp to user
 	utils.SendOTP(userDTOWithOTP)
+	loginResponseDTO := userDTOWithToken.ConvertUserToTokenResponseDTO()
 
-	return &resDTOWithToken, nil
+	return &loginResponseDTO, nil
 }
 
 // Plug userService to UserServicePort
@@ -103,6 +103,20 @@ func (s UserService) VerifyAcc(vr requestdto.VerifyRequest) (*responsedto.Verifi
 
 	res := result.ConvertToVeriyResponse()
 	return &res, nil
+}
+
+func (s UserService) CompleteLoginProcess(claim models.Claim) (*responsedto.CompleteUserDTO, *ericerrors.EricError) {
+	result, err := s.repo.CompleteLogin(claim)
+	if err != nil {
+		logger.Error(konstants.LOGIN_ERR + err.Message)
+		return nil, err
+	}
+	// Generate Token
+	tok := security.GeneTokenFromCompleteDTO(*result)
+	// Convert result to CompleteUser DTO
+	cUserDto := result.ConvertToCompleteUserDTO(tok)
+	return &cUserDto, nil
+
 }
 
 //   ----------------------- PRIVATE METHOD ---------------------------- //

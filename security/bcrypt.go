@@ -12,7 +12,6 @@ func HashPword(pword string) (string, error) {
 }
 
 func CheckUserPassword(password, hashedPword string) bool {
-	logger.Info("PWORD/HASH = " + password + "/" + hashedPword)
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPword), []byte(password))
 
 	if err != nil {

@@ -40,15 +40,16 @@ func StartApp() {
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
 
-	// Health check routs
+	// PUBLIC ROUTES
 	router.HandleFunc("/", controllers.Greet).Methods(http.MethodGet).Name("Home")
 	router.HandleFunc("/ping", controllers.Ping).Methods(http.MethodGet).Name("Ping")
 	router.HandleFunc("/verify", controllers.ServeHTMLTemplate).Methods(http.MethodGet).Name("Verify")
-
-	// User related routes
-	router.HandleFunc("/users", authH.GetAllUsers).Methods(http.MethodGet).Name("GetAllUser")
 	router.HandleFunc("/register", authH.CreateUser).Methods(http.MethodPost).Name("RegisterUser")
 	router.HandleFunc("/login", authH.Login).Methods(http.MethodPost).Name("Login")
+
+	// - PROTECTED routes
+	router.HandleFunc("/users", authH.GetAllUsers).Methods(http.MethodGet).Name("GetAllUser")
+	router.HandleFunc("/complete-login", authH.CompleteLoginProcess).Methods(http.MethodPost).Name("Complete-Login")
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)

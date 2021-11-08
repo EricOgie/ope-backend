@@ -32,9 +32,11 @@ func (repo MiddleWareRepo) IsAuthorized(claim models.Claim) bool {
 //  ----------------------------- PRIVATE METHOD ------------------------ //
 
 func isValidAuth(c models.Claim, u models.User) bool {
-	if c.Firstname == u.FirstName && c.Firstname == u.LastName && c.When == u.CreatedAt {
+	if c.Firstname == u.FirstName && c.Lastname == u.LastName && c.When == u.CreatedAt {
+
 		return true
 	} else {
+
 		return false
 	}
 }

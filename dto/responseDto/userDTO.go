@@ -11,6 +11,16 @@ type OneUserDto struct {
 	Token     string `json:"token" xml:"token"`
 }
 
+type CompleteUserDTO struct {
+	Id        string      `json:"user_id"`
+	FirstName string      `json:"firstname" xml:"first_name"`
+	LastName  string      `json:"lastname" xml:"last_name"`
+	Email     string      `json:"email" xml:"email"`
+	CreatedAt string      `db:"created_at" json:"created_at"`
+	Token     string      `json:"token" xml:"token"`
+	Portfolio interface{} `json:"portfolio" xml:"portfolio"`
+}
+
 type OneUserDtoWithOtp struct {
 	Id        string `json:"user_id"`
 	FirstName string `json:"firstname" xml:"first_name"`
@@ -37,4 +47,14 @@ type VerifiedRESPONSE struct {
 	Id     string `json:"user_id"`
 	Email  string `json:"email" xml:"email"`
 	Status string `json:"status" xml:"status"`
+}
+
+type LoginResponseDTO struct {
+	TokenString string
+}
+
+func (user OneUserDto) ConvertUserToTokenResponseDTO() LoginResponseDTO {
+	return LoginResponseDTO{
+		TokenString: user.Token,
+	}
 }

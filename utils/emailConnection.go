@@ -138,7 +138,6 @@ func getEmail(emailStruct models.Emailable, env Config) *mail.Email {
 
 func getOTPMail(emailStruct models.Emailable, env Config) *mail.Email {
 	var body bytes.Buffer
-	// mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; "
 	body.Write([]byte(fmt.Sprintf("")))
 
 	temp, err := template.ParseFiles("mailables/twofaemail.html")
