@@ -21,9 +21,9 @@ func StartApp() {
 	// define mux router
 	router := mux.NewRouter()
 	// Load config data
-	config, err := utils.LoadConfig(".")
+	config := utils.LoadConfig()
 	// Sanity Check
-	utils.RunSanityCheck(err)
+	// utils.RunSanityCheck(err)
 	// Create an instance of DBClient
 	dbClient := databases.GetRDBClient(config)
 	// Create an instance of SMTPClient that will be use for mailing

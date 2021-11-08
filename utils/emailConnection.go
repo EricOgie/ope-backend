@@ -52,10 +52,7 @@ func GetEmailClient(env Config) *mail.SMTPClient {
 // SendVerificationMail is callable when a verification mail mail needs to be sent
 // It require an instance of responsedto.OneUserDtoWithOtp, and a token string to construct the required mailable
 func SendVerificationMail(data responsedto.OneUserDtoWithOtp, token string) {
-	env, loadErr := LoadConfig("*")
-	if loadErr != nil {
-		logger.Error("ENV_LOAD_ERR : " + loadErr.Error())
-	}
+	env := LoadConfig()
 
 	emailStruct := makeMailable(data, token)
 	client := GetEmailClient(env)
@@ -72,11 +69,7 @@ func SendVerificationMail(data responsedto.OneUserDtoWithOtp, token string) {
 // SendOTP is callable when OTP needs to be sent either for a 2FA fulfillment or
 // It require an instance of responsedto.OneUserDtoWithOtp to construct the required mailable
 func SendOTP(data responsedto.OneUserDtoWithOtp) {
-	env, loadErr := LoadConfig("*")
-	if loadErr != nil {
-		logger.Error("ENV_LOAD_ERR : " + loadErr.Error())
-	}
-
+	env := LoadConfig()
 	emailStruct := makeOTPMailable(data)
 	client := GetEmailClient(env)
 	email := getOTPMail(emailStruct, env)
