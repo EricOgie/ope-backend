@@ -75,6 +75,12 @@ const (
 
 	FROM_PREFIX string = "Ope"
 
+	ENV_PROD    string = "production"
+	ERR_OS_READ string = "OS READ ERR = "
+	READ_OS     string = "Reading From Production Os "
+
+	ERR_SANITY_CHECK string = "Sanity check Err: "
+
 	VERIFY_URL string = "http://localhost:8080/verify" //
 	HOME_URL   string = "https://loaner-two.vercel.app/login"
 
