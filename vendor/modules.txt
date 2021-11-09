@@ -1,14 +1,6 @@
-# github.com/armon/consul-api v0.0.0-20180202201655-eb2c6b5be1b6
-## explicit
-# github.com/coreos/etcd v3.3.10+incompatible
-## explicit
-# github.com/coreos/go-etcd v2.0.0+incompatible
-## explicit
 # github.com/dgrijalva/jwt-go v3.2.0+incompatible
 ## explicit
 github.com/dgrijalva/jwt-go
-# github.com/felixge/httpsnoop v1.0.2
-## explicit
 # github.com/fsnotify/fsnotify v1.5.1
 github.com/fsnotify/fsnotify
 # github.com/go-sql-driver/mysql v1.6.0
@@ -59,18 +51,12 @@ github.com/spf13/viper/internal/encoding/toml
 github.com/spf13/viper/internal/encoding/yaml
 # github.com/subosito/gotenv v1.2.0
 github.com/subosito/gotenv
-# github.com/ugorji/go/codec v0.0.0-20181204163529-d75b2dcb6bc8
-## explicit
 # github.com/xhit/go-simple-mail/v2 v2.10.0
 ## explicit
 github.com/xhit/go-simple-mail/v2
-# github.com/xordataexchange/crypt v0.0.3-0.20170626215501-b2862e3d0a77
-## explicit
-# go.uber.org/atomic v1.9.0
-## explicit
+# go.uber.org/atomic v1.7.0
 go.uber.org/atomic
-# go.uber.org/multierr v1.7.0
-## explicit
+# go.uber.org/multierr v1.6.0
 go.uber.org/multierr
 # go.uber.org/zap v1.19.1
 ## explicit
@@ -80,7 +66,7 @@ go.uber.org/zap/internal/bufferpool
 go.uber.org/zap/internal/color
 go.uber.org/zap/internal/exit
 go.uber.org/zap/zapcore
-# golang.org/x/crypto v0.0.0-20210921155107-089bfa567519
+# golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa
 ## explicit
 golang.org/x/crypto/bcrypt
 golang.org/x/crypto/blowfish

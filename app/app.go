@@ -16,7 +16,6 @@ import (
 )
 
 func StartApp() {
-
 	// define mux router
 	router := mux.NewRouter()
 	// Load config data
@@ -32,7 +31,6 @@ func StartApp() {
 	midWare := service.AuthMiddlewareService{repositories.MiddleWareRepo{dbClient}}
 	// Apply Auth Middleware on router
 	router.Use(midWare.AuthMiddleware(config))
-
 	// ------------------------   WIRING AND CONNECTIONS --------------------------
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
 	authH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
