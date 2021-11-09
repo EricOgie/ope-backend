@@ -15,7 +15,7 @@ import (
 // The utils.Config struct intake here, prevent having to reload and READ env variables
 func GetRDBClient(env utils.Config) *sqlx.DB {
 	// Construct sql connection DATA source
-	datasource := fmt.Sprintf("%s@tcp(%s)/%s", env.DBUser, env.DBAddress, env.DBName)
+	datasource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", env.DBUser, env.DBPassword, env.DBAddress, env.DBPort, env.DBName)
 	//Open connection to database
 	dbClient, err := sqlx.Open("mysql", datasource)
 	if err != nil {
