@@ -71,7 +71,7 @@ const (
 	MAIL_DEL_ERR   string = "Mail Sending Err: "
 	MAIL_PARSE_ERR string = "ParseFiles Err"
 	VERIFY_SUB     string = "Verify Your Ope Account"
-	YAHOO          string = "ericogia@yahoo.com"
+	YAHOO          string = "huy@yahoo.com"
 
 	FROM_PREFIX string = "Ope"
 
@@ -83,6 +83,7 @@ const (
 
 	VERIFY_URL string = "http://localhost:8080/verify" //
 	HOME_URL   string = "https://loaner-two.vercel.app/login"
+	ROOT_ADD   string = "https://opebe.herokuapp.com/"
 
 	DT_KEY    string = "props"
 	CLAIM_ERR string = "ERROR while trying to extract claims from request context. Err: "

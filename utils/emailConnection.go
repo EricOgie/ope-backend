@@ -82,7 +82,7 @@ func SendOTP(data responsedto.OneUserDtoWithOtp) {
 }
 
 func makeMailable(data responsedto.OneUserDtoWithOtp, token string) models.Emailable {
-	redirURL := konstants.VERIFY_URL + "?k=" + token
+	redirURL := konstants.ROOT_ADD + "verify?k=" + token
 	return models.Emailable{
 		RecipientName:  data.FirstName,
 		RecipientEmail: data.Email,
