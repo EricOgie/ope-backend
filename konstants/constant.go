@@ -75,7 +75,7 @@ const (
 
 	FROM_PREFIX string = "Ope"
 
-	ENV_PROD    string = "production"
+	ENV_PROD    string = "Production"
 	ERR_OS_READ string = "OS READ ERR = "
 	READ_OS     string = "Reading From Production Os "
 
