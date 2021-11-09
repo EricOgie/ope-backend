@@ -53,9 +53,8 @@ func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricEr
 * To be called upon REGISTER user Request
  */
 func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.EricError) {
+	logger.Info("ERIC I DEY HIA")
 	// Define Query
-	i := db.client.Ping()
-	logger.Info("PING" + i.Error())
 	insertQuery := "INSERT INTO users (firstname, lastname, email, phone, password, created_at) " +
 		"values(?, ?, ?, ?, ?, ?)"
 	// Hash User password
@@ -77,8 +76,6 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
 		logger.Error(konstants.DB_ID_ERR + err.Error())
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
-
-	// User registered successfully. Send Mail to user
 
 	// merge ID from Db with UserObject
 	u.Id = strconv.Itoa(int(newId))
