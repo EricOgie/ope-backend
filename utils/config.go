@@ -53,7 +53,7 @@ func getConfigFromOs() Config {
 	return Config{
 		AppName:         os.Getenv("APP_NAME"),
 		AppEnv:          os.Getenv("APP_ENV"),
-		ServerPort:      os.Getenv("SERVER_PORT"),
+		ServerPort:      os.Getenv("PORT"),
 		ServerAddress:   os.Getenv("SERVER_ADDRESS"),
 		SigningKey:      os.Getenv("JWT_SECRETE"),
 		DBDriver:        os.Getenv("DB_DRIVER"),
