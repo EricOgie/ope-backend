@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 
@@ -34,8 +33,6 @@ func StartApp() {
 	router := mux.NewRouter()
 	// Load config data
 	config := utils.LoadConfig(".")
-
-	fmt.Println(fmt.Sprintf("%#v", config))
 
 	// Create an instance of DBClient
 	dbClient := databases.GetRDBClient(config)

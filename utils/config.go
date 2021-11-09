@@ -37,7 +37,6 @@ type Config struct {
 // It returns a Config struct with all loaded envs as attributes.
 // Each env can then be accessed by the DOT notation on the Config struct like so: config.DBAddress
 func LoadConfig(path string) Config {
-	logger.Info("WHERE = " + os.Getenv("APP_ENV"))
 	if os.Getenv("APP_ENV") == konstants.ENV_PROD {
 		logger.Error("ENV = " + konstants.ENV_PROD)
 		config := getConfigFromOs()
@@ -50,7 +49,6 @@ func LoadConfig(path string) Config {
 }
 
 func getConfigFromOs() Config {
-	logger.Info("POR = " + os.Getenv("PORT"))
 	return Config{
 		AppName:         os.Getenv("APP_NAME"),
 		AppEnv:          os.Getenv("APP_ENV"),
