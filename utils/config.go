@@ -39,7 +39,7 @@ func LoadConfig(path string) (config Config, err error) {
 	// Set config file path to env fle
 	viper.AddConfigPath(path)
 	// define what file to be looked with config name
-	viper.SetConfigName("ope")
+	viper.SetConfigName("config")
 	// Define the type of file to ve looked
 	viper.SetConfigType("env")
 	// configure auto override config variables with set environment variables
