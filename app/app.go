@@ -3,6 +3,7 @@ package app
 import (
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/EricOgie/ope-be/app/controllers"
 	"github.com/EricOgie/ope-be/app/handlers"
@@ -17,11 +18,15 @@ import (
 
 func StartApp() {
 
+	y := os.Getenv("APP_ENV")
+	logger.Info("ENV = " + y)
+
 	// define mux router
 	router := mux.NewRouter()
 	// Load config data
 	config, err := utils.LoadConfig(".")
 	// Sanity Check
+
 	utils.RunSanityCheck(err)
 	// Create an instance of DBClient
 	dbClient := databases.GetRDBClient(config)
