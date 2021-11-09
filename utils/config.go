@@ -50,6 +50,7 @@ func LoadConfig(path string) Config {
 }
 
 func getConfigFromOs() Config {
+	logger.Info("POR = " + os.Getenv("PORT"))
 	return Config{
 		AppName:         os.Getenv("APP_NAME"),
 		AppEnv:          os.Getenv("APP_ENV"),
