@@ -27,8 +27,8 @@ func StartApp() {
 	// mtd := handlers.AllowedMethods([]string{"GET", "POST", "PATCH", "PUT"})
 	// origin := handlers.AllowedOrigins(([]string{"*"}))
 
-	options := []string{"*", "http://localhost:*", "http://localhost:8080/", "localhost:8080/", "https://loaner-two.vercel.app/"}
-	cors := handlers.CORS(handlers.AllowedOrigins(options))
+	// options := []string{"*",  "https://loaner-two.vercel.app/"}
+	// cors := handlers.CORS(handlers.AllowedOrigins({"*"}))
 
 	// define mux router
 	router := mux.NewRouter()
@@ -65,6 +65,7 @@ func StartApp() {
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
-	log.Fatal(http.ListenAndServe(":"+config.ServerPort, cors(router)))
+	log.Fatal(http.ListenAndServe(":"+config.ServerPort,
+		handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(router)))
 
 }

@@ -54,6 +54,8 @@ func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricEr
  */
 func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.EricError) {
 	// Define Query
+	i := db.client.Ping()
+	logger.Info("PING" + i.Error())
 	insertQuery := "INSERT INTO users (firstname, lastname, email, phone, password, created_at) " +
 		"values(?, ?, ?, ?, ?, ?)"
 	// Hash User password

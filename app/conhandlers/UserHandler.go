@@ -2,7 +2,6 @@ package conhandlers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -42,7 +41,6 @@ func (s *UserHandler) CreateUser(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
-
 	var request requestdto.LoginRequest
 	err := json.NewDecoder(req.Body).Decode(&request)
 	// Handle Bad Request Error
@@ -75,10 +73,9 @@ func (s *UserHandler) VerifyUserAcc(res http.ResponseWriter, req *http.Request) 
 }
 
 func (s *UserHandler) CompleteLoginProcess(res http.ResponseWriter, req *http.Request) {
+
 	// access the intent claim from the request
 	claim, _ := req.Context().Value(konstants.DT_KEY).(models.Claim)
-	logger.Info("C =" + strconv.Itoa(claim.Otp))
-	fmt.Println(fmt.Sprintf("%#v", claim))
 
 	if !IsOTPTheSame(req, claim) {
 		response.ServeResponse(konstants.ERR, "", res, &ericerrors.EricError{
