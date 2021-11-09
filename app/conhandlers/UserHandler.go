@@ -1,4 +1,4 @@
-package handlers
+package conhandlers
 
 import (
 	"encoding/json"
@@ -20,13 +20,11 @@ type UserHandler struct {
 }
 
 func (s *UserHandler) GetAllUsers(res http.ResponseWriter, req *http.Request) {
-	ManageCors(&res)
 	Users, err := s.Service.GetAllUsers()
 	response.ServeResponse(konstants.USER_COLL, Users, res, err)
 }
 
 func (s *UserHandler) CreateUser(res http.ResponseWriter, req *http.Request) {
-	ManageCors(&res)
 	var request requestdto.RegisterRequest
 	err := json.NewDecoder(req.Body).Decode(&request)
 
@@ -44,7 +42,7 @@ func (s *UserHandler) CreateUser(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
-	ManageCors(&res)
+
 	var request requestdto.LoginRequest
 	err := json.NewDecoder(req.Body).Decode(&request)
 	// Handle Bad Request Error
@@ -61,7 +59,6 @@ func (s *UserHandler) Login(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *UserHandler) VerifyUserAcc(res http.ResponseWriter, req *http.Request) {
-	ManageCors(&res)
 	// access the intent claim from the request
 	claim, _ := req.Context().Value(konstants.DT_KEY).(models.Claim)
 	// construct a verifyRequest from models.Claim
@@ -78,7 +75,6 @@ func (s *UserHandler) VerifyUserAcc(res http.ResponseWriter, req *http.Request) 
 }
 
 func (s *UserHandler) CompleteLoginProcess(res http.ResponseWriter, req *http.Request) {
-	ManageCors(&res)
 	// access the intent claim from the request
 	claim, _ := req.Context().Value(konstants.DT_KEY).(models.Claim)
 	logger.Info("C =" + strconv.Itoa(claim.Otp))

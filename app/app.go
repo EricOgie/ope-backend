@@ -4,8 +4,8 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/EricOgie/ope-be/app/conhandlers"
 	"github.com/EricOgie/ope-be/app/controllers"
-	"github.com/EricOgie/ope-be/app/handlers"
 	"github.com/EricOgie/ope-be/databases"
 	"github.com/EricOgie/ope-be/domain/repositories"
 	"github.com/EricOgie/ope-be/konstants"
@@ -16,6 +16,7 @@ import (
 )
 
 func StartApp() {
+
 	// define mux router
 	router := mux.NewRouter()
 	// Load config data
@@ -33,7 +34,7 @@ func StartApp() {
 	router.Use(midWare.AuthMiddleware(config))
 	// ------------------------   WIRING AND CONNECTIONS --------------------------
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
-	authH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
+	authH := conhandlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
 	// port := os.Getenv("PORT")
