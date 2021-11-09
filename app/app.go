@@ -22,9 +22,12 @@ import (
 func StartApp() {
 
 	// Define cors handling strategy
-	head := handlers.AllowedHeaders([]string{"X-Requested-With", "Content_Type", "Authorization"})
-	mtd := handlers.AllowedMethods([]string{"GET", "POST", "PATCH", "PUT"})
-	origin := handlers.AllowedOrigins(([]string{"*"}))
+	// head := handlers.AllowedHeaders([]string{"X-Requested-With", "Content_Type", "Authorization"})
+	// mtd := handlers.AllowedMethods([]string{"GET", "POST", "PATCH", "PUT"})
+	// origin := handlers.AllowedOrigins(([]string{"*"}))
+
+	options := []string{"*", "http://localhost:*", "http://localhost:8080/", "localhost:8080/", "https://loaner-two.vercel.app/"}
+	cors := handlers.CORS(handlers.AllowedOrigins(options))
 
 	// define mux router
 	router := mux.NewRouter()
@@ -60,6 +63,6 @@ func StartApp() {
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
-	log.Fatal(http.ListenAndServe(":"+config.ServerPort, handlers.CORS(head, mtd, origin)(router)))
+	log.Fatal(http.ListenAndServe(":"+config.ServerPort, cors(router)))
 
 }
