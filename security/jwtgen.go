@@ -13,7 +13,7 @@ import (
 
 // GenerateToken takes responsedto.OneUserDto as aurg and return a string crtographed token
 func GenerateToken(payload responsedto.OneUserDtoWithOtp) string {
-	config := utils.LoadConfig()
+	config, _ := utils.LoadConfig(".")
 	claim := genUserClaim(payload)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 
@@ -53,7 +53,7 @@ func genUserClaimFromCompleteUser(payload models.CompleteUser) jwt.MapClaims {
 
 // GenerateToken takes responsedto.OneUserDto as aurg and return a string crtographed token
 func GeneTokenFromCompleteDTO(payload models.CompleteUser) string {
-	config := utils.LoadConfig()
+	config, _ := utils.LoadConfig(".")
 	claim := genUserClaimFromCompleteUser(payload)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 

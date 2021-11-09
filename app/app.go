@@ -3,7 +3,6 @@ package app
 import (
 	"log"
 	"net/http"
-	"os"
 
 	"github.com/EricOgie/ope-be/app/controllers"
 	"github.com/EricOgie/ope-be/app/handlers"
@@ -21,9 +20,9 @@ func StartApp() {
 	// define mux router
 	router := mux.NewRouter()
 	// Load config data
-	config := utils.LoadConfig()
+	config, err := utils.LoadConfig(".")
 	// Sanity Check
-	// utils.RunSanityCheck(err)
+	utils.RunSanityCheck(err)
 	// Create an instance of DBClient
 	dbClient := databases.GetRDBClient(config)
 	// Create an instance of SMTPClient that will be use for mailing
@@ -40,7 +39,7 @@ func StartApp() {
 	authH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
-	port := os.Getenv("PORT")
+	// port := os.Getenv("PORT")
 	// PUBLIC ROUTES
 	router.HandleFunc("/", controllers.Greet).Methods(http.MethodGet).Name("Home")
 	router.HandleFunc("/ping", controllers.Ping).Methods(http.MethodGet).Name("Ping")
@@ -54,6 +53,6 @@ func StartApp() {
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	log.Fatal(http.ListenAndServe(":"+config.ServerPort, router))
 
 }
