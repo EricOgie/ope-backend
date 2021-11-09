@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"os"
 
 	"github.com/EricOgie/ope-be/konstants"
@@ -37,40 +36,16 @@ type Config struct {
 // LoadConfig reads/loads environment variables into config struct.
 // It returns a Config struct with all loaded envs as attributes.
 // Each env can then be accessed by the DOT notation on the Config struct like so: config.DBAddress
-func LoadConfig(path string) (config Config, err error) {
+func LoadConfig(path string) Config {
 
 	if os.Getenv("APP_ENV") == konstants.ENV_PROD {
-		logger.Info(konstants.READ_OS + err.Error())
-		return getConfigFromOs(), nil
+		logger.Error("ENV = " + konstants.ENV_PROD)
+		config := getConfigFromOs()
+		return config
 	} else {
-		// Set config file path to env fle
-		viper.AddConfigPath(path)
-		// define what file to be looked with config name
-		viper.SetConfigName("ope")
-		// Define the type of file to ve looked
-		viper.SetConfigType("env")
-		// configure auto override config variables with set environment variables
-		viper.AutomaticEnv()
-		// Initiate read config value
-		err = viper.ReadInConfig()
-
-		if err != nil {
-			logger.Info(konstants.ERR_OS_READ + err.Error())
-			return
-		} else {
-			err = viper.Unmarshal(&config)
-			return
-		}
-	}
-
-}
-
-// RunSanityCheck runs a check on the system to ensure all essential variables are properly read from env.
-// It will KILL the system if it can not read set variables from config
-func RunSanityCheck(err error) {
-	if err != nil {
-		logger.Error(konstants.ERR_SANITY_CHECK + err.Error())
-		log.Fatal(konstants.ERR_SANITY_CHECK, err)
+		logger.Error("ENV = Dev")
+		config := getCongiFRomENV(path)
+		return config
 	}
 }
 
@@ -96,4 +71,26 @@ func getConfigFromOs() Config {
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
 		MailFromName:    os.Getenv("MAIL_FROM_NAME"),
 	}
+
+}
+
+func getCongiFRomENV(path string) Config {
+	// Set config file path to env fle
+	viper.AddConfigPath(path)
+	// define what file to be looked with config name
+	viper.SetConfigName("ope")
+	// Define the type of file to ve looked
+	viper.SetConfigType("env")
+	// configure auto override config variables with set environment variables
+	viper.AutomaticEnv()
+	// Initiate read config value
+	err := viper.ReadInConfig()
+
+	if err != nil {
+		logger.Error(konstants.ERR_SANITY_CHECK + err.Error())
+		return Config{}
+	}
+	var config Config
+	err = viper.Unmarshal(&config)
+	return config
 }
