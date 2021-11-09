@@ -16,6 +16,7 @@ import (
 func GetRDBClient(env utils.Config) *sqlx.DB {
 	// Construct sql connection DATA source
 	datasource := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", env.DBUser, env.DBPassword, env.DBAddress, env.DBPort, env.DBName)
+	logger.Info("u/p/a/port/n = " + env.DBUser + "/" + env.DBPassword + "/" + env.DBAddress + "/" + env.DBPort + "/" + env.DBName)
 	//Open connection to database
 	dbClient, err := sqlx.Open("mysql", datasource)
 	if err != nil {
