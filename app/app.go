@@ -12,10 +12,19 @@ import (
 	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/service"
 	"github.com/EricOgie/ope-be/utils"
+
+	// "github.com/gorilla/handlers"
+
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 func StartApp() {
+
+	// Define cors handling strategy
+	head := handlers.AllowedHeaders([]string{"X-Requested-With", "Content_Type", "Authorization"})
+	mtd := handlers.AllowedMethods([]string{"GET", "POST", "PATCH", "PUT"})
+	origin := handlers.AllowedOrigins(([]string{"*"}))
 
 	// define mux router
 	router := mux.NewRouter()
@@ -51,6 +60,6 @@ func StartApp() {
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
-	log.Fatal(http.ListenAndServe(":"+config.ServerPort, router))
+	log.Fatal(http.ListenAndServe(":"+config.ServerPort, handlers.CORS(head, mtd, origin)(router)))
 
 }
