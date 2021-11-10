@@ -91,21 +91,7 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
  */
 
 func (db UserRepositoryDB) Login(u models.UserLogin) (*models.User, *ericerrors.EricError) {
-	querySQL := "SELECT id, firstname, lastname, email, phone, password, created_at FROM users WHERE email = ?"
-	var user models.User
-	err := db.client.Get(&user, querySQL, u.Email)
-	// Check error state and responde accordingly
-	if err != nil {
-		if err.Error() == konstants.DB_NO_ROW {
-			// user does not exist
-			logger.Error(konstants.DB_ERROR + konstants.CREDENTIAL_ERR)
-			return nil, ericerrors.NewError(http.StatusUnauthorized, konstants.CREDENTIAL_ERR)
-		} else {
-			logger.Error(konstants.QUERY_ERR + err.Error())
-			return nil, ericerrors.New500Error(konstants.MSG_500)
-		}
-	}
-	return &user, nil
+	return runUserQueryWithEmail(u.Email, db)
 }
 
 func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User, *ericerrors.EricError) {
@@ -145,4 +131,26 @@ func (db UserRepositoryDB) CompleteLogin(claim models.Claim) (*models.CompleteUs
 	return &completeUser, nil
 }
 
+func (db UserRepositoryDB) RequestPasswordChange(userEmail models.UserEmail) (*models.User, *ericerrors.EricError) {
+	return runUserQueryWithEmail(userEmail.Email, db)
+}
+
 // ---------------------- PRIVATE METHODS ------------------------//
+
+func runUserQueryWithEmail(userEmail string, db UserRepositoryDB) (*models.User, *ericerrors.EricError) {
+	querySQL := "SELECT id, firstname, lastname, email, phone, password, created_at FROM users WHERE email = ?"
+	var user models.User
+	err := db.client.Get(&user, querySQL, userEmail)
+	// Check error state and responde accordingly
+	if err != nil {
+		if err.Error() == konstants.DB_NO_ROW {
+			// user does not exist
+			logger.Error(konstants.DB_ERROR + konstants.CREDENTIAL_ERR)
+			return nil, ericerrors.NewError(http.StatusUnauthorized, konstants.CREDENTIAL_ERR)
+		} else {
+			logger.Error(konstants.QUERY_ERR + err.Error())
+			return nil, ericerrors.New500Error(konstants.MSG_500)
+		}
+	}
+	return &user, nil
+}
