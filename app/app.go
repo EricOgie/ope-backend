@@ -34,6 +34,13 @@ func StartApp() {
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
 	authH := conhandlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
 
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "PATCH", "POST", "PUT", "OPTIONS"})
+
+	// start server listen
+	// with error handling
+
 	// ------------------------   ROUTE DEFINITIONS --------------------------
 	// port := os.Getenv("PORT")
 	// PUBLIC ROUTES
@@ -51,7 +58,6 @@ func StartApp() {
 	// Define and include cors handling strategy
 	// Cors strategy is currently using a wild now This should change to a of selected orrigins when in production
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
-	log.Fatal(http.ListenAndServe(":"+config.ServerPort,
-		handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(router)))
+	log.Fatal(http.ListenAndServe(":"+config.ServerPort, handlers.CORS(originsOk, headersOk, methodsOk)(router)))
 
 }
