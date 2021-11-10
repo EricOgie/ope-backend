@@ -24,6 +24,7 @@ func (s *UserHandler) GetAllUsers(res http.ResponseWriter, req *http.Request) {
 }
 
 func (s *UserHandler) CreateUser(res http.ResponseWriter, req *http.Request) {
+
 	var request requestdto.RegisterRequest
 	err := json.NewDecoder(req.Body).Decode(&request)
 

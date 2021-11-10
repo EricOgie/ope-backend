@@ -30,6 +30,10 @@ type UserLogin struct {
 	Password string `json:"password"`
 }
 
+type UserEmail struct {
+	Email string
+}
+
 type VerifyUser struct {
 	Id        string
 	FirstName string
@@ -51,6 +55,7 @@ type UserRepositoryPort interface {
 	VerifyUserAccount(VerifyUser) (*User, *ericerrors.EricError)
 	Login(UserLogin) (*User, *ericerrors.EricError)
 	CompleteLogin(Claim) (*CompleteUser, *ericerrors.EricError)
+	RequestPasswordChange(UserEmail) (*User, *ericerrors.EricError)
 }
 
 /**

@@ -10,9 +10,6 @@ type Stock struct {
 	PercentChange string `db:"fluctuation" json:"percentage_change"`
 }
 
-type StockRepositoryPort interface {
-}
-
 func MakeCompleteUser(claim Claim, stocks []Stock) CompleteUser {
 	return CompleteUser{
 		Id:        claim.Id,

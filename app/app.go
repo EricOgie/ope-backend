@@ -34,7 +34,10 @@ func StartApp() {
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
 	authH := conhandlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
 
+	// Define and include cors handling strategy
+	// Cors strategy is currently using a wildcard now. This should change to a selected orrigins when in production
 	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+	credentials := handlers.AllowCredentials()
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "PATCH", "POST", "PUT", "OPTIONS"})
 
@@ -55,9 +58,7 @@ func StartApp() {
 	router.HandleFunc("/complete-login", authH.CompleteLoginProcess).Methods(http.MethodPost).Name("Complete-Login")
 
 	// Start server and log error should ther be one
-	// Define and include cors handling strategy
-	// Cors strategy is currently using a wild now This should change to a of selected orrigins when in production
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
-	log.Fatal(http.ListenAndServe(":"+config.ServerPort, handlers.CORS(originsOk, headersOk, methodsOk)(router)))
+	log.Fatal(http.ListenAndServe(":"+config.ServerPort, handlers.CORS(originsOk, headersOk, methodsOk, credentials)(router)))
 
 }
