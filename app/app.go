@@ -13,36 +13,20 @@ import (
 	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/service"
 	"github.com/EricOgie/ope-be/utils"
-
-	// "github.com/gorilla/handlers"
-
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
 func StartApp() {
 
-	// Define cors handling strategy
-	// head := handlers.AllowedHeaders([]string{"X-Requested-With", "Content_Type", "Authorization"})
-	// mtd := handlers.AllowedMethods([]string{"GET", "POST", "PATCH", "PUT"})
-	// origin := handlers.AllowedOrigins(([]string{"*"}))
-
-	// options := []string{"*",  "https://loaner-two.vercel.app/"}
-	// cors := handlers.CORS(handlers.AllowedOrigins({"*"}))
-
 	// define mux router
 	router := mux.NewRouter()
 	// Load config data
 	config := utils.LoadConfig(".")
 	fmt.Println(fmt.Sprintf("%#v", config))
-
 	// Create an instance of DBClient
 	dbClient := databases.GetRDBClient(config)
-	// Create an instance of SMTPClient that will be use for mailing
-	// This way, we don get to create multiple smtp connections because we just
-	// have one instance and pass it along when and where it is needed
-	// smptClient := utils.GetEmailClient(config)
-
+	// Defne a middleware
 	midWare := service.AuthMiddlewareService{repositories.MiddleWareRepo{dbClient}}
 	// Apply Auth Middleware on router
 	router.Use(midWare.AuthMiddleware(config))
@@ -64,6 +48,8 @@ func StartApp() {
 	router.HandleFunc("/complete-login", authH.CompleteLoginProcess).Methods(http.MethodPost).Name("Complete-Login")
 
 	// Start server and log error should ther be one
+	// Define and include cors handling strategy
+	// Cors strategy is currently using a wild now This should change to a of selected orrigins when in production
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
 	log.Fatal(http.ListenAndServe(":"+config.ServerPort,
 		handlers.CORS(handlers.AllowedOrigins([]string{"*"}))(router)))
