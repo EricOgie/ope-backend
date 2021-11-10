@@ -18,6 +18,7 @@ type UserServicePort interface {
 	VerifyAcc(requestdto.VerifyRequest) (*responsedto.LoginResponseDTO, *ericerrors.EricError)
 	Login(requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
 	CompleteLoginProcess(models.Claim) (*responsedto.CompleteUserDTO, *ericerrors.EricError)
+	RequestPasswordChange(models.UserEmail) (*responsedto.OneUserDto, *ericerrors.EricError)
 }
 
 // Define UserService as biz end of User domain
@@ -116,6 +117,29 @@ func (s UserService) CompleteLoginProcess(claim models.Claim) (*responsedto.Comp
 	// Convert result to CompleteUser DTO
 	cUserDto := result.ConvertToCompleteUserDTO(tok)
 	return &cUserDto, nil
+
+}
+
+func (s UserService) RequestPasswordChange(req requestdto.PasswordChangeRequest) (*responsedto.OneUserDto, *ericerrors.EricError) {
+	// Validate request
+	err := req.ValidatePwordRequest()
+	if err != nil {
+		logger.Error(konstants.REQ_VALIDITY_ERR)
+		return nil, err
+	}
+	emailStruct := models.UserEmail{Email: req.Email}
+	dBUser, err := s.repo.RequestPasswordChange(emailStruct)
+
+	if err != nil {
+		logger.Error(konstants.LOGIN_ERR + err.Message)
+		return nil, err
+	}
+
+	// Return Queried User with token that will be used for verication on confirm password change
+	userDTOWithToken, res := getUserWithToken(dBUser)
+	// Send Mail to user
+	utils.SendRequestMail(res)
+	return &userDTOWithToken, nil
 
 }
 

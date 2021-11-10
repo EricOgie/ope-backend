@@ -122,13 +122,14 @@ func jwtTokenFromString(tokenString string, ens utils.Config) (*jwt.Token, error
 // This will check the active or in focus route if listed among the authenticatable routes
 func needsAuthorization(routeName string) bool {
 	auth := map[string]bool{
-		"Home":           false,
-		"Ping":           false,
-		"Verify":         false,
-		"Login":          false,
-		"RegisterUser":   false,
-		"GetAllUser":     true,
-		"Complete-Login": true,
+		"Home":                    false,
+		"Ping":                    false,
+		"Verify":                  false,
+		"Login":                   false,
+		"RegisterUser":            false,
+		"GetAllUser":              true,
+		"Complete-Login":          true,
+		"Request-Password-Change": true,
 	}
 	return auth[routeName]
 

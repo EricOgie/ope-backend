@@ -12,8 +12,19 @@ type LoginRequest struct {
 	Password string `json:"password"`
 }
 
+type PasswordChangeRequest struct {
+	Email string
+}
+
 type OTPDto struct {
 	OTP int
+}
+
+func (req PasswordChangeRequest) ValidatePwordRequest() *ericerrors.EricError {
+	if !isValidEmail(req.Email) {
+		return ericerrors.New422Error(konstants.INVALID_EMAIL)
+	}
+	return nil
 }
 
 // To be called on Loginrequest to validate input

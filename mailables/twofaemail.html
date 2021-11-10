@@ -12,9 +12,9 @@
       <path d="M40.0015 20.7737C40.0015 31.3946 31.554 40.0045 21.1335 40.0045C10.7131 40.0045 2.26562 31.3946 2.26562 20.7737C2.26562 10.1529 10.7131 1.54297 21.1335 1.54297C31.554 1.54297 40.0015 10.1529 40.0015 20.7737Z" fill="#0C1825"/>
       <path d="M25.4151 13.4615C25.4151 20.3619 19.9317 25.9231 13.2075 25.9231C6.48338 25.9231 1 20.3619 1 13.4615C1 6.56118 6.48338 1 13.2075 1C19.9317 1 25.4151 6.56118 25.4151 13.4615Z" fill="white" stroke="#0C1825" stroke-width="2"/>
       </svg>
-   <h2 class="my-2 font-bold text-4xl">Hello {{ .RecipientName }}!</h2>
+   <h2 class="my-2 font-bold text-4xl">{{ .Caption }} {{ .RecipientName }}!</h2>
    <p style="margin:0.25em 0; font-weight: bolder; font-size: 1.5em">
-    We notice traffic on your account.plese use the OTP below to confirm your operation on theapp"
+    {{ .Body }}
    </p>
 
    <p style="margin-bottom: 2em">Please ignore this mail if you did not initiate this process</p>

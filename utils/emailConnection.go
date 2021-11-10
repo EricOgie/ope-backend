@@ -54,7 +54,7 @@ func GetEmailClient(env Config) *mail.SMTPClient {
 func SendVerificationMail(data responsedto.OneUserDtoWithOtp, token string) {
 	env := LoadConfig(".")
 
-	emailStruct := makeMailable(data, token)
+	emailStruct := makeMailable(data, token, "verification", "Verify My Account")
 	client := GetEmailClient(env)
 
 	email := getEmail(emailStruct, env)
@@ -81,15 +81,58 @@ func SendOTP(data responsedto.OneUserDtoWithOtp) {
 
 }
 
-func makeMailable(data responsedto.OneUserDtoWithOtp, token string) models.Emailable {
-	redirURL := konstants.ROOT_ADD + "verify?k=" + token
+func SendRequestMail(data responsedto.OneUserDtoWithOtp) {
+	env := LoadConfig(".")
+
+	emailStruct := makeMailable(data, "", "Password", "Change Password")
+	client := GetEmailClient(env)
+
+	email := getEmail(emailStruct, env)
+	err := email.Send(client)
+	if err != nil {
+		logger.Error(konstants.MAIL_DEL_ERR + err.Error())
+		return
+	}
+
+}
+
+func makeMailable(data responsedto.OneUserDtoWithOtp, token string, purpose string, btnTxt string) models.Emailable {
+	redirURL := ""
+
+	subject := ""
+	body := ""
+	tail := ""
+	caption := ""
+
+	if purpose == "verification" {
+		redirURL += konstants.ROOT_ADD + "verify?k=" + token
+		subject += konstants.SUBJECT_VERIFY_ACC
+		body += konstants.MAIL_BODY_VERIFY
+		tail += konstants.MAIL_BODY_VERIFY
+		caption += konstants.CAPTION_WELCOME
+	} else if purpose == "OTP" {
+		redirURL += ""
+		subject += konstants.SUBJECT_OTP
+		body += konstants.MAIL_BODY_OTP
+		tail += konstants.MAIL_TAIL_ACT_NOTICED
+		caption += konstants.CAPTION_HELLO
+	} else {
+		redirURL += konstants.ROOT_ADD
+		subject += konstants.SUBJECT_PASSWORD_CHANGE
+		body += konstants.MAIL_BODY_PASSWORD_RESET
+		tail += konstants.MAIL_TAIL_PASSWORD_REQ
+		caption += konstants.CAPTION_HELLO
+	}
+
 	return models.Emailable{
 		RecipientName:  data.FirstName,
 		RecipientEmail: data.Email,
-		Subject:        "Verify Your Ope Account",
-		Body:           "Verify your Ope account",
+		Subject:        subject,
+		Caption:        caption,
+		Body:           body,
+		Tail:           tail,
 		IsWithButton:   true,
-		ButtonText:     "Verify Your Account",
+		ButtonText:     btnTxt,
 		RedirectUrl:    redirURL,
 		OTP:            strconv.Itoa(data.OTP),
 	}
@@ -97,10 +140,13 @@ func makeMailable(data responsedto.OneUserDtoWithOtp, token string) models.Email
 
 func makeOTPMailable(data responsedto.OneUserDtoWithOtp) models.Emailable {
 	logger.Error(data.FirstName + "/" + strconv.Itoa(data.OTP))
+
 	return models.Emailable{
 		RecipientName:  data.FirstName,
 		RecipientEmail: data.Email,
-		Body:           konstants.MAIL_ACT_NOTICED,
+		Caption:        konstants.CAPTION_HELLO,
+		Body:           konstants.MAIL_BODY_OTP,
+		Tail:           konstants.MAIL_TAIL_ACT_NOTICED,
 		OTP:            strconv.Itoa(data.OTP),
 	}
 }
@@ -122,7 +168,7 @@ func getEmail(emailStruct models.Emailable, env Config) *mail.Email {
 	email.SetFrom(konstants.FROM_PREFIX + "<" + env.MailFromAddress + ">")
 	email.AddTo(emailStruct.RecipientEmail)
 	// email.AddCc(konstants.YAHOO)
-	email.SetSubject(konstants.VERIFY_SUB)
+	email.SetSubject(emailStruct.Subject)
 
 	email.SetBody(mail.TextHTML, string(body.Bytes()))
 

@@ -97,6 +97,22 @@ func (s *UserHandler) CompleteLoginProcess(res http.ResponseWriter, req *http.Re
 
 }
 
+func (s *UserHandler) RequestPasswordChange(res http.ResponseWriter, req *http.Request) {
+	var request requestdto.PasswordChangeRequest
+	err := json.NewDecoder(req.Body).Decode(&request)
+	// Handle Bad Request Error
+	if err != nil {
+		// end process and send 400 error code to client
+		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
+		response.ServeResponse(konstants.ERR, "", res, eError)
+	} else {
+		newUser, eError := s.Service.RequestPasswordChange(request)
+		// Send response and Error to Response handler layer and allow
+		//it serve the appropriate response to client
+		response.ServeResponse("Request", newUser, res, eError)
+	}
+}
+
 func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
 	return requestdto.VerifyRequest{
 		Id:         claim.Id,

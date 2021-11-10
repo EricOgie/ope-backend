@@ -55,7 +55,7 @@ type UserRepositoryPort interface {
 	VerifyUserAccount(VerifyUser) (*User, *ericerrors.EricError)
 	Login(UserLogin) (*User, *ericerrors.EricError)
 	CompleteLogin(Claim) (*CompleteUser, *ericerrors.EricError)
-	// RequestPasswordChange(UserEmail) (*User, *ericerrors.EricError)
+	RequestPasswordChange(UserEmail) (*User, *ericerrors.EricError)
 }
 
 /**
