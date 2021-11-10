@@ -36,7 +36,7 @@ func StartApp() {
 
 	// Define and include cors handling strategy
 	// Cors strategy is currently using a wildcard now. This should change to a selected orrigins when in production
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
 	credentials := handlers.AllowCredentials()
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "PATCH", "POST", "PUT", "OPTIONS"})
