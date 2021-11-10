@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/EricOgie/ope-be/domain/models"
@@ -95,8 +96,14 @@ func (db UserRepositoryDB) Login(u models.UserLogin) (*models.User, *ericerrors.
 	err := db.client.Get(&user, querySQL, u.Email)
 	// Check error state and responde accordingly
 	if err != nil {
-		logger.Error(konstants.QUERY_ERR + err.Error())
-		return nil, ericerrors.New500Error(konstants.MSG_500)
+		if err.Error() == konstants.DB_NO_ROW {
+			// user does not exist
+			logger.Error(konstants.DB_ERROR + konstants.CREDENTIAL_ERR)
+			return nil, ericerrors.NewError(http.StatusUnauthorized, konstants.CREDENTIAL_ERR)
+		} else {
+			logger.Error(konstants.QUERY_ERR + err.Error())
+			return nil, ericerrors.New500Error(konstants.MSG_500)
+		}
 	}
 	return &user, nil
 }

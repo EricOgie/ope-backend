@@ -37,6 +37,7 @@ const (
 	DB_ERROR      string = "Unexpected Database Error"
 	NO_DER_ERR    string = "User no dey. Err = "
 	DB_SCAN_ERROR string = "DB Row Scan Error"
+	DB_NO_ROW     string = "sql: no rows in result set"
 	LOCAL_DB_USER string = "root"
 	LOCAL_DB_NAME string = "ope"
 	LOCAL_DB_ADD  string = "localhost"
