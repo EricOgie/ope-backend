@@ -19,7 +19,7 @@ func (repo MiddleWareRepo) IsAuthorized(claim models.Claim) bool {
 	querySQL := "SELECT id, firstname, lastname, email, phone, created_at FROM users WHERE email = ?"
 	var user models.User
 	err := repo.Client.Get(&user, querySQL, claim.Email)
-	// Check error state and responde accordingly
+	// Check error state and respond accordingly
 	if err != nil {
 		logger.Error(konstants.QUERY_ERR + err.Error())
 		return false
@@ -33,7 +33,6 @@ func (repo MiddleWareRepo) IsAuthorized(claim models.Claim) bool {
 
 func isValidAuth(c models.Claim, u models.User) bool {
 	if c.Firstname == u.FirstName && c.Lastname == u.LastName && c.When == u.CreatedAt {
-
 		return true
 	} else {
 

@@ -93,14 +93,21 @@ const (
 	CLAIM_ERR string = "ERROR while trying to extract claims from request context. Err: "
 
 	MAIL_VET_PATH string = "mailables/verification.html"
-	MAIL_OTP_PATH string = "mailables/otp.html"
+	MAIL_OTP_PATH string = "mailables/twofaemail.html"
 
-	MAIL_TAIL_ACT_NOTICED  string = "We Notice traffic on your account.Enter the OTP below to confirm your operation on Ope app"
-	MAIL_TAIL_VERIFY       string = "We would like to verify your account quickly so you can get to the fun part. Click the button below to verify your account"
-	MAIL_TAIL_PASSWORD_REQ string = "Click the button below to change your password"
+	MAIL_PURPOSE_VERIFY string = "verification"
+	MAIL_PURPOSE_REQ    string = "Password"
+	MAIL_PURPOSE_OTP    string = "OTP"
 
+	MAIL_BTN_VET   string = "Verify My Account"
+	MAIL_BTN_PWORD string = "Change Password"
+
+	MAIL_TAIL_ACT_NOTICED    string = "We Notice traffic on your account. Use the OTP below to confirm your operation on Ope app"
+	MAIL_TAIL_VERIFY         string = "We would like to verify your account quickly so you can get to the fun part. Click the button below to verify your account"
+	MAIL_TAIL_PASSWORD_REQ   string = "Click the button below to change your password"
+	MAIL_TAIL_OTP            string = "Use the below one time password to conclude your transaction "
 	MAIL_BODY_PASSWORD_RESET string = "You requested for a password change"
-	MAIL_BODY_VERIFY         string = "Verify your Ope account"
+	MAIL_BODY_VERIFY         string = "One more step required"
 	MAIL_BODY_OTP            string = "You initiated a process"
 
 	CAPTION_WELCOME string = "Welcome To Ope"
