@@ -3,9 +3,11 @@ package response
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/konstants"
+	"github.com/EricOgie/ope-be/logger"
 )
 
 // ServeResponse serves the correct response to client depending on the result and
@@ -17,6 +19,7 @@ func ServeResponse(collection string, resource interface{},
 
 	res.Header().Set(konstants.CONTENT_TYPE, konstants.TYPE_JSON)
 	if error != nil {
+		logger.Info("CODE = " + strconv.Itoa(error.Code))
 		res.WriteHeader(error.Code)
 		errRes := ErrorResponse{Code: error.Code, Status: "Error", Message: error.Message}
 		json.NewEncoder(res).Encode(errRes)
