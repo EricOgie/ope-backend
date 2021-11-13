@@ -163,6 +163,8 @@ func userIsNotInDB(userEmail string, db UserRepositoryDB) bool {
 	querySQL := "SELECT  email FROM users WHERE email = ?"
 	var user models.User
 	err := db.client.Get(&user, querySQL, userEmail)
+	fmt.Println(fmt.Sprintf("%#v", user))
 	fmt.Println(fmt.Sprintf("%#v", err))
-	return err.Error() == konstants.DB_NO_ROW
+	// return err.Error() == konstants.DB_NO_ROW
+	return false
 }
