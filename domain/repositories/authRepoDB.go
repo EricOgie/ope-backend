@@ -1,7 +1,6 @@
 package repositories
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -56,8 +55,8 @@ func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricEr
  */
 func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.EricError) {
 	// First check if User is registered prior
-	if !userIsNotInDB(u.Email, db) {
-		logger.Info("User with email, " + u.Email + "is registered prior ")
+	if userIsRegistered(u.Email, db) {
+		logger.Info("User with email, " + u.Email + " is registered prior ")
 		return nil, &ericerrors.EricError{Code: 403, Message: konstants.MSG_403}
 	}
 	// Define Query
@@ -159,12 +158,9 @@ func runUserQueryWithEmail(userEmail string, db UserRepositoryDB) (*models.User,
 	return &user, nil
 }
 
-func userIsNotInDB(userEmail string, db UserRepositoryDB) bool {
+func userIsRegistered(userEmail string, db UserRepositoryDB) bool {
 	querySQL := "SELECT  email FROM users WHERE email = ?"
 	var user models.User
 	err := db.client.Get(&user, querySQL, userEmail)
-	fmt.Println(fmt.Sprintf("%#v", user))
-	fmt.Println(fmt.Sprintf("%#v", err))
-	// return err.Error() == konstants.DB_NO_ROW
-	return false
+	return err == nil
 }
