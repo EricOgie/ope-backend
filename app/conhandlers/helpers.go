@@ -40,3 +40,7 @@ func IsOtpValid(otp int) bool {
 	stV := strconv.Itoa(otp)
 	return len(stV) == 6
 }
+
+type PWord struct {
+	Password string
+}
