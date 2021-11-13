@@ -38,7 +38,7 @@ func executeMailing(data responsedto.OneUserDtoWithOtp, token string,
 	env := LoadConfig(".")
 	emailStruct := makeMailable(data, token, purpose, btnTxt)
 	client := getEmailClient(env)
-	email := makeEmail(emailStruct, env, "mailables/vet.html")
+	email := makeEmail(emailStruct, env, TemplatePATH)
 	err := email.Send(client)
 	if err != nil {
 		logger.Error(konstants.MAIL_DEL_ERR + err.Error())
