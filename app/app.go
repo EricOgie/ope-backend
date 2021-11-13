@@ -50,13 +50,15 @@ func StartApp() {
 	router.HandleFunc("/ping", controllers.Ping).Methods(http.MethodGet).Name("Ping")
 	router.HandleFunc("/verify-account", authH.VerifyUserAcc).Methods(http.MethodGet).Name("Verify-Acc")
 	router.HandleFunc("/verified", controllers.ServeHTMLTemplate).Methods(http.MethodGet).Name("Verified")
+	router.HandleFunc("/request-password-change", authH.RequestPasswordChange).Methods(http.MethodPost).Name("Request-Password-Change")
 	router.HandleFunc("/register", authH.CreateUser).Methods(http.MethodPost).Name("RegisterUser")
 	router.HandleFunc("/login", authH.Login).Methods(http.MethodPost).Name("Login")
 
 	// - PROTECTED routes
 	router.HandleFunc("/users", authH.GetAllUsers).Methods(http.MethodGet).Name("GetAllUser")
 	router.HandleFunc("/complete-login", authH.CompleteLoginProcess).Methods(http.MethodPost).Name("Complete-Login")
-	router.HandleFunc("/request-password-change", authH.RequestPasswordChange).Methods(http.MethodPost).Name("Request-Password-Change")
+	router.HandleFunc("/change-password", authH.ChangePassword).Methods(http.MethodPatch).Name("Change-Password")
+
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
 	log.Fatal(http.ListenAndServe(":"+config.ServerPort, handlers.CORS(originsOk, headersOk, methodsOk, credentials)(router)))

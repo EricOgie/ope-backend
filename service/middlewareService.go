@@ -35,7 +35,7 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 
 			if !needsAuthorization(routeInFocus.GetName()) {
 				// Check if token in url, It might just be a case of email verification
-				if isTokenInURL(req, envs) {
+				if isTokenInURL(req) {
 					// extract claim data and pass along with request
 					claim := getClaim(req, envs, res)
 					ctx := context.WithValue(req.Context(), konstants.DT_KEY, claim)
@@ -126,16 +126,17 @@ func needsAuthorization(routeName string) bool {
 		"Verify-Acc":              false,
 		"Verified":                false,
 		"Login":                   false,
+		"Request-Password-Change": false,
 		"RegisterUser":            false,
 		"GetAllUser":              true,
 		"Complete-Login":          true,
-		"Request-Password-Change": false,
+		"Change-Password":         true,
 	}
 	return auth[routeName]
 
 }
 
-func isTokenInURL(req *http.Request, env utils.Config) bool {
+func isTokenInURL(req *http.Request) bool {
 	tok := req.URL.Query().Get("k")
 	return len(tok) > 0
 }

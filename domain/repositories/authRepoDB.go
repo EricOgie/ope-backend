@@ -111,6 +111,7 @@ func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User,
 
 }
 
+// Complete Login method, callable to complete loging process
 func (db UserRepositoryDB) CompleteLogin(claim models.Claim) (*models.CompleteUser, *ericerrors.EricError) {
 	userId, err := strconv.Atoi(claim.Id)
 
@@ -128,7 +129,7 @@ func (db UserRepositoryDB) CompleteLogin(claim models.Claim) (*models.CompleteUs
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 
-	// Cretate a complete-user by merging the user struct in the claim passed into function with
+	// Cretate a completeuser struct by merging the user struct in the claim passed into function with
 	// the slice of user stocks gotten from the DB. This will serve a user with his/her stock portfolio
 	completeUser := models.MakeCompleteUser(claim, userStocks)
 	return &completeUser, nil
@@ -138,29 +139,15 @@ func (db UserRepositoryDB) RequestPasswordChange(userEmail models.UserEmail) (*m
 	return runUserQueryWithEmail(userEmail.Email, db)
 }
 
-// ---------------------- PRIVATE METHODS ------------------------//
-
-func runUserQueryWithEmail(userEmail string, db UserRepositoryDB) (*models.User, *ericerrors.EricError) {
-	querySQL := "SELECT id, firstname, lastname, email, phone, password, created_at FROM users WHERE email = ?"
-	var user models.User
-	err := db.client.Get(&user, querySQL, userEmail)
-	// Check error state and responde accordingly
+func (db UserRepositoryDB) ChangePassword(u models.UserLogin) (*responsedto.PlainResponseDTO, *ericerrors.EricError) {
+	hashedPword := security.GenHashedPwd(u.Password)
+	query := "UPDATE users SET password = ? WHERE email = ?"
+	_, err := db.client.Exec(query, hashedPword, u.Email)
 	if err != nil {
-		if err.Error() == konstants.DB_NO_ROW {
-			// user does not exist
-			logger.Error(konstants.DB_ERROR + konstants.CREDENTIAL_ERR)
-			return nil, ericerrors.NewError(http.StatusUnauthorized, konstants.CREDENTIAL_ERR)
-		} else {
-			logger.Error(konstants.QUERY_ERR + err.Error())
-			return nil, ericerrors.New500Error(konstants.MSG_500)
-		}
+		logger.Error("Edit Error" + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
-	return &user, nil
-}
 
-func userIsRegistered(userEmail string, db UserRepositoryDB) bool {
-	querySQL := "SELECT  email FROM users WHERE email = ?"
-	var user models.User
-	err := db.client.Get(&user, querySQL, userEmail)
-	return err == nil
+	res := u.GetPlainResponseDTO(http.StatusOK, "Password Changed")
+	return &res, nil
 }

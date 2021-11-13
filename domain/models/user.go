@@ -34,6 +34,11 @@ type UserEmail struct {
 	Email string
 }
 
+type EditResponse struct {
+	Code    int
+	Message string
+}
+
 type VerifyUser struct {
 	Id        string
 	FirstName string
@@ -56,6 +61,7 @@ type UserRepositoryPort interface {
 	Login(UserLogin) (*User, *ericerrors.EricError)
 	CompleteLogin(Claim) (*CompleteUser, *ericerrors.EricError)
 	RequestPasswordChange(UserEmail) (*User, *ericerrors.EricError)
+	ChangePassword(UserLogin) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
 }
 
 /**
@@ -100,11 +106,11 @@ func (user User) ConvertToOneUserDtoWithOtp(otp int) responsedto.OneUserDtoWithO
 	}
 }
 
-func (user User) ConvertToVeriyResponse() responsedto.VerifiedRESPONSE {
+func (user User) ConvertToVeriyResponse(verified string) responsedto.VerifiedRESPONSE {
 	return responsedto.VerifiedRESPONSE{
 		Id:     user.Id,
 		Email:  user.Email,
-		Status: "Verified",
+		Status: verified,
 	}
 }
 
@@ -127,5 +133,12 @@ func (v VerifyUser) GetUserFromVerify() User {
 		LastName:  v.LastName,
 		Email:     v.Email,
 		CreatedAt: v.CreatedAt,
+	}
+}
+
+func (u UserLogin) GetPlainResponseDTO(code int, msg string) responsedto.PlainResponseDTO {
+	return responsedto.PlainResponseDTO{
+		Code:    code,
+		Message: msg,
 	}
 }

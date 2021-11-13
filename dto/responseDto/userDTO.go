@@ -53,6 +53,11 @@ type LoginResponseDTO struct {
 	TokenString string
 }
 
+type PlainResponseDTO struct {
+	Code    int
+	Message string
+}
+
 func (user OneUserDto) ConvertUserToTokenResponseDTO() LoginResponseDTO {
 	return LoginResponseDTO{
 		TokenString: user.Token,

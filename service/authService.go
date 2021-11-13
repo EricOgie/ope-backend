@@ -19,6 +19,7 @@ type UserServicePort interface {
 	Login(requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
 	CompleteLoginProcess(models.Claim) (*responsedto.CompleteUserDTO, *ericerrors.EricError)
 	RequestPasswordChange(models.UserEmail) (*responsedto.OneUserDto, *ericerrors.EricError)
+	ChangePassword(requestdto.LoginRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
 }
 
 // Define UserService as biz end of User domain
@@ -102,7 +103,7 @@ func (s UserService) VerifyAcc(vr requestdto.VerifyRequest) (*responsedto.Verifi
 		return nil, err
 	}
 
-	res := result.ConvertToVeriyResponse()
+	res := result.ConvertToVeriyResponse("verified")
 	return &res, nil
 }
 
@@ -143,16 +144,18 @@ func (s UserService) RequestPasswordChange(req requestdto.PasswordChangeRequest)
 
 }
 
-//   ----------------------- PRIVATE METHOD ---------------------------- //
-func getUserWithToken(user *models.User) (responsedto.OneUserDto, responsedto.OneUserDtoWithOtp) {
-	// Gen OTP
-	otp := security.GenerateOTP()
-	// Construct UserDTOwithOTP from user
-	userDTOWithOTP := user.ConvertToOneUserDtoWithOtp(otp)
-	// Gen Token
-	token := security.GenerateToken(userDTOWithOTP)
-	// Contruct UserDTOwithToken
-	userResponseDTOWithToken := user.ConvertToOneUserDto(token) //user.ConvertToOneUserDto(token)
-
-	return userResponseDTOWithToken, userDTOWithOTP
+// Call Changepassword when user password is to change
+func (s UserService) ChangePassword(userReq requestdto.LoginRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError) {
+	err := userReq.ValidateRequest()
+	if err != nil {
+		logger.Error(konstants.REQ_VALIDITY_ERR)
+		return nil, err
+	}
+	userLogin := models.UserLogin{Email: userReq.Email, Password: userReq.Password}
+	res, err := s.repo.ChangePassword(userLogin)
+	if err != nil {
+		logger.Error("Pword Change Err: " + err.Message)
+		return nil, err
+	}
+	return res, nil
 }

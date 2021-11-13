@@ -3,7 +3,6 @@ package conhandlers
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/EricOgie/ope-be/domain/models"
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
@@ -115,32 +114,18 @@ func (s *UserHandler) RequestPasswordChange(res http.ResponseWriter, req *http.R
 	}
 }
 
-func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
-	return requestdto.VerifyRequest{
-		Id:         claim.Id,
-		FirstName:  claim.Firstname,
-		Lastname:   claim.Lastname,
-		Email:      claim.Email,
-		Created_at: claim.When,
-		When:       claim.When,
-	}
-}
-
-func IsOTPTheSame(req *http.Request, claim models.Claim) bool {
-	var reqOTP requestdto.OTPDto
-	err := json.NewDecoder(req.Body).Decode(&reqOTP)
-
-	logger.Info("Claim/Req = " + strconv.Itoa(claim.Otp) + "/" + strconv.Itoa(reqOTP.OTP))
-
+func (s *UserHandler) ChangePassword(res http.ResponseWriter, req *http.Request) {
+	var request requestdto.LoginRequest
+	err := json.NewDecoder(req.Body).Decode(&request)
+	// Handle Bad Request Error
 	if err != nil {
-		logger.Error(konstants.ERR + err.Error())
+		// end process and send 400 error code to client
+		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
+		response.ServeResponse(konstants.ERR, "", res, eError)
+	} else {
+		newUser, eError := s.Service.ChangePassword(request)
+		// Send response and Error to Response handler layer and allow
+		//it serve the appropriate response to client
+		response.ServeResponse("Plain Response", newUser, res, eError)
 	}
-
-	return reqOTP.OTP == claim.Otp
-
-}
-
-func IsOtpValid(otp int) bool {
-	stV := strconv.Itoa(otp)
-	return len(stV) == 6
 }
