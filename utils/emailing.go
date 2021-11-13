@@ -76,7 +76,7 @@ func makeMailable(data responsedto.OneUserDtoWithOtp, token string,
 	caption := ""
 
 	if purpose == "verification" {
-		redirURL += konstants.ROOT_ADD + "verify?k=" + token
+		redirURL += konstants.ROOT_ADD + "verify-account?k=" + token
 		subject += konstants.SUBJECT_VERIFY_ACC
 		body += konstants.MAIL_BODY_VERIFY
 		tail += konstants.MAIL_TAIL_VERIFY
