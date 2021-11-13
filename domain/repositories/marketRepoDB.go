@@ -28,7 +28,7 @@ func NewMarketRepoDB(dbClient *sqlx.DB, env utils.Config) MarketRepoDB {
 func (db MarketRepoDB) ShowStockMarket() (*[]models.Share, *ericerrors.EricError) {
 	marketstock := make([]models.Share, 0)
 	query := "SELECT * FROM shares"
-	err := db.client.Select(marketstock, query)
+	err := db.client.Select(&marketstock, query)
 
 	if err != nil {
 		logger.Error(konstants.QUERY_ERR + err.Error())
