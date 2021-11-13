@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -143,7 +142,6 @@ func isTokenInURL(req *http.Request, env utils.Config) bool {
 
 func getClaim(req *http.Request, env utils.Config, res http.ResponseWriter) models.Claim {
 	tokString := req.URL.Query().Get("k")
-
 	// convert to JWT
 	tokJwt, e := jwtTokenFromString(tokString, env)
 	if e != nil {
@@ -157,8 +155,6 @@ func getClaim(req *http.Request, env utils.Config, res http.ResponseWriter) mode
 
 	jwtMapClaim := tokJwt.Claims.(jwt.MapClaims)
 	claimObj := models.MakeClaim(jwtMapClaim)
-	fmt.Println(fmt.Sprintf("%#v", claimObj))
-
 	return claimObj
 
 }

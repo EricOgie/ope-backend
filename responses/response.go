@@ -31,6 +31,10 @@ func ServeResponse(collection string, resource interface{},
 
 }
 
+func RedirectToVerified(res http.ResponseWriter, req *http.Request) {
+	http.Redirect(res, req, konstants.VERIFY_URL, http.StatusPermanentRedirect)
+}
+
 func ServeError(code int, errorMsg string, res http.ResponseWriter) {
 	res.WriteHeader(http.StatusBadRequest)
 	errRes := ErrorResponse{Code: code, Status: "Error", Message: errorMsg}

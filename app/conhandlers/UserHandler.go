@@ -63,14 +63,16 @@ func (s *UserHandler) VerifyUserAcc(res http.ResponseWriter, req *http.Request) 
 	// construct a verifyRequest from models.Claim
 	verifyRequest := makeVerifyReqDTO(claim)
 	//make request along the wiring chain
-	result, err := s.Service.VerifyAcc(verifyRequest)
+	_, err := s.Service.VerifyAcc(verifyRequest)
 
 	if err != nil {
 		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
 		response.ServeResponse(konstants.ERR, "", res, eError)
 	}
 
-	response.ServeResponse(konstants.USER, result, res, nil)
+	// response.ServeResponse(konstants.USER, result, res, nil)
+
+	response.RedirectToVerified(res, req)
 }
 
 func (s *UserHandler) CompleteLoginProcess(res http.ResponseWriter, req *http.Request) {

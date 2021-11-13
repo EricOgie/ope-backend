@@ -82,10 +82,11 @@ const (
 
 	ERR_SANITY_CHECK string = "Sanity check Err: "
 
-	VERIFY_URL string = "http://localhost:8080/verify" //
+	VERIFY_URL string = "https://be-ope.herokuapp.com/verifed" //
 	HOME_URL   string = "https://loaner-two.vercel.app/"
 	ROOT_ADD   string = "https://be-ope.herokuapp.com/"
-	LOGIN_URL  string = "https://loaner-two.vercel.app/login"
+	// ROOT_ADD  string = "http://localhost:8080/"
+	LOGIN_URL string = "https://loaner-two.vercel.app/login"
 
 	FLUTTERWAVE_URL string = "https://api.flutterwave.com/v3/payments"
 
