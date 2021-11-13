@@ -95,6 +95,8 @@ func makeMailable(data responsedto.OneUserDtoWithOtp, token string,
 		caption += konstants.CAPTION_HELLO
 	}
 
+	logger.Info("OTP = " + strconv.Itoa(data.OTP))
+
 	return models.Emailable{
 		RecipientName:  data.FirstName,
 		RecipientEmail: data.Email,
