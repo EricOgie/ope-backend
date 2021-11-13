@@ -115,7 +115,6 @@ func (s *UserHandler) RequestPasswordChange(res http.ResponseWriter, req *http.R
 }
 
 func (s *UserHandler) ChangePassword(res http.ResponseWriter, req *http.Request) {
-	var request requestdto.LoginRequest
 	var pword PWord
 	err1 := json.NewDecoder(req.Body).Decode(&pword)
 
@@ -127,24 +126,8 @@ func (s *UserHandler) ChangePassword(res http.ResponseWriter, req *http.Request)
 	}
 
 	// User email will be gotten from claim extracted from token
-
 	claim, _ := req.Context().Value(konstants.DT_KEY).(models.Claim)
 	UserCrendentials := requestdto.LoginRequest{Email: claim.Email, Password: pword.Password}
 	newUser, eError := s.Service.ChangePassword(UserCrendentials)
-	// Handle Bad Request Error
-	if err != nil {
-		// end process and send 400 error code to client
-		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
-		response.ServeResponse(konstants.ERR, "", res, eError)
-	} else {
-		UserCrendentials := requestdto.LoginRequest{Email: request.Email, Password: pword.Password}
-		newUser, eError := s.Service.ChangePassword(UserCrendentials)
-		// Send response and Error to Response handler layer and allow
-		//it serve the appropriate response to client
-		response.ServeResponse("Plain Response", newUser, res, eError)
-	}
-}
-
-type PWord struct {
-	Password string
+	response.ServeResponse("Plain Response", newUser, res, eError)
 }
