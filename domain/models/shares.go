@@ -7,7 +7,7 @@ type Share struct {
 	Symbol        string `db:"symbol" json:"symbol"`
 	ImageUrl      string `db:"image" json:"image_url"`
 	UnitPrice     string `db:"unit_price" json:"unit_price"`
-	PercentChange string `db:"fluctuation" json:"percentage_change"`
+	PercentChange string `db:"percentage_change" json:"percentage_change"`
 }
 
 type MarketRepositoryPort interface {
