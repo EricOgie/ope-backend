@@ -144,6 +144,7 @@ func (s UserService) RequestPasswordChange(req requestdto.PasswordChangeRequest)
 }
 
 //   ----------------------- PRIVATE METHOD ---------------------------- //
+
 func getUserWithToken(user *models.User) (responsedto.OneUserDto, responsedto.OneUserDtoWithOtp) {
 	// Gen OTP
 	otp := security.GenerateOTP()
