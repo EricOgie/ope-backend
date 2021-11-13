@@ -124,12 +124,13 @@ func needsAuthorization(routeName string) bool {
 	auth := map[string]bool{
 		"Home":                    false,
 		"Ping":                    false,
-		"Verify":                  false,
+		"Verify-Acc":              false,
+		"Verified":                false,
 		"Login":                   false,
 		"RegisterUser":            false,
 		"GetAllUser":              true,
 		"Complete-Login":          true,
-		"Request-Password-Change": true,
+		"Request-Password-Change": false,
 	}
 	return auth[routeName]
 
