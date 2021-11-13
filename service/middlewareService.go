@@ -131,6 +131,7 @@ func needsAuthorization(routeName string) bool {
 		"GetAllUser":              true,
 		"Complete-Login":          true,
 		"Change-Password":         true,
+		"Market":                  true,
 	}
 	return auth[routeName]
 

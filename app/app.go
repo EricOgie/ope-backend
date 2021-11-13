@@ -32,6 +32,7 @@ func StartApp() {
 	// ------------------------   WIRING AND CONNECTIONS --------------------------
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
 	authH := conhandlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
+	marketH := conhandlers.MarkHandler{service.MarketService{repositories.NewMarketRepoDB(dbClient, config)}}
 
 	// Define and include cors handling strategy
 	// Cors strategy is currently using a wildcard now. This should change to a selected orrigins when in production
@@ -58,6 +59,7 @@ func StartApp() {
 	router.HandleFunc("/users", authH.GetAllUsers).Methods(http.MethodGet).Name("GetAllUser")
 	router.HandleFunc("/complete-login", authH.CompleteLoginProcess).Methods(http.MethodPost).Name("Complete-Login")
 	router.HandleFunc("/change-password", authH.ChangePassword).Methods(http.MethodPatch).Name("Change-Password")
+	router.HandleFunc("/show-market", marketH.FetchMarketState).Methods(http.MethodGet).Name("Market")
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
