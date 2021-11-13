@@ -54,7 +54,6 @@ func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricEr
 * To be called upon REGISTER user Request
  */
 func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.EricError) {
-	logger.Info("ERIC I DEY HIA")
 	// Define Query
 	insertQuery := "INSERT INTO users (firstname, lastname, email, phone, password, created_at) " +
 		"values(?, ?, ?, ?, ?, ?)"
@@ -95,6 +94,7 @@ func (db UserRepositoryDB) Login(u models.UserLogin) (*models.User, *ericerrors.
 }
 
 func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User, *ericerrors.EricError) {
+	logger.Info("WE WAN VERIFY " + v.FirstName)
 	query := "UPDATE users SET verified = ? WHERE email = ?"
 	_, err := db.client.Exec(query, "true", v.Email)
 	if err != nil {
