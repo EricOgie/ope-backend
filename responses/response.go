@@ -31,6 +31,8 @@ func ServeResponse(collection string, resource interface{},
 
 }
 
+// RedirectToVerified is callable when process needs to redirect active user to to the verified page
+// It take  http.ResponseWrite, and  *http.Request
 func RedirectToVerified(res http.ResponseWriter, req *http.Request) {
 	http.Redirect(res, req, konstants.VERIFY_URL, http.StatusPermanentRedirect)
 }

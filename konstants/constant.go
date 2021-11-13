@@ -82,7 +82,7 @@ const (
 
 	ERR_SANITY_CHECK string = "Sanity check Err: "
 
-	VERIFY_URL string = "https://be-ope.herokuapp.com/verifed" //
+	VERIFY_URL string = "https://be-ope.herokuapp.com/verified" //
 	HOME_URL   string = "https://loaner-two.vercel.app/"
 	ROOT_ADD   string = "https://be-ope.herokuapp.com/"
 	// ROOT_ADD  string = "http://localhost:8080/"
