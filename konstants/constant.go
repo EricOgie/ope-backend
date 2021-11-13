@@ -8,6 +8,7 @@ const (
 	TYPE_XML     string = "application/xml"
 	TYPE_JSON    string = "application/json"
 	MSG_500      string = "Unexpected Server Error!"
+	MSG_403      string = "User Already Exis"
 	MSG_START    string = "Starting Appliction ...."
 	LOGGER_TYPE  string = "logger-type"
 	TIME         string = "timestamp"
