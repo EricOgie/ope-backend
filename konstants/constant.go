@@ -94,7 +94,8 @@ const (
 	DT_KEY    string = "props"
 	CLAIM_ERR string = "ERROR while trying to extract claims from request context. Err: "
 
-	MAIL_VET_PATH string = "mailables/verification.html"
+	// MAIL_VET_PATH string = "mailables/verification.html"
+	MAIL_VET_PATH string = "mailables/vet.html"
 	MAIL_OTP_PATH string = "mailables/twofaemail.html"
 
 	MAIL_PURPOSE_VERIFY string = "verification"
