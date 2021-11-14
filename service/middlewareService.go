@@ -64,6 +64,7 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 					if err != nil {
 						ericErr := ericerrors.NewError(http.StatusForbidden, konstants.UAUTH_ERR)
 						response.ServeResponse(konstants.ERR, "", res, ericErr)
+						return
 					}
 
 					if !jwtToken.Valid {
