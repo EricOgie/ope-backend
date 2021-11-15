@@ -16,12 +16,15 @@ import (
 
 func runUserQueryWithEmail(userEmail string, db UserRepositoryDB) (*models.CompleteUser, *ericerrors.EricError) {
 	// querySQL := "SELECT id, firstname, lastname, email, phone, password, created_at FROM users WHERE email = ?"
-	querySQL := "SELECT users.id, users.firstname, users.lastname, users.email, users.phone, users.password, users.created_at, users.account_no, users.account_name, wallet.amount, wallet.address FROM wallet INNER JOIN users ON wallet.user_id = ?"
+	querySQL := "SELECT users.id, users.firstname, users.lastname, users.email, users.phone, users.password," +
+		" users.created_at, users.account_no, users.account_name, wallet.amount, wallet.address FROM wallet" +
+		" INNER JOIN users ON wallet.user_id = users.id WHERE wallet.user_id = ?"
 	var user models.QueryUser
 	userId := UserId(userEmail, db)
 
 	err := db.client.Get(&user, querySQL, userId)
 	// Check error state and responde accordingly
+
 	if err != nil {
 		if err.Error() == konstants.DB_NO_ROW {
 			// user does not exist
@@ -36,6 +39,7 @@ func runUserQueryWithEmail(userEmail string, db UserRepositoryDB) (*models.Compl
 	return &allInOne, nil
 }
 
+//
 func userIsRegistered(userEmail string, db UserRepositoryDB) bool {
 	querySQL := "SELECT  email FROM users WHERE email = ?"
 	var user models.User

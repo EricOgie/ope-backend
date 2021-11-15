@@ -68,6 +68,7 @@ func makeEmail(emailStruct models.Emailable, env Config, temPath string) *mail.E
 }
 
 func makeMailable(data responsedto.CompleteUserDTO, purpose string, btnTxt string) models.Emailable {
+
 	redirURL := ""
 	subject := ""
 	body := ""
@@ -93,9 +94,6 @@ func makeMailable(data responsedto.CompleteUserDTO, purpose string, btnTxt strin
 		tail += konstants.MAIL_TAIL_PASSWORD_REQ
 		caption += konstants.CAPTION_HELLO
 	}
-
-	logger.Info("OTP = " + data.Otp)
-	logger.Info("Email add = " + data.Email)
 
 	return models.Emailable{
 		RecipientName:  data.FirstName,
