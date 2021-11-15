@@ -21,6 +21,8 @@ const (
 	KEY_DB_NAME  string = "DB_NAME"
 	AUTH         string = "Authorization"
 
+	MSG_REG string = "Check Email To Verify Account"
+
 	REQ_VALIDITY_ERR string = "422 Validiity Error"
 
 	ERR_REQ_SEND string = "Error while sending req. Err: "
@@ -117,7 +119,7 @@ const (
 	CAPTION_HELLO   string = "Hello"
 
 	SUBJECT_WELCOME         string = "Welcome To Ope"
-	SUBJECT_VERIFY_ACC      string = "Verify Yout Ope Account"
+	SUBJECT_VERIFY_ACC      string = "Verify Your Ope Account"
 	SUBJECT_OTP             string = "OTP"
 	SUBJECT_PASSWORD_CHANGE string = "Change Password"
 )

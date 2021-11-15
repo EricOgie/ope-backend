@@ -64,5 +64,4 @@ func StartApp() {
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)
 	log.Fatal(http.ListenAndServe(":"+config.ServerPort, handlers.CORS(originsOk, headersOk, methodsOk, credentials)(router)))
-
 }

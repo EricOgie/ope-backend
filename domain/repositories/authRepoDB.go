@@ -53,7 +53,7 @@ func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricEr
 * METHOD implemetation of UserRepositoryPort as an interface
 * To be called upon REGISTER user Request
  */
-func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.EricError) {
+func (db UserRepositoryDB) Create(u models.User) (*models.CompleteUser, *ericerrors.EricError) {
 	// First check if User is registered prior
 	if userIsRegistered(u.Email, db) {
 		logger.Info("User with email, " + u.Email + " is registered prior ")
@@ -82,10 +82,18 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 
+	// Create wallet for user
+	wallet, ericErr := createUserWallet(db, u.FirstName, newId)
+	if ericErr != nil {
+		logger.Error("Wallet Err: " + ericErr.Message)
+	}
+
 	// merge ID from Db with UserObject
 	u.Id = strconv.Itoa(int(newId))
+	// construct user with wallet and bank struck
+	userWithWallet := u.MakeCompleteUser(wallet)
 	// return newly created user
-	return &u, nil
+	return &userWithWallet, nil
 
 }
 
@@ -94,9 +102,15 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
 * To be called upon Login Request
  */
 
-func (db UserRepositoryDB) Login(u models.UserLogin) (*models.User, *ericerrors.EricError) {
+func (db UserRepositoryDB) Login(u models.UserLogin) (*models.CompleteUser, *ericerrors.EricError) {
 	return runUserQueryWithEmail(u.Email, db)
 }
+
+/**
+* @VERIFYUSERACCOUNT
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called upon verification of user
+ */
 
 func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User, *ericerrors.EricError) {
 	query := "UPDATE users SET is_verified = ? WHERE email = ?"
@@ -111,18 +125,22 @@ func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User,
 
 }
 
-// Complete Login method, callable to complete loging process
+/**
+* @CHANGEPASSWORD
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called to commplete login workflow
+ */
 func (db UserRepositoryDB) CompleteLogin(claim models.Claim) (*models.CompleteUser, *ericerrors.EricError) {
 	userId, err := strconv.Atoi(claim.Id)
 
 	if err != nil {
 		logger.Error(konstants.STRING_INT_ERR + err.Error())
 	}
-
-	sqlQuery := "SELECT id, symbol, image, total_quantity, unit_price, equity_value, fluctuation FROM stocks WHERE user_id = ?"
+	sqlQuery := "SELECT id, symbol, image, total_quantity, unit_price, equity_value, percentage_change FROM stocks WHERE user_id = ?"
 	userStocks := make([]models.Stock, 0)
 	// Query and marshal to slice of stock-struct
 	qErr := db.client.Select(&userStocks, sqlQuery, userId)
+
 	// Handle possible query error
 	if qErr != nil {
 		logger.Error(konstants.QUERY_ERR + qErr.Error())
@@ -135,10 +153,20 @@ func (db UserRepositoryDB) CompleteLogin(claim models.Claim) (*models.CompleteUs
 	return &completeUser, nil
 }
 
-func (db UserRepositoryDB) RequestPasswordChange(userEmail models.UserEmail) (*models.User, *ericerrors.EricError) {
+/**
+* @REQUESTPASSWORDCHANGE
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called upon password change request
+ */
+func (db UserRepositoryDB) RequestPasswordChange(userEmail models.UserEmail) (*models.CompleteUser, *ericerrors.EricError) {
 	return runUserQueryWithEmail(userEmail.Email, db)
 }
 
+/**
+* @CHANGEPASSWORD
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called to commplete password change workflow
+ */
 func (db UserRepositoryDB) ChangePassword(u models.UserLogin) (*responsedto.PlainResponseDTO, *ericerrors.EricError) {
 	hashedPword := security.GenHashedPwd(u.Password)
 	query := "UPDATE users SET password = ? WHERE email = ?"

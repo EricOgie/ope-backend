@@ -12,13 +12,16 @@ type OneUserDto struct {
 }
 
 type CompleteUserDTO struct {
-	Id        string      `json:"user_id"`
-	FirstName string      `json:"firstname" xml:"first_name"`
-	LastName  string      `json:"lastname" xml:"last_name"`
-	Email     string      `json:"email" xml:"email"`
-	CreatedAt string      `db:"created_at" json:"created_at"`
-	Token     string      `json:"token" xml:"token"`
-	Portfolio interface{} `json:"portfolio" xml:"portfolio"`
+	Id          string         `json:"user_id"`
+	FirstName   string         `json:"firstname" xml:"first_name"`
+	LastName    string         `json:"lastname" xml:"last_name"`
+	Email       string         `json:"email" xml:"email"`
+	CreatedAt   string         `db:"created_at" json:"created_at"`
+	BankAccount BankAccountDTO `json:"bank_account"`
+	Otp         string         `json:"otp"`
+	Wallet      WalletDTO      `json:"wallet"`
+	Token       string         `json:"token" xml:"token"`
+	Portfolio   interface{}    `json:"portfolio" xml:"portfolio"`
 }
 
 type OneUserDtoWithOtp struct {
@@ -50,7 +53,8 @@ type VerifiedRESPONSE struct {
 }
 
 type LoginResponseDTO struct {
-	TokenString string
+	Message     string `json:"message"`
+	TokenString string `json:"token"`
 }
 
 type PlainResponseDTO struct {
@@ -58,8 +62,13 @@ type PlainResponseDTO struct {
 	Message string
 }
 
-func (user OneUserDto) ConvertUserToTokenResponseDTO() LoginResponseDTO {
-	return LoginResponseDTO{
-		TokenString: user.Token,
+func (u CompleteUserDTO) GetOneUserFromComplete() OneUserDto {
+	return OneUserDto{
+		Id:        u.Id,
+		FirstName: u.FirstName,
+		LastName:  u.LastName,
+		Email:     u.Email,
+		CreatedAt: u.CreatedAt,
+		Token:     u.Token,
 	}
 }

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"net/http"
+
 	"github.com/EricOgie/ope-be/domain/models"
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
 	responsedto "github.com/EricOgie/ope-be/dto/responseDto"
@@ -14,7 +16,7 @@ import (
 // Create client side port for User related resource
 type UserServicePort interface {
 	GetAllUsers() (*[]responsedto.UserDto, error)
-	RegisterUser(requestdto.RegisterRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
+	RegisterUser(requestdto.RegisterRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
 	VerifyAcc(requestdto.VerifyRequest) (*responsedto.LoginResponseDTO, *ericerrors.EricError)
 	Login(requestdto.LoginRequest) (*responsedto.OneUserDto, *ericerrors.EricError)
 	CompleteLoginProcess(models.Claim) (*responsedto.CompleteUserDTO, *ericerrors.EricError)
@@ -34,7 +36,7 @@ func NewUserService(repo models.UserRepositoryPort) UserService {
 }
 
 // Plug userService to UserServicePort via RegisterUser interface implementation
-func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.OneUserDto, *ericerrors.EricError) {
+func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError) {
 	// Validate request
 	err := req.ValidateRequest()
 	if err != nil {
@@ -46,10 +48,11 @@ func (s UserService) RegisterUser(req requestdto.RegisterRequest) (*responsedto.
 	if err != nil {
 		return nil, err
 	}
-	// Add signed token to user struct and return
-	userResponseDTOWithToken, resDTOWithToken := getUserWithToken(newUser)
-	utils.SendVerificationMail(resDTOWithToken, userResponseDTOWithToken.Token)
-	return &userResponseDTOWithToken, nil
+	// create a userDTO with token and otp
+	userDTO := getDTOWithTokenAndOTP(newUser, "register")
+	utils.SendVerificationMail(userDTO)
+	plainResponse := responsedto.PlainResponseDTO{Code: http.StatusOK, Message: konstants.MSG_REG}
+	return &plainResponse, nil
 }
 
 func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.LoginResponseDTO, *ericerrors.EricError) {
@@ -74,11 +77,14 @@ func (s UserService) Login(req requestdto.LoginRequest) (*responsedto.LoginRespo
 		return nil, ericerrors.NewCredentialError(konstants.CREDENTIAL_ERR)
 	}
 	// Construct responseDTOWithToken and responseWithOTP
-	userDTOWithToken, userDTOWithOTP := getUserWithToken(dBUser)
-	// Since all is well, send 2FA otp to user
-	utils.SendOTP(userDTOWithOTP)
-	loginResponseDTO := userDTOWithToken.ConvertUserToTokenResponseDTO()
+	userDTO := getDTOWithTokenAndOTP(dBUser, "login")
 
+	// Since all is well, send 2FA otp to user
+	utils.SendOTP(userDTO)
+	loginResponseDTO := responsedto.LoginResponseDTO{
+		Message:     "Check Mail For Login OTP",
+		TokenString: userDTO.Token}
+	// return appropriate response
 	return &loginResponseDTO, nil
 }
 
@@ -114,11 +120,9 @@ func (s UserService) CompleteLoginProcess(claim models.Claim) (*responsedto.Comp
 		return nil, err
 	}
 	// Generate Token
-	tok := security.GeneTokenFromCompleteDTO(*result)
+	userDTO := getDTOWithTokenAndOTP(result, "complete-login")
 	// Convert result to CompleteUser DTO
-	cUserDto := result.ConvertToCompleteUserDTO(tok)
-	return &cUserDto, nil
-
+	return &userDTO, nil
 }
 
 func (s UserService) RequestPasswordChange(req requestdto.PasswordChangeRequest) (*responsedto.OneUserDto, *ericerrors.EricError) {
@@ -137,10 +141,11 @@ func (s UserService) RequestPasswordChange(req requestdto.PasswordChangeRequest)
 	}
 
 	// Return Queried User with token that will be used for verication on confirm password change
-	userDTOWithToken, res := getUserWithToken(dBUser)
+	userDTO := getDTOWithTokenAndOTP(dBUser, "request")
+	oneUser := userDTO.GetOneUserFromComplete()
 	// Send Mail to user
-	utils.SendRequestMail(res)
-	return &userDTOWithToken, nil
+	utils.SendRequestMail(userDTO)
+	return &oneUser, nil
 
 }
 

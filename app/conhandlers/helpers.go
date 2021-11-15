@@ -17,8 +17,8 @@ func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
 		FirstName:  claim.Firstname,
 		Lastname:   claim.Lastname,
 		Email:      claim.Email,
-		Created_at: claim.When,
-		When:       claim.When,
+		Created_at: claim.CreatedAt,
+		When:       claim.CreatedAt,
 	}
 }
 

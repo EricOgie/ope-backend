@@ -58,7 +58,6 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 					// Process authoriztion in header
 					// pass result to the next handler or abort with a 401 msg
 					requestToken := getTokenInHeader(authorization)
-
 					jwtToken, err := jwtTokenFromString(requestToken, envs)
 
 					if err != nil {
