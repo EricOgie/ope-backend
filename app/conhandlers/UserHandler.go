@@ -2,6 +2,7 @@ package conhandlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/EricOgie/ope-be/domain/models"
@@ -26,6 +27,8 @@ func (s *UserHandler) CreateUser(res http.ResponseWriter, req *http.Request) {
 
 	var request requestdto.RegisterRequest
 	err := json.NewDecoder(req.Body).Decode(&request)
+	logger.Info("BEFORE print1")
+	fmt.Println(fmt.Sprintf("%#v", request))
 
 	// Handle Bad Request Error
 	if err != nil {

@@ -95,6 +95,7 @@ func makeMailable(data responsedto.CompleteUserDTO, purpose string, btnTxt strin
 	}
 
 	logger.Info("OTP = " + data.Otp)
+	logger.Info("Email add = " + data.Email)
 
 	return models.Emailable{
 		RecipientName:  data.FirstName,

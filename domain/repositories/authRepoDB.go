@@ -59,6 +59,10 @@ func (db UserRepositoryDB) Create(u models.User) (*models.CompleteUser, *ericerr
 		logger.Info("User with email, " + u.Email + " is registered prior ")
 		return nil, &ericerrors.EricError{Code: 403, Message: konstants.MSG_403}
 	}
+
+	logger.Info("user password =" + u.Password)
+	logger.Info("user email =" + u.Email)
+
 	// Define Query
 	insertQuery := "INSERT INTO users (firstname, lastname, email, phone, password, created_at) " +
 		"values(?, ?, ?, ?, ?, ?)"
