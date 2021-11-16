@@ -6,19 +6,6 @@ import (
 	"github.com/EricOgie/ope-be/security"
 )
 
-//   ----------------------- PRIVATE METHOD ---------------------------- //
-// func getUserWithToken(user *models.CompleteUser) (responsedto.OneUserDto, responsedto.OneUserDtoWithOtp) {
-// 	// Gen OTP
-// 	otp := security.GenerateOTP()
-// 	// Construct UserDTOwithOTP from user
-// 	userDTOWithOTP := user.ConvertToOneUserDtoWithOtp(otp)
-// 	// Gen Token
-// 	token := security.GenerateToken(userDTOWithOTP)
-// 	// Contruct UserDTOwithToken
-// 	userResponseDTOWithToken := user.ConvertToOneUserDto(token) //user.ConvertToOneUserDto(token)
-
-// 	return userResponseDTOWithToken, userDTOWithOTP
-// }
 var purposeList = []string{"request", "login"}
 
 func OTPNeeded(purpose string) bool {

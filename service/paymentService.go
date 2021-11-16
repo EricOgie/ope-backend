@@ -12,6 +12,7 @@ import (
 
 type PaymentServicePort interface {
 	FundWallet(requestdto.UserPayRequest, models.Claim) *responsedto.FlutterResponseDTO
+	CompleteFunding(requestdto.CompleteWalletRequest) (*responsedto.WalletDTO, *ericerrors.EricError)
 }
 type PaymentService struct {
 	repo models.FundReopositoryPort
@@ -38,4 +39,17 @@ func (payService PaymentService) FundWallet(userPayReq requestdto.UserPayRequest
 	result.Token = security.GenPaymentToken(&result.PaymentBody)
 	// Return correct response
 	return &result, nil
+}
+
+// CompleteFunding completes the funding workflow. It persist the amount paid to Ope DB.
+// It takes requestdto.CompleteWalletRequest and spills responsedto.WalletDTO, ericerrors.EricError
+func (payService PaymentService) CompleteFunding(req requestdto.CompleteWalletRequest) (*responsedto.WalletDTO, *ericerrors.EricError) {
+	// Note: Validation checks for this is done in the handler because of the sensitivity of the operation
+	payload := models.CompleteFunding{TxRef: req.TxRef, Wallet: req.Wallet, Amount: req.Amount}
+	res, err := payService.repo.CompletWalletFunding(payload)
+	if err != nil {
+		logger.Error(konstants.ERR + err.Message)
+		return nil, err
+	}
+	return res, nil
 }

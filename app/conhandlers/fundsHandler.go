@@ -6,7 +6,6 @@ import (
 
 	"github.com/EricOgie/ope-be/domain/models"
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
-	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/konstants"
 	response "github.com/EricOgie/ope-be/responses"
 	"github.com/EricOgie/ope-be/service"
@@ -23,14 +22,36 @@ func (handler FundHandler) FundUserWallet(res http.ResponseWriter, req *http.Req
 	var request requestdto.UserPayRequest
 	err := json.NewDecoder(req.Body).Decode(&request)
 	if err != nil {
-		// end process and send 400 error code to client
-		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
-		response.ServeResponse(konstants.ERR, "", res, eError)
+		handleBadRequest(res)
 	}
-
 	// call service
 	result, rErr := handler.Service.FundWallet(request, claim)
-
 	// Pass response to response layer to serve the appropriate response
-	response.ServeResponse("FultterWave Response", result, res, rErr)
+	response.ServeResponse("FultterWave", result, res, rErr)
+}
+
+//
+func (handler FundHandler) CompleteFundingFlow(res http.ResponseWriter, req *http.Request) {
+
+	// Retreve claim and cast to payment claim structS
+	claim, _ := req.Context().Value(konstants.DT_KEY).(models.PaymentClaim)
+	var request requestdto.CompleteWalletRequest
+	err := json.NewDecoder(req.Body).Decode(&request)
+
+	if err != nil {
+		handleBadRequest(res)
+	}
+	// vallidate request
+	isvalidRe := request.IsValidAmount(claim) && request.IsValidAmount(claim) && request.IsValidTxRef(claim)
+	if !isvalidRe {
+		handleBadRequest(res)
+		return
+	}
+
+	result, eErr := handler.Service.CompleteFunding(request)
+	if eErr != nil {
+		response.ServeResponse(konstants.ERR, "", res, eErr)
+	}
+
+	response.ServeResponse("Wallet", result, res, eErr)
 }

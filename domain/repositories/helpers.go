@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"database/sql"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -10,6 +12,7 @@ import (
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
 	"github.com/EricOgie/ope-be/security"
+	"github.com/jmoiron/sqlx"
 )
 
 // ---------------------- PRIVATE METHODS ------------------------//
@@ -92,4 +95,48 @@ func UserId(email string, db UserRepositoryDB) int32 {
 
 	logger.Info("USERID = " + strconv.Itoa(int(userid)))
 	return userid
+}
+
+//
+func getWallet(add string, db *sqlx.DB) models.Wallet {
+	var wal models.Wallet
+	sqlQ := "SELECT id, amount, address FROM wallet WHERE address = ?"
+	err := db.Get(&wal, sqlQ, add)
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		log.Panic(err)
+	}
+
+	return wal
+}
+
+func hasBeenRedeemed(tx_ref string, db *sqlx.DB) bool {
+	sqlQ := "SELECT id FROM transactions WHERE tx_ref = ?"
+	var transaction models.Transactions
+	err := db.Get(&transaction, sqlQ, tx_ref)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false
+		} else {
+			return true
+		}
+
+	}
+	return true
+}
+
+func recordTx(tx_ref string, db *sqlx.DB) *error {
+	sqlQ := "INSERT INTO transactions (tx_ref) Values (?)"
+
+	res, err := db.Exec(sqlQ, tx_ref)
+
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return &err
+	}
+	id, _ := res.LastInsertId()
+
+	logger.Info("TX-id: " + strconv.Itoa(int(id)) + "has been recorded")
+	return nil
 }

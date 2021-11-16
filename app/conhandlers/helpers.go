@@ -7,8 +7,10 @@ import (
 
 	"github.com/EricOgie/ope-be/domain/models"
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
+	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
+	response "github.com/EricOgie/ope-be/responses"
 )
 
 func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
@@ -43,4 +45,9 @@ func IsOtpValid(otp int) bool {
 
 type PWord struct {
 	Password string
+}
+
+func handleBadRequest(res http.ResponseWriter) {
+	eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
+	response.ServeResponse(konstants.ERR, "", res, eError)
 }

@@ -63,6 +63,7 @@ func StartApp() {
 	router.HandleFunc("/show-market", marketH.FetchMarketState).Methods(http.MethodGet).Name("Market")
 
 	router.HandleFunc("/fund-wallet", fundsH.FundUserWallet).Methods(http.MethodPost).Name("Fund-Wallet")
+	router.HandleFunc("/complete-funding", fundsH.CompleteFundingFlow).Methods(http.MethodPatch).Name("Complete-Funding")
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)

@@ -67,7 +67,6 @@ func (db UserRepositoryDB) Create(u models.User) (*models.CompleteUser, *ericerr
 	insertQuery := "INSERT INTO users (firstname, lastname, email, phone, password, created_at) " +
 		"values(?, ?, ?, ?, ?, ?)"
 	// Hash User password
-	logger.Info("PASS=" + u.Password)
 	hashedPword := security.GenHashedPwd(u.Password)
 	// Execute query
 	result, err := db.client.Exec(insertQuery, u.FirstName,

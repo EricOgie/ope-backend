@@ -30,6 +30,11 @@ type Customizations struct {
 	Logo        string `json:"logo"`
 }
 
+type Transactions struct {
+	Id    int    `db:"id"`
+	TxRef string `db:"tx_ref"`
+}
+
 func (p Payment) ConvertToFlutterResponseDTO() responsedto.FlutterResponseDTO {
 	return responsedto.FlutterResponseDTO{
 		Tx_Ref:         p.Tx_Ref,
