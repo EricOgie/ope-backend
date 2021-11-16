@@ -11,26 +11,26 @@ import (
 func GenerateToken(payload responsedto.OneUserDtoWithOtp) string {
 	config := utils.LoadConfig(".")
 	claim := genUserClaim(payload)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
-
-	signedToken, err := token.SignedString([]byte(config.SigningKey))
-	// Handle token error siginig
-	if err != nil {
-		logger.Error("Failed To Sign Token. Error: " + err.Error())
-		return ""
-	} else {
-		return signedToken
-	}
+	return makeToken(claim, config)
 }
 
 // GenerateToken takes responsedto.OneUserDto as aurg and return a string crtographed token
 func GeneTokenFromCompleteDTO(payload *responsedto.CompleteUserDTO) string {
 	config := utils.LoadConfig(".")
 	claim := genUserClaimFromCompleteUserDTO(payload)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
+	return makeToken(claim, config)
+}
 
+func GenPaymentToken(payload *responsedto.FlutterResponseDTO) string {
+	config := utils.LoadConfig(".")
+	claim := genPaymentClaim(payload)
+	return makeToken(claim, config)
+}
+
+// Helpers func
+func makeToken(claim jwt.Claims, config utils.Config) string {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	signedToken, err := token.SignedString([]byte(config.SigningKey))
-	// Handle token error siginig
 	if err != nil {
 		logger.Error("Failed To Sign Token. Error: " + err.Error())
 		return ""

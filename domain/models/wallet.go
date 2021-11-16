@@ -1,6 +1,8 @@
 package models
 
-import "github.com/EricOgie/ope-be/ericerrors"
+import (
+	responsedto "github.com/EricOgie/ope-be/dto/responseDto"
+)
 
 type Wallet struct {
 	Id      int64   `db:"id" json:"id"`
@@ -14,5 +16,5 @@ type Fund struct {
 }
 
 type FundReopositoryPort interface {
-	FundWallet(Fund) (*Wallet, *ericerrors.EricError)
+	FundWallet(Payment) responsedto.PaymentInitRespnse
 }

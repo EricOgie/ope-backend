@@ -122,4 +122,6 @@ const (
 	SUBJECT_VERIFY_ACC      string = "Verify Your Ope Account"
 	SUBJECT_OTP             string = "OTP"
 	SUBJECT_PASSWORD_CHANGE string = "Change Password"
+
+	PAY_VALIDATION_ERR_MSG string = "Amount >= 5000 & PaymentOption = Card & Curreny = NG"
 )

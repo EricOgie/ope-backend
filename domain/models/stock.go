@@ -2,9 +2,6 @@ package models
 
 import (
 	"encoding/json"
-	"fmt"
-
-	"github.com/EricOgie/ope-be/logger"
 )
 
 type Stock struct {
@@ -18,8 +15,7 @@ type Stock struct {
 }
 
 func MakeCompleteUser(claim Claim, stocks []Stock) CompleteUser {
-	logger.Info("JUST TO SHOW BEFORE")
-	fmt.Println(fmt.Sprintf("%#v", claim.BankAccount))
+
 	var acc BankAccount
 	var wal Wallet
 	valInJson, _ := json.Marshal(claim.BankAccount)

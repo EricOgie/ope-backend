@@ -12,7 +12,6 @@ import (
 )
 
 func genUserClaim(payload responsedto.OneUserDtoWithOtp) jwt.MapClaims {
-	logger.Info("fircst gen")
 	return jwt.MapClaims{
 		"id":        payload.Id,
 		"firstname": payload.FirstName,
@@ -25,7 +24,7 @@ func genUserClaim(payload responsedto.OneUserDtoWithOtp) jwt.MapClaims {
 }
 
 func genUserClaimFromCompleteUserDTO(payload *responsedto.CompleteUserDTO) jwt.MapClaims {
-	logger.Info("2nd gen")
+
 	otp, err := strconv.Atoi(payload.Otp)
 	if err != nil {
 		logger.Error("CONVERSION ERR")
@@ -47,5 +46,28 @@ func genUserClaimFromCompleteUserDTO(payload *responsedto.CompleteUserDTO) jwt.M
 			"amount":  fmt.Sprintf("%f", payload.Wallet.Amount),
 		},
 		"portfolio": payload.Portfolio,
+	}
+}
+
+func genPaymentClaim(p *responsedto.FlutterResponseDTO) jwt.Claims {
+	return jwt.MapClaims{
+		"tx_ref":         p.Tx_Ref,
+		"amount":         p.Amount,
+		"currency":       p.Currency,
+		"payment_option": p.PaymentOption,
+		"meta": map[string]string{
+			"cusumer_id":   strconv.Itoa(p.Meta.ConsumerId),
+			"consumer_mac": p.Meta.ConsumerMac,
+		},
+		"customer": map[string]string{
+			"email": p.Customer.Name,
+			"phone": p.Customer.PhoneNumber,
+			"name":  p.Customer.Name,
+		},
+		"customization": map[string]string{
+			"title": p.Customizations.Title,
+			"desc":  p.Customizations.Description,
+			"logo":  p.Customizations.Logo,
+		},
 	}
 }
