@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/EricOgie/ope-be/domain/models"
+	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/logger"
 )
 
@@ -23,6 +24,12 @@ type CompleteWalletRequest struct {
 	TxRef  string `json:"tx_ref"`
 	Wallet string `json:"wallet"`
 	Amount string `json:"amount"`
+}
+
+type BankRequest struct {
+	UserId        string `json:"user_id"`
+	BankName      string `json:"bank_name"`
+	AccountNumber string `json:"account_no"`
 }
 
 // MakePaymenr is a method implementation on UserPayRequest that converts UserPayRequest to models.Payment struct
@@ -52,9 +59,31 @@ func (c CompleteWalletRequest) ConvertToCompletFunding() models.CompleteFunding 
 	}
 }
 
+// Convert BankRequest to Models.BankAccount struct
+func (b BankRequest) ConvertToBankAccount() models.BankAccount {
+	return models.BankAccount{UserId: b.UserId, AccountNumber: b.AccountNumber, AccountName: b.BankName}
+}
+
 //
 func (userPayReq UserPayRequest) IsValidateRequest() bool {
 	return userPayReq.IsAmountIsUpto5000() && userPayReq.IsCardOption() && userPayReq.IsNaira()
+}
+
+func (req BankRequest) ValidateBankRequest() *ericerrors.EricError {
+
+	if !req.isValidId() {
+		return ericerrors.New422Error("Invalid user Id")
+	}
+
+	if !req.isValidAccountNumber() {
+		return ericerrors.New422Error("Invalid Account Number")
+	}
+
+	if !req.isValidBankName() {
+		return ericerrors.New422Error("Invalid Bank Name")
+	}
+
+	return nil
 }
 
 func gencode() string {
@@ -75,7 +104,7 @@ func (userPayReq UserPayRequest) IsNaira() bool {
 //
 func (userPayReq UserPayRequest) IsAmountIsUpto5000() bool {
 	ammount, _ := strconv.Atoi(userPayReq.Amount)
-	return ammount >= 5000
+	return ammount >= 1000
 }
 
 //
@@ -85,21 +114,31 @@ func (userPayReq UserPayRequest) IsCardOption() bool {
 
 //
 func (req CompleteWalletRequest) IsValidTxRef(claim models.PaymentClaim) bool {
-
-	logger.Info("a/b = " + req.TxRef + "/" + claim.TxRef)
 	return len(req.TxRef) >= 11 && req.TxRef == claim.TxRef
 }
 
 func (req CompleteWalletRequest) IsValidWallet() bool {
-	if len(req.Wallet) < 40 {
-		logger.Info("Wallet ERR")
-	}
 	return len(req.Wallet) > 40
 }
 
 func (req CompleteWalletRequest) IsValidAmount(claim models.PaymentClaim) bool {
-	if req.Amount != claim.Amount {
-		logger.Info("AMOUNT ERR, reqAout/claimAmount = " + req.Amount + "/" + claim.Amount)
-	}
 	return req.Amount == claim.Amount
+}
+
+func isDigit(value string) bool {
+	n, e := strconv.Atoi(value)
+	logger.Info("Acc No : " + strconv.Itoa(n))
+	return e == nil
+}
+
+func (r BankRequest) isValidId() bool {
+	return r.UserId != "0" && len(r.UserId) > 0
+}
+
+func (r BankRequest) isValidAccountNumber() bool {
+	return isDigit(r.AccountNumber) && len(r.AccountNumber) >= 10
+}
+
+func (r BankRequest) isValidBankName() bool {
+	return len(r.BankName) > 5
 }

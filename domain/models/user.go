@@ -67,6 +67,8 @@ type UserRepositoryPort interface {
 	CompleteLogin(Claim) (*CompleteUser, *ericerrors.EricError)
 	RequestPasswordChange(UserEmail) (*CompleteUser, *ericerrors.EricError)
 	ChangePassword(UserLogin) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
+	UpdateProfile(QueryUser) (*CompleteUser, *ericerrors.EricError)
+	UpdateBankAccount(BankAccount) (*responsedto.BankAccountDTO, *ericerrors.EricError)
 }
 
 /**
@@ -96,6 +98,17 @@ func (user CompleteUser) ConvertToCompleteUserDTO() responsedto.CompleteUserDTO 
 		Wallet:      responsedto.WalletDTO{Amount: user.Wallet.Amount, Address: user.Wallet.Address},
 		Token:       "",
 		Portfolio:   user.Portfolio,
+	}
+}
+
+func (user CompleteUser) ConvertToUserProfileDTO() responsedto.UserProfileDTO {
+	return responsedto.UserProfileDTO{
+		Id:          user.Id,
+		FirstName:   user.FirstName,
+		LastName:    user.LastName,
+		Email:       user.Email,
+		Phone:       user.Password,
+		BankAccount: responsedto.BankAccountDTO{AccountNo: user.BankAccount.AccountNumber, AccountName: user.BankAccount.AccountName},
 	}
 }
 

@@ -11,7 +11,12 @@ import (
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
 	response "github.com/EricOgie/ope-be/responses"
+	"github.com/gorilla/mux"
 )
+
+type PWord struct {
+	Password string
+}
 
 func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
 	return requestdto.VerifyRequest{
@@ -24,6 +29,7 @@ func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
 	}
 }
 
+//
 func IsOTPTheSame(req *http.Request, claim models.Claim) bool {
 	var reqOTP requestdto.OTPDto
 	err := json.NewDecoder(req.Body).Decode(&reqOTP)
@@ -38,16 +44,34 @@ func IsOTPTheSame(req *http.Request, claim models.Claim) bool {
 
 }
 
+//
 func IsOtpValid(otp int) bool {
 	stV := strconv.Itoa(otp)
 	return len(stV) == 6
 }
 
-type PWord struct {
-	Password string
+//
+func handleBadRequest(res http.ResponseWriter) {
+	eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
+	response.ServeResponse(konstants.ERR, "", res, eError)
 }
 
-func handleBadRequest(res http.ResponseWriter) {
+//
+func getUserId(req *http.Request) int {
+	pathParams := mux.Vars(req)
+	userId := pathParams["userId"]
+	idAsInt, e := strconv.Atoi(userId)
+	if e != nil {
+		logger.Error(konstants.ERR + e.Error())
+	}
+
+	return idAsInt
+}
+
+//
+//
+func handleMarshallingErr(res http.ResponseWriter, err error) {
+	logger.Error(konstants.ERR_DECODE + err.Error())
 	eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
 	response.ServeResponse(konstants.ERR, "", res, eError)
 }

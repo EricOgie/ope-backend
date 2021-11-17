@@ -28,6 +28,8 @@ func needsAuthorization(routeName string) bool {
 		"Market":                  true,
 		"Fund-Wallet":             true,
 		"Complete-Funding":        true,
+		"Profile-Update":          true,
+		"Bank-Update":             true,
 	}
 	return auth[routeName]
 

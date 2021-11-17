@@ -22,6 +22,8 @@ type UserServicePort interface {
 	CompleteLoginProcess(models.Claim) (*responsedto.CompleteUserDTO, *ericerrors.EricError)
 	RequestPasswordChange(models.UserEmail) (*responsedto.OneUserDto, *ericerrors.EricError)
 	ChangePassword(requestdto.LoginRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
+	ProfileUpdate(requestdto.UserDetailsRequest) (*responsedto.UserProfileDTO, *ericerrors.EricError)
+	SetBankDetails(requestdto.BankRequest) (*responsedto.BankAccountDTO, *ericerrors.EricError)
 }
 
 // Define UserService as biz end of User domain
@@ -163,4 +165,37 @@ func (s UserService) ChangePassword(userReq requestdto.LoginRequest) (*responsed
 		return nil, err
 	}
 	return res, nil
+}
+
+func (s UserService) ProfileUpdate(req requestdto.UserDetailsRequest) (*responsedto.UserProfileDTO, *ericerrors.EricError) {
+	qUser := req.BuildQueryUser()
+	result, err := s.repo.UpdateProfile(qUser)
+
+	// Handle possible Errors
+	if err != nil {
+		logger.Error(konstants.ERR + err.Message)
+		return nil, err
+	}
+
+	userDTO := result.ConvertToUserProfileDTO()
+	return &userDTO, nil
+}
+
+func (s UserService) SetBankDetails(bR requestdto.BankRequest) (*responsedto.BankAccountDTO, *ericerrors.EricError) {
+	validationErr := bR.ValidateBankRequest()
+
+	if validationErr != nil {
+		logger.Error(konstants.REQ_VALIDITY_ERR + validationErr.Message)
+		return nil, validationErr
+	}
+	// Construct Bank Acc
+	bancAcc := models.BankAccount{UserId: bR.UserId, AccountNumber: bR.AccountNumber, AccountName: bR.BankName}
+	result, err := s.repo.UpdateBankAccount(bancAcc)
+	// Handle possible Errors
+	if err != nil {
+		logger.Error(konstants.ERR + err.Message)
+		return nil, err
+	}
+
+	return result, nil
 }

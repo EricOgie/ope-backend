@@ -46,7 +46,7 @@ func StartApp() {
 	// with error handling
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
-	// port := os.Getenv("PORT")
+
 	// PUBLIC ROUTES
 	router.HandleFunc("/", controllers.Greet).Methods(http.MethodGet).Name("Home")
 	router.HandleFunc("/ping", controllers.Ping).Methods(http.MethodGet).Name("Ping")
@@ -60,6 +60,9 @@ func StartApp() {
 	router.HandleFunc("/users", authH.GetAllUsers).Methods(http.MethodGet).Name("GetAllUser")
 	router.HandleFunc("/complete-login", authH.CompleteLoginProcess).Methods(http.MethodPost).Name("Complete-Login")
 	router.HandleFunc("/change-password", authH.ChangePassword).Methods(http.MethodPatch).Name("Change-Password")
+	router.HandleFunc("/update-profile/{userId:[0-9]+}", authH.UpdateUserProfile).Methods(http.MethodPatch).Name("Profile-Update")
+	router.HandleFunc("/user/bankupdate/{userId:[0-9]+}", authH.UpdateUserBank).Methods(http.MethodPatch).Name("Bank-Update")
+
 	router.HandleFunc("/show-market", marketH.FetchMarketState).Methods(http.MethodGet).Name("Market")
 
 	router.HandleFunc("/fund-wallet", fundsH.FundUserWallet).Methods(http.MethodPost).Name("Fund-Wallet")

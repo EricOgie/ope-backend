@@ -124,4 +124,8 @@ const (
 	SUBJECT_PASSWORD_CHANGE string = "Change Password"
 
 	PAY_VALIDATION_ERR_MSG string = "Amount >= 5000 & PaymentOption = Card & Curreny = NG"
+
+	ERR_FLOAT_CONV string = "Couldn't Make float64"
+	ERR_FRAUD      string = "Fraudulent transaction"
+	ERR_TRANS_REC  string = "DID NOT SAVE TRANSACTION"
 )

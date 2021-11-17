@@ -140,3 +140,14 @@ func recordTx(tx_ref string, db *sqlx.DB) *error {
 	logger.Info("TX-id: " + strconv.Itoa(int(id)) + "has been recorded")
 	return nil
 }
+
+func makeCompleteUser(u models.QueryUser) models.CompleteUser {
+	return models.CompleteUser{
+		Id:          u.Id,
+		FirstName:   u.FirstName,
+		LastName:    u.LastName,
+		Email:       u.Email,
+		Password:    u.Phone, // Using this field to pass along the user phone
+		BankAccount: models.BankAccount{UserId: u.Id, AccountNumber: u.AccountNo, AccountName: u.AccountName},
+	}
+}

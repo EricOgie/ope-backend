@@ -183,3 +183,40 @@ func (db UserRepositoryDB) ChangePassword(u models.UserLogin) (*responsedto.Plai
 	res := u.GetPlainResponseDTO(http.StatusOK, "Password Changed")
 	return &res, nil
 }
+
+func (db UserRepositoryDB) UpdateProfile(u models.QueryUser) (*models.CompleteUser, *ericerrors.EricError) {
+	userId, cErr := strconv.Atoi(u.Id)
+	if cErr != nil {
+		logger.Error(konstants.STRING_INT_ERR)
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+	query := "UPDATE users SET firstname = ?, lastname = ?, email = ?, phone = ?, account_no = ?, account_name = ? WHERE id = ?"
+	_, err := db.client.Exec(query, u.FirstName, u.LastName, u.Email, u.Phone, u.AccountNo, u.AccountName, userId)
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	// Construct CompleteUser
+	user := makeCompleteUser(u)
+	return &user, nil
+}
+
+func (db UserRepositoryDB) UpdateBankAccount(req models.BankAccount) (*responsedto.BankAccountDTO, *ericerrors.EricError) {
+	userId, cErr := strconv.Atoi(req.UserId)
+	if cErr != nil {
+		logger.Error(konstants.STRING_INT_ERR)
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	query := "UPDATE users SET account_no = ?, account_name = ? WHERE id = ?"
+	_, err := db.client.Exec(query, req.AccountNumber, req.AccountName, userId)
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	bank := responsedto.BankAccountDTO{AccountNo: req.AccountNumber, AccountName: req.AccountName}
+	return &bank, nil
+
+}

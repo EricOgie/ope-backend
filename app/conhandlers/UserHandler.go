@@ -3,6 +3,7 @@ package conhandlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/EricOgie/ope-be/domain/models"
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
@@ -128,4 +129,38 @@ func (s *UserHandler) ChangePassword(res http.ResponseWriter, req *http.Request)
 	UserCrendentials := requestdto.LoginRequest{Email: claim.Email, Password: pword.Password}
 	newUser, eError := s.Service.ChangePassword(UserCrendentials)
 	response.ServeResponse("Plain Response", newUser, res, eError)
+}
+
+func (s *UserHandler) UpdateUserProfile(res http.ResponseWriter, req *http.Request) {
+	idAsInt := getUserId(req)
+	var request requestdto.UserDetailsRequest
+
+	reqErr := json.NewDecoder(req.Body).Decode(&request)
+
+	if reqErr != nil {
+		logger.Error(konstants.ERR_DECODE + reqErr.Error())
+		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
+		response.ServeResponse(konstants.ERR, "", res, eError)
+	}
+
+	// Define the Id attribute of the request
+	request.Id = idAsInt
+	result, eError := s.Service.ProfileUpdate(request)
+	response.ServeResponse(konstants.USER, result, res, eError)
+
+}
+
+func (s *UserHandler) UpdateUserBank(res http.ResponseWriter, req *http.Request) {
+	userId := getUserId(req)
+	var request requestdto.BankRequest
+	jErr := json.NewDecoder(req.Body).Decode(&request)
+
+	if jErr != nil {
+		handleMarshallingErr(res, jErr)
+	} else {
+		request.UserId = strconv.Itoa(userId)
+		result, ericErr := s.Service.SetBankDetails(request)
+		response.ServeResponse("Account", result, res, ericErr)
+	}
+
 }

@@ -2,6 +2,7 @@ package requestdto
 
 import (
 	"net/mail"
+	"strconv"
 	"time"
 
 	"github.com/EricOgie/ope-be/domain/models"
@@ -17,6 +18,22 @@ type RegisterRequest struct {
 	Password  string `json:"password"`
 }
 
+type UserDetailsRequest struct {
+	Id        int    `json:"id"`
+	FirstName string `json:"firstname"`
+	LastName  string `json:"lastname"`
+	Email     string `json:"email"`
+	Phone     string `json:"phone"`
+	AccountNo string `json:"account_no"`
+	BankName  string `json:"bank_name"`
+}
+
+type BankAccountRequest struct {
+	UserId    int    `json:"user_id"`
+	AccountNo string `json:"account_no"`
+	BankName  string `json:"bank_name"`
+}
+
 // Helper to build User Sruct from RegisterRequest
 func BuildUser(r RegisterRequest) models.User {
 	return models.User{
@@ -28,6 +45,26 @@ func BuildUser(r RegisterRequest) models.User {
 		Password:  r.Password,
 		CreatedAt: time.Now().Format(konstants.T_FORMAT),
 		UpdatedAt: "",
+	}
+}
+
+func (u UserDetailsRequest) BuildQueryUser() models.QueryUser {
+	return models.QueryUser{
+		Id:          strconv.Itoa(u.Id),
+		FirstName:   u.FirstName,
+		LastName:    u.LastName,
+		Email:       u.Email,
+		Phone:       u.Phone,
+		AccountNo:   u.AccountNo,
+		AccountName: u.BankName,
+	}
+}
+
+func (b BankAccountRequest) BuildBankAccount() models.BankAccount {
+	return models.BankAccount{
+		UserId:        strconv.Itoa(b.UserId),
+		AccountNumber: b.AccountNo,
+		AccountName:   b.BankName,
 	}
 }
 

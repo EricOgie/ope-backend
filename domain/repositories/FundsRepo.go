@@ -32,25 +32,21 @@ func (repo FundsRepo) FundWallet(payment models.Payment) responsedto.PaymentInit
 //
 
 func (repo FundsRepo) CompletWalletFunding(funding models.CompleteFunding) (*responsedto.WalletDTO, *ericerrors.EricError) {
-
 	// Before Updated wallet, Check if transaction hasn't been redeemed
 	redeemed := hasBeenRedeemed(funding.TxRef, repo.db)
 	if redeemed {
-		logger.Error("Fraudulent transaction")
-		return nil, ericerrors.NewError(400, "Fraudulent transaction")
+		logger.Error(konstants.ERR_FRAUD)
+		return nil, ericerrors.NewError(400, konstants.ERR_FRAUD)
 	} else {
 		userWallet := getWallet(funding.Wallet, repo.db)
 		prevAmount := userWallet.Amount
 		value, Cerr := strconv.ParseFloat(funding.Amount, 64)
 		if Cerr != nil {
-			logger.Error("Couldn't Make float64")
+			logger.Error(konstants.ERR_FLOAT_CONV)
 		}
 		newAmount := prevAmount + value
-		// Prepare statement
 		query := "UPDATE wallet SET amount = ? WHERE id = ?"
-		// Hit DB
 		_, err := repo.db.Exec(query, newAmount, userWallet.Id)
-		// HAndle error case
 		if err != nil {
 			logger.Error(konstants.QUERY_ERR + err.Error())
 			return nil, ericerrors.New500Error(err.Error())
@@ -58,9 +54,8 @@ func (repo FundsRepo) CompletWalletFunding(funding models.CompleteFunding) (*res
 		// Record transaction and check if recorded
 		newErr := recordTx(funding.TxRef, repo.db)
 		if newErr != nil {
-			logger.Error("DID NOT SAVE TRANSACTION")
+			logger.Error(konstants.ERR_TRANS_REC)
 		}
-		// Return the appropriate response
 		wallet := responsedto.WalletDTO{Amount: newAmount, Address: userWallet.Address}
 		return &wallet, nil
 	}

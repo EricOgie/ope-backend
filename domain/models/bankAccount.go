@@ -1,13 +1,9 @@
 package models
 
 type BankAccount struct {
+	UserId        string `db:"user_id" json:"user_id"`
 	AccountNumber string `db:"account_name" json:"account_name"`
 	AccountName   string `db:"account_no" json:"account_no"`
-}
-
-type Bank struct {
-	AccountName   string
-	AccountNumber string
 }
 
 type QueryUser struct {
@@ -26,7 +22,6 @@ type QueryUser struct {
 
 // MakeAllInOneUserDTO function will output a complete user dTO with account, wallet and portfolio slice
 func (qUser QueryUser) MakeCompleteUserFromQueryUser() CompleteUser {
-
 	return CompleteUser{
 		Id:          qUser.Id,
 		FirstName:   qUser.FirstName,
