@@ -164,3 +164,12 @@ func (s *UserHandler) UpdateUserBank(res http.ResponseWriter, req *http.Request)
 	}
 
 }
+
+func (s *UserHandler) FindOneUser(res http.ResponseWriter, req *http.Request) {
+	// Extract claim from request and get user email
+	claim := req.Context().Value(konstants.DT_KEY).(models.Claim)
+	userEmail := claim.Email
+
+	result, err := s.Service.FetchOneUser(userEmail)
+	response.ServeResponse(konstants.USER, result, res, err)
+}

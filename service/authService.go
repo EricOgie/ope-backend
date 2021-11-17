@@ -24,6 +24,7 @@ type UserServicePort interface {
 	ChangePassword(requestdto.LoginRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
 	ProfileUpdate(requestdto.UserDetailsRequest) (*responsedto.UserProfileDTO, *ericerrors.EricError)
 	SetBankDetails(requestdto.BankRequest) (*responsedto.BankAccountDTO, *ericerrors.EricError)
+	FetchOneUser(string) (*responsedto.CompleteUserDTO, *ericerrors.EricError)
 }
 
 // Define UserService as biz end of User domain
@@ -198,4 +199,17 @@ func (s UserService) SetBankDetails(bR requestdto.BankRequest) (*responsedto.Ban
 	}
 
 	return result, nil
+}
+
+func (s UserService) FetchOneUser(email string) (*responsedto.CompleteUserDTO, *ericerrors.EricError) {
+	cUser, ericErr := s.repo.GetUser(email)
+
+	if ericErr != nil {
+		logger.Error(konstants.ERR + ericErr.Message)
+		return nil, ericErr
+	}
+
+	// Convert completeUser to completeUserDTO
+	userDTO := cUser.ConvertToCompleteUserDTO()
+	return &userDTO, nil
 }

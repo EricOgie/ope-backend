@@ -69,6 +69,7 @@ type UserRepositoryPort interface {
 	ChangePassword(UserLogin) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
 	UpdateProfile(QueryUser) (*CompleteUser, *ericerrors.EricError)
 	UpdateBankAccount(BankAccount) (*responsedto.BankAccountDTO, *ericerrors.EricError)
+	GetUser(string) (*CompleteUser, *ericerrors.EricError)
 }
 
 /**

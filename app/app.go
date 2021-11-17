@@ -62,6 +62,7 @@ func StartApp() {
 	router.HandleFunc("/change-password", authH.ChangePassword).Methods(http.MethodPatch).Name("Change-Password")
 	router.HandleFunc("/update-profile/{userId:[0-9]+}", authH.UpdateUserProfile).Methods(http.MethodPatch).Name("Profile-Update")
 	router.HandleFunc("/user/bankupdate/{userId:[0-9]+}", authH.UpdateUserBank).Methods(http.MethodPatch).Name("Bank-Update")
+	router.HandleFunc("/user/refresh", authH.FindOneUser).Methods(http.MethodGet).Name("Refresh")
 
 	router.HandleFunc("/show-market", marketH.FetchMarketState).Methods(http.MethodGet).Name("Market")
 

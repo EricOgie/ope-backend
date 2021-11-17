@@ -42,6 +42,20 @@ func runUserQueryWithEmail(userEmail string, db UserRepositoryDB) (*models.Compl
 	return &allInOne, nil
 }
 
+func fetcStocks(userId int, db UserRepositoryDB) (*[]models.Stock, *ericerrors.EricError) {
+	sqlQuery := "SELECT id, symbol, image, total_quantity, unit_price, equity_value, percentage_change FROM stocks WHERE user_id = ?"
+	userStocks := make([]models.Stock, 0)
+	// Query and marshal to slice of stock-struct
+	qErr := db.client.Select(&userStocks, sqlQuery, userId)
+
+	if qErr != nil {
+		logger.Error(konstants.QUERY_ERR + qErr.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	return &userStocks, nil
+}
+
 //
 func userIsRegistered(userEmail string, db UserRepositoryDB) bool {
 	querySQL := "SELECT  email FROM users WHERE email = ?"

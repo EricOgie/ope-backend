@@ -30,6 +30,7 @@ func needsAuthorization(routeName string) bool {
 		"Complete-Funding":        true,
 		"Profile-Update":          true,
 		"Bank-Update":             true,
+		"Refresh":                 true,
 	}
 	return auth[routeName]
 

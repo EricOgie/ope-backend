@@ -220,3 +220,25 @@ func (db UserRepositoryDB) UpdateBankAccount(req models.BankAccount) (*responsed
 	return &bank, nil
 
 }
+
+func (db UserRepositoryDB) GetUser(email string) (*models.CompleteUser, *ericerrors.EricError) {
+	userWithoutStocks, ericErr := runUserQueryWithEmail(email, db)
+
+	if ericErr != nil {
+		logger.Error(konstants.QUERY_ERR + ericErr.Message)
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	userId, _ := strconv.Atoi(userWithoutStocks.Id)
+	// Fetch user stocks
+	userStocks, eErr := fetcStocks(userId, db)
+
+	if eErr != nil {
+		logger.Error(konstants.QUERY_ERR + eErr.Message)
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	// Merge stocks to completeUser
+	userWithoutStocks.Portfolio = *userStocks
+	return userWithoutStocks, nil
+}
