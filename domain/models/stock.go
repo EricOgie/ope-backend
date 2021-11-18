@@ -40,6 +40,7 @@ func MakeCompleteUser(claim Claim, stocks []Stock) CompleteUser {
 		LastName:    claim.Lastname,
 		Email:       claim.Email,
 		CreatedAt:   claim.CreatedAt,
+		Holdings:    claim.Holdings,
 		BankAccount: acc,
 		Wallet:      wal,
 		Portfolio:   stocks,

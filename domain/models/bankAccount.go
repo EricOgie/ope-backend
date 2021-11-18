@@ -1,5 +1,9 @@
 package models
 
+import (
+	"fmt"
+)
+
 type BankAccount struct {
 	UserId        string `db:"user_id" json:"user_id"`
 	AccountNumber string `db:"account_name" json:"account_name"`
@@ -22,6 +26,7 @@ type QueryUser struct {
 
 // MakeAllInOneUserDTO function will output a complete user dTO with account, wallet and portfolio slice
 func (qUser QueryUser) MakeCompleteUserFromQueryUser() CompleteUser {
+	amount := fmt.Sprintf("%f", qUser.Amount)
 	return CompleteUser{
 		Id:          qUser.Id,
 		FirstName:   qUser.FirstName,
@@ -29,6 +34,7 @@ func (qUser QueryUser) MakeCompleteUserFromQueryUser() CompleteUser {
 		Email:       qUser.Email,
 		Password:    qUser.Password,
 		CreatedAt:   qUser.CreatedAt,
+		Holdings:    amount,
 		BankAccount: BankAccount{AccountName: qUser.AccountName, AccountNumber: qUser.AccountNo},
 		Wallet:      Wallet{Amount: qUser.Amount, Address: qUser.Address},
 	}

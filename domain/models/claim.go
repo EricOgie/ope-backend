@@ -13,6 +13,7 @@ type Claim struct {
 	Lastname    string
 	Email       string
 	CreatedAt   string
+	Holdings    string
 	BankAccount map[string]interface{}
 	Otp         int
 	Wallet      map[string]interface{}
@@ -37,6 +38,7 @@ func RetrieveClaim(claim jwt.MapClaims) Claim {
 		Firstname:   fmt.Sprintf("%v", claim["firstname"]),
 		Lastname:    fmt.Sprintf("%v", claim["lastname"]),
 		Email:       fmt.Sprintf("%v", claim["email"]),
+		Holdings:    fmt.Sprintf("%v", claim["holdings"]),
 		CreatedAt:   fmt.Sprintf("%v", claim["when"]),
 		BankAccount: claim["bank_account"].(map[string]interface{}),
 		Otp:         otpT,

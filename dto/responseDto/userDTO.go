@@ -12,11 +12,12 @@ type OneUserDto struct {
 }
 
 type CompleteUserDTO struct {
-	Id          string         `json:"user_id"`
-	FirstName   string         `json:"firstname" xml:"first_name"`
-	LastName    string         `json:"lastname" xml:"last_name"`
-	Email       string         `json:"email" xml:"email"`
-	CreatedAt   string         `db:"created_at" json:"created_at"`
+	Id          string `json:"user_id"`
+	FirstName   string `json:"firstname" xml:"first_name"`
+	LastName    string `json:"lastname" xml:"last_name"`
+	Email       string `json:"email" xml:"email"`
+	CreatedAt   string `db:"created_at" json:"created_at"`
+	Holdings    string
 	BankAccount BankAccountDTO `json:"bank_account"`
 	Otp         string         `json:"otp"`
 	Wallet      WalletDTO      `json:"wallet"`

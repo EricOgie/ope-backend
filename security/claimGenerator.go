@@ -35,6 +35,7 @@ func genUserClaimFromCompleteUserDTO(payload *responsedto.CompleteUserDTO) jwt.M
 		"lastname":  payload.LastName,
 		"email":     payload.Email,
 		"when":      payload.CreatedAt,
+		"holdings":  fmt.Sprintf("%f", payload.Wallet.Amount),
 		"exp":       time.Now().Add(time.Duration(konstants.EXP_TIME)).Unix(),
 		"bank_account": map[string]string{
 			"account_no":   payload.BankAccount.AccountNo,

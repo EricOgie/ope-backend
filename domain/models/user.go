@@ -1,6 +1,8 @@
 package models
 
 import (
+	"strconv"
+
 	responsedto "github.com/EricOgie/ope-be/dto/responseDto"
 	"github.com/EricOgie/ope-be/ericerrors"
 )
@@ -25,6 +27,7 @@ type CompleteUser struct {
 	Email       string `json:"email"`
 	Password    string `json:"password"`
 	CreatedAt   string `db:"created_at"`
+	Holdings    string `json:"holdings"`
 	BankAccount BankAccount
 	Wallet      Wallet
 	Portfolio   []Stock
@@ -89,6 +92,7 @@ func (user CompleteUser) ConvertToUserDto() responsedto.UserDto {
 }
 
 func (user CompleteUser) ConvertToCompleteUserDTO() responsedto.CompleteUserDTO {
+	amount, _ := strconv.ParseFloat(user.Holdings, 64)
 	return responsedto.CompleteUserDTO{
 		Id:          user.Id,
 		FirstName:   user.FirstName,
@@ -96,7 +100,7 @@ func (user CompleteUser) ConvertToCompleteUserDTO() responsedto.CompleteUserDTO 
 		Email:       user.Email,
 		CreatedAt:   user.CreatedAt,
 		BankAccount: responsedto.BankAccountDTO{AccountNo: user.BankAccount.AccountNumber, AccountName: user.BankAccount.AccountName},
-		Wallet:      responsedto.WalletDTO{Amount: user.Wallet.Amount, Address: user.Wallet.Address},
+		Wallet:      responsedto.WalletDTO{Amount: amount, Address: user.Wallet.Address},
 		Token:       "",
 		Portfolio:   user.Portfolio,
 	}
