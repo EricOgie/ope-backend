@@ -1,6 +1,9 @@
 package models
 
-import "github.com/EricOgie/ope-be/ericerrors"
+import (
+	responsedto "github.com/EricOgie/ope-be/dto/responseDto"
+	"github.com/EricOgie/ope-be/ericerrors"
+)
 
 type Share struct {
 	Id            string  `db:"id" json:"id"`
@@ -13,4 +16,5 @@ type Share struct {
 
 type MarketRepositoryPort interface {
 	ShowStockMarket() (*[]Share, *ericerrors.EricError)
+	BuyStock(ShareStock) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
 }

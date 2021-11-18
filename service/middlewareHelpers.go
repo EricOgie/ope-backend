@@ -31,6 +31,7 @@ func needsAuthorization(routeName string) bool {
 		"Profile-Update":          true,
 		"Bank-Update":             true,
 		"Refresh":                 true,
+		"Buy":                     true,
 	}
 	return auth[routeName]
 

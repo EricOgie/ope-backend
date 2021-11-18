@@ -18,6 +18,11 @@ type PWord struct {
 	Password string
 }
 
+func getUserIdAsString(req *http.Request) string {
+	urlVars := mux.Vars(req)
+	return urlVars["userId"]
+}
+
 func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
 	return requestdto.VerifyRequest{
 		Id:         claim.Id,

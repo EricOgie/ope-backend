@@ -14,6 +14,16 @@ type Stock struct {
 	PercentChange string `db:"percentage_change" json:"percentage_change"`
 }
 
+type ShareStock struct {
+	OwnerId       string
+	Symbol        string  `json:"symbol"`
+	ImageUrl      string  `json:"image_url"`
+	QUantity      string  ` json:"quantity"`
+	UnitPrice     float64 ` json:"unit_price"`
+	Equity        float64 `json:"equity_value"`
+	PercentChange float64 `json:"percentage_change"`
+}
+
 func MakeCompleteUser(claim Claim, stocks []Stock) CompleteUser {
 
 	var acc BankAccount

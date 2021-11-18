@@ -96,3 +96,50 @@ Payload:
 2 - Amount has to be the same as the one in the PAYMENT BODY
 
 3 - wallet is the user's wallet address. It will also be sent as "customer_mac" under the "meta" attribute of the PAYMENT-BODY
+
+RESPONSE
+
+```
+{
+    "status": "success",
+    "collection": "User",
+    "data": {
+        "user_id": "5",
+        "firstname": "Aghahowa",
+        "lastname": "Ogie",
+        "email": "gulephil44@gmail.com",
+        "created_at": "2021-11-15 00:52:42",
+        "bank_account": {
+            "account_no": "2085394463",
+            "bank_name": "Zenith Bank"
+        },
+        "otp": "",
+        "wallet": {
+            "amount": 54000,
+            "address": "$2a$06$WRKRFEsAP/meZbjMP1lkOuzyu7jtZ66cu8uH0dQZPKP3pwzDwYRvi"
+        },
+        "token": "",
+        "portfolio": [
+            {
+                "id": "5",
+                "symbol": "AWS",
+                "image_url": "https://buyshares.co.uk/wp-content/uploads/2020/07/Screenshot-2020-07-04-at-16.49.55.png",
+                "quantity": "120",
+                "unit_price": "1200",
+                "equity_value": "144000",
+                "percentage_change": "-9"
+            },
+            {
+                "id": "15",
+                "symbol": "TSLA",
+                "image_url": "https://g.foolcdn.com/art/companylogos/square/tsla.png",
+                "quantity": "25",
+                "unit_price": "800",
+                "equity_value": "20000",
+                "percentage_change": "-1"
+            }
+        ]
+    }
+}
+
+```

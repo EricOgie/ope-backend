@@ -65,6 +65,7 @@ func StartApp() {
 	router.HandleFunc("/user/refresh", authH.FindOneUser).Methods(http.MethodGet).Name("Refresh")
 
 	router.HandleFunc("/show-market", marketH.FetchMarketState).Methods(http.MethodGet).Name("Market")
+	router.HandleFunc("/buy-stock/{userId:[0-9]+}", marketH.BuyInvestment).Methods(http.MethodPost).Name("Buy")
 
 	router.HandleFunc("/fund-wallet", fundsH.FundUserWallet).Methods(http.MethodPost).Name("Fund-Wallet")
 	router.HandleFunc("/complete-funding", fundsH.CompleteFundingFlow).Methods(http.MethodPatch).Name("Complete-Funding")

@@ -8,7 +8,6 @@ import (
 
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
-	"github.com/EricOgie/ope-be/logger"
 )
 
 // To Fund wallet or any other payment, the input from client will be unmashalled into UserPayRequest
@@ -126,8 +125,7 @@ func (req CompleteWalletRequest) IsValidAmount(claim models.PaymentClaim) bool {
 }
 
 func isDigit(value string) bool {
-	n, e := strconv.Atoi(value)
-	logger.Info("Acc No : " + strconv.Itoa(n))
+	_, e := strconv.Atoi(value)
 	return e == nil
 }
 

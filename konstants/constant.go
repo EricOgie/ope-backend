@@ -128,4 +128,6 @@ const (
 	ERR_FLOAT_CONV string = "Couldn't Make float64"
 	ERR_FRAUD      string = "Fraudulent transaction"
 	ERR_TRANS_REC  string = "DID NOT SAVE TRANSACTION"
+
+	ERR_INSURFICIENCY string = "Insurficient Funds"
 )

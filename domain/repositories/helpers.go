@@ -155,6 +155,7 @@ func recordTx(tx_ref string, db *sqlx.DB) *error {
 	return nil
 }
 
+//
 func makeCompleteUser(u models.QueryUser) models.CompleteUser {
 	return models.CompleteUser{
 		Id:          u.Id,
@@ -164,4 +165,65 @@ func makeCompleteUser(u models.QueryUser) models.CompleteUser {
 		Password:    u.Phone, // Using this field to pass along the user phone
 		BankAccount: models.BankAccount{UserId: u.Id, AccountNumber: u.AccountNo, AccountName: u.AccountName},
 	}
+}
+
+//
+func getStockIfPresent(db MarketRepoDB, id string, symb string) (*models.Stock, *ericerrors.EricError) {
+	userId, _ := strconv.Atoi(id)
+	var stock models.Stock
+	query := "SELECT * FROM stocks WHERE user_id = ? AND symbol = ?"
+	err := db.client.Get(stock, query, userId, symb)
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	return &stock, nil
+}
+
+//
+func lessWalletAmount(db MarketRepoDB, s models.ShareStock) *ericerrors.EricError {
+	userId, _ := strconv.Atoi(s.OwnerId)
+	qty, _ := strconv.Atoi(s.QUantity)
+	amount := float64(qty) * s.UnitPrice
+	query := "UPDATE wallet SET amount = amount - ? WHERE user_id = ?"
+	_, err := db.client.Exec(query, amount, userId)
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		ericErr := ericerrors.NewError(http.StatusInternalServerError, konstants.MSG_500)
+		return ericErr
+	}
+	return nil
+}
+
+//
+
+func hasStockPrior(db MarketRepoDB, userId int, symbol string) bool {
+	var symb string
+	query := "SELECT symbol FROM stocks WHERE user_id = ? AND symbol = ?"
+	err := db.client.Get(&symb, query, userId, symbol)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return false
+		} else {
+			panic(err)
+		}
+	}
+
+	return true
+}
+
+//
+func checkSurficientFunds(db MarketRepoDB, amount float64, userId int) bool {
+	var walletFund float64
+	query := "SELECT amount FROM wallet WHERE user_id = ?"
+	err := db.client.Get(&walletFund, query, userId)
+
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return false
+	}
+
+	return walletFund > amount
 }
