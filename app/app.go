@@ -22,13 +22,13 @@ func StartApp() {
 	router := mux.NewRouter()
 	// Load config data
 	config := utils.LoadConfig(".")
-	// fmt.Println(fmt.Sprintf("%#v", config))
 	// Create an instance of DBClient
 	dbClient := databases.GetRDBClient(config)
 	// Defne a middleware
 	midWare := service.AuthMiddlewareService{repositories.MiddleWareRepo{dbClient}}
 	// Apply Auth Middleware on router
 	router.Use(midWare.AuthMiddleware(config))
+
 	// ------------------------   WIRING AND CONNECTIONS --------------------------
 	// userH := handlers.UserHandler{service.NewUserService(repositories.NewUserRepoStub())}
 	authH := conhandlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
@@ -41,9 +41,6 @@ func StartApp() {
 	credentials := handlers.AllowCredentials()
 	originsOk := handlers.AllowedOrigins([]string{"*"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "PATCH", "POST", "PUT", "OPTIONS"})
-
-	// start server listen
-	// with error handling
 
 	// ------------------------   ROUTE DEFINITIONS --------------------------
 

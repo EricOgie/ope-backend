@@ -97,7 +97,7 @@ Payload:
 
 3 - wallet is the user's wallet address. It will also be sent as "customer_mac" under the "meta" attribute of the PAYMENT-BODY
 
-RESPONSE
+SAMPLE RESPONSE
 
 ```
 {
@@ -140,6 +140,27 @@ RESPONSE
             }
         ]
     }
+}
+
+```
+
+BUY INVESTMENT
+
+Once a user's wallet has been successfully funded, it can then be used to buy investments in company stocks. The amount of stocks that can be bought is completely dependent on the user and the amount available in his/her wallet.
+
+To buy investment, the client should call the endpoint as detailed below.
+
+```
+URL : https://be-ope.herokuapp.com/buy-stock/{userId}
+METHODE TYPE: POST
+Authorization: Bearer token (Any valid user token that is not PAYMENT TOKEN)
+PAYLOAD:
+{
+    "symbol":"FB",
+	"image_url":"https://cdn3.vectorstock.com/i/1000x1000/02/37/logo-facebook-vector-31060237.jpg",
+	"quantity" : "2",
+	"unit_price" : 341.13,
+	"percentage_change": 1.57
 }
 
 ```
