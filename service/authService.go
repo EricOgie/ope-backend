@@ -176,10 +176,11 @@ func (s UserService) ProfileUpdate(req requestdto.UserDetailsRequest) (*response
 	if err != nil {
 		logger.Error(konstants.ERR + err.Message)
 		return nil, err
+	} else {
+		userDTO := result.ConvertToUserProfileDTO()
+		return &userDTO, nil
 	}
 
-	userDTO := result.ConvertToUserProfileDTO()
-	return &userDTO, nil
 }
 
 func (s UserService) SetBankDetails(bR requestdto.BankRequest) (*responsedto.BankAccountDTO, *ericerrors.EricError) {

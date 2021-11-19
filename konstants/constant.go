@@ -130,4 +130,7 @@ const (
 	ERR_TRANS_REC  string = "DID NOT SAVE TRANSACTION"
 
 	ERR_INSURFICIENCY string = "Insurficient Funds"
+
+	LOAN_OPEN     string = "open"
+	LOAN_INACTIVE string = "This loan has been closed"
 )
