@@ -23,6 +23,11 @@ func getUserIdAsString(req *http.Request) string {
 	return urlVars["userId"]
 }
 
+func getLoanIdAsString(req *http.Request) string {
+	urlVars := mux.Vars(req)
+	return urlVars["loanId"]
+}
+
 func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
 	return requestdto.VerifyRequest{
 		Id:         claim.Id,
@@ -66,6 +71,18 @@ func getUserId(req *http.Request) int {
 	pathParams := mux.Vars(req)
 	userId := pathParams["userId"]
 	idAsInt, e := strconv.Atoi(userId)
+	if e != nil {
+		logger.Error(konstants.ERR + e.Error())
+	}
+
+	return idAsInt
+}
+
+//
+func getLoanId(req *http.Request) int {
+	pathParams := mux.Vars(req)
+	loanId := pathParams["loanId"]
+	idAsInt, e := strconv.Atoi(loanId)
 	if e != nil {
 		logger.Error(konstants.ERR + e.Error())
 	}

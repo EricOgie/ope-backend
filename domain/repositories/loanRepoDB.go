@@ -55,10 +55,10 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 }
 
 //
-func (db LoanRepo) FetchLoans(userId int) (*[]models.Loan, *ericerrors.EricError) {
+func (db LoanRepo) FetchLoans(userId int) (*[]models.QueryLoan, *ericerrors.EricError) {
 	query := "SELECT id, amount, paid, package, duration, status, created_at FROM loans WHERE user_id = ?"
 
-	loans := make([]models.Loan, 0)
+	loans := make([]models.QueryLoan, 0)
 	qErr := db.Client.Select(&loans, query, userId)
 
 	if qErr != nil {
@@ -119,7 +119,9 @@ func (db LoanRepo) PayLoan(pay models.LoanPayment) (*responsedto.RepaymentResDTO
 }
 
 func (db LoanRepo) GetInstallments(loanId int) (*[]models.Querypayment, *ericerrors.EricError) {
+
 	installments := make([]models.Querypayment, 0)
+
 	query := "SELECT repayments.id, repayments.payment, repayments.balance, loans.amount, repayments.created_at" +
 		" FROM repayments INNER JOIN loans ON repayments.loan_id = loans.id WHERE repayments.loan_id = ?"
 

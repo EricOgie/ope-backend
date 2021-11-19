@@ -12,7 +12,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 )
 
-// This will check the active or in focus route if listed among the authenticatable routes
+// This will check the active or in focus route if listed among the "authenticatable" routes
 func needsAuthorization(routeName string) bool {
 	auth := map[string]bool{
 		"Home":                    false,
@@ -32,6 +32,10 @@ func needsAuthorization(routeName string) bool {
 		"Bank-Update":             true,
 		"Refresh":                 true,
 		"Buy":                     true,
+		"Request-Loan":            true,
+		"Loans":                   true,
+		"Repay":                   true,
+		"Get-Payments":            true,
 	}
 	return auth[routeName]
 

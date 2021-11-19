@@ -34,6 +34,7 @@ func StartApp() {
 	authH := conhandlers.UserHandler{service.NewUserService(repositories.NewUserRepoDB(dbClient, config))}
 	marketH := conhandlers.MarkHandler{service.MarketService{repositories.NewMarketRepoDB(dbClient, config)}}
 	fundsH := conhandlers.FundHandler{service.NewPaymentService(repositories.NewFundsRepo(dbClient, config))}
+	loanH := conhandlers.LoanHandler{service.NewLoanService(repositories.NewLoanRepo(dbClient, config))}
 
 	// Define and include cors handling strategy
 	// Cors strategy is currently using a wildcard now. This should change to a selected orrigins when in production
@@ -68,6 +69,12 @@ func StartApp() {
 	// ----- Wallet Related routes
 	router.HandleFunc("/fund-wallet", fundsH.FundUserWallet).Methods(http.MethodPost).Name("Fund-Wallet")
 	router.HandleFunc("/complete-funding", fundsH.CompleteFundingFlow).Methods(http.MethodPatch).Name("Complete-Funding")
+
+	//  ---- Loan Related Routes
+	router.HandleFunc("/loan/request", loanH.RequestLoan).Methods(http.MethodPost).Name("Request-Loan")
+	router.HandleFunc("/loans/{userId:[1-9]+}", loanH.GetAllUserLoans).Methods(http.MethodGet).Name("Loans")
+	router.HandleFunc("/payment/loan/{loanId:[1-9]+}/user/{userId:[1-9]+}/", loanH.RePayInInstallment).Methods("POST").Name("Repay")
+	router.HandleFunc("/payment/{loanId:[1-9]+}", loanH.GetLoanPayments).Methods(http.MethodGet).Name("Get-Payments")
 
 	// Start server and log error should ther be one
 	logger.Info(konstants.MSG_START + " Address and Port set to " + config.ServerAddress)

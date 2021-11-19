@@ -39,6 +39,16 @@ type Querypayment struct {
 	Date    string  `db:"created_at" json:"date"`
 }
 
+type QueryLoan struct {
+	Id        int     `db:"id" json:"id"`
+	Amount    float64 `db:"amount" json:"amount"`
+	Paid      float64 `db:"paid" json:"paid"`
+	Package   string  `db:"package" json:"package"`
+	Duration  string  `db:"duration" json:"duration"`
+	Status    string  `db:"status" json:"status"`
+	CreatedAt string  `db:"created_at" json:"created_at"`
+}
+
 type LoanPayment struct {
 	LoanId    int     `json:"loan_id"`
 	UserId    int     `json:"user_id"`
@@ -48,9 +58,9 @@ type LoanPayment struct {
 
 type LoanRepositoryPort interface {
 	TakeLoan(Loan) (*responsedto.LoanResDTO, *ericerrors.EricError)
-	FetchLoans(int) (*[]Loan, *ericerrors.EricError)
+	FetchLoans(int) (*[]QueryLoan, *ericerrors.EricError)
 	PayLoan(LoanPayment) (*responsedto.RepaymentResDTO, *ericerrors.EricError)
-	GetInstallments() (*[]Querypayment, *ericerrors.EricError)
+	GetInstallments(int) (*[]Querypayment, *ericerrors.EricError)
 }
 
 //
