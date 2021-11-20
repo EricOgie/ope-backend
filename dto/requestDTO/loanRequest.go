@@ -38,7 +38,7 @@ func (req LoanRequest) ConvertToLoan() models.Loan {
 	return models.Loan{
 		UserId:    userId,
 		Amount:    req.Amount,
-		Package:   req.Package,
+		Package:   req.Package + " Per Month",
 		Duration:  req.Duration,
 		CreatedAt: time.Now().String(),
 	}

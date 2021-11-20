@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"strconv"
+
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
@@ -16,9 +18,11 @@ type MiddleWareRepo struct {
 }
 
 func (repo MiddleWareRepo) IsAuthorized(claim models.Claim) bool {
-	querySQL := "SELECT id, firstname, lastname, email, phone, created_at FROM users WHERE email = ?"
+	id, _ := strconv.Atoi(claim.Id)
+
+	querySQL := "SELECT id, firstname, lastname, email, phone, created_at FROM users WHERE id = ?"
 	var user models.User
-	err := repo.Client.Get(&user, querySQL, claim.Email)
+	err := repo.Client.Get(&user, querySQL, id)
 	// Check error state and respond accordingly
 	if err != nil {
 		logger.Error(konstants.QUERY_ERR + err.Error())
@@ -32,10 +36,10 @@ func (repo MiddleWareRepo) IsAuthorized(claim models.Claim) bool {
 //  ----------------------------- PRIVATE METHOD ------------------------ //
 
 func isValidAuth(c models.Claim, u models.User) bool {
-	if c.Firstname == u.FirstName && c.Lastname == u.LastName && c.CreatedAt == u.CreatedAt {
+	if c.CreatedAt == u.CreatedAt && c.Id == u.Id {
 		return true
-	} else {
 
+	} else {
 		return false
 	}
 }

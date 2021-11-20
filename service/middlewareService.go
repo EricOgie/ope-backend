@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	"github.com/EricOgie/ope-be/domain/models"
@@ -70,7 +69,6 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 						response.ServeResponse(konstants.ERR, "", res, ericErr)
 					}
 					jwtMapClaim := jwtToken.Claims.(jwt.MapClaims)
-					fmt.Println(fmt.Sprintf("%#v", jwtMapClaim))
 
 					// To enable ushandle CompletePayment flow differently, flow is as follows
 					if isCompletePayment(routeInFocus.GetName()) {
@@ -82,7 +80,6 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 
 					} else {
 						claimObj := models.RetrieveClaim(jwtMapClaim)
-						fmt.Println(fmt.Sprintf("%#v", claimObj))
 						// Check Autjorization and respond accordingly
 						if authMid.Repo.IsAuthorized(claimObj) == true {
 							// Embed claim in request context
@@ -91,7 +88,7 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 							nxtHandler.ServeHTTP(res, req.WithContext(ctx))
 
 						} else {
-							logger.Info("ERERE")
+							logger.Info("Failed Auth")
 							ericErr := ericerrors.NewError(http.StatusForbidden, konstants.UAUTH_ERR)
 							response.ServeResponse(konstants.ERR, "", res, ericErr)
 						}
