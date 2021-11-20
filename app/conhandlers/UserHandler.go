@@ -140,12 +140,12 @@ func (s *UserHandler) UpdateUserProfile(res http.ResponseWriter, req *http.Reque
 		logger.Error(konstants.ERR_DECODE + reqErr.Error())
 		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
 		response.ServeResponse(konstants.ERR, "", res, eError)
+	} else {
+		// Define the Id attribute of the request
+		request.Id = idAsInt
+		result, eError := s.Service.ProfileUpdate(request)
+		response.ServeResponse(konstants.USER, result, res, eError)
 	}
-
-	// Define the Id attribute of the request
-	request.Id = idAsInt
-	result, eError := s.Service.ProfileUpdate(request)
-	response.ServeResponse(konstants.USER, result, res, eError)
 
 }
 
