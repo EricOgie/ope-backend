@@ -3,11 +3,13 @@ package requestdto
 import (
 	"net/mail"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/konstants"
+	"github.com/EricOgie/ope-be/logger"
 )
 
 type RegisterRequest struct {
@@ -68,22 +70,10 @@ func (b BankAccountRequest) BuildBankAccount() models.BankAccount {
 	}
 }
 
-func isValidEmail(email string) bool {
-	_, err := mail.ParseAddress(email)
-	return err == nil
-}
-
-func isValidPword(pword string) bool {
-	return len(pword) >= 6
-}
-
 // Request Validation function
 func (req RegisterRequest) ValidateRequest() *ericerrors.EricError {
-	if len(req.FirstName) < 2 || len(req.FirstName) > 20 {
-		return ericerrors.New422Error(konstants.NAME_TOO_SHORT)
-	}
 
-	if len(req.LastName) < 2 {
+	if !isValidName(req.FirstName) && !isValidName(req.LastName) {
 		return ericerrors.New422Error(konstants.NAME_TOO_SHORT)
 	}
 
@@ -91,7 +81,7 @@ func (req RegisterRequest) ValidateRequest() *ericerrors.EricError {
 		return ericerrors.New422Error(konstants.INVALID_EMAIL)
 	}
 
-	if len(req.Phone) != 11 {
+	if !isValidPhone(req.Phone) {
 		return ericerrors.New422Error(konstants.PHONE_ERR)
 	}
 
@@ -100,4 +90,64 @@ func (req RegisterRequest) ValidateRequest() *ericerrors.EricError {
 	}
 
 	return nil
+}
+
+//
+func (req UserDetailsRequest) ValidateRequest() *ericerrors.EricError {
+	if !isValidName(req.LastName) {
+		return ericerrors.New422Error(konstants.NAME_TOO_SHORT)
+	}
+
+	if !isValidName(req.FirstName) {
+		return ericerrors.New422Error(konstants.NAME_TOO_SHORT)
+	}
+
+	if !isValidEmail(req.Email) {
+		return ericerrors.New422Error(konstants.INVALID_EMAIL)
+	}
+
+	if !isValidPhone(req.Phone) {
+		return ericerrors.New422Error(konstants.PHONE_ERR)
+	}
+
+	if !isValidAccNumber(req.AccountNo) {
+		return ericerrors.New422Error("Invalid Account Number")
+	}
+
+	if !isValidBank(req.BankName) {
+		return ericerrors.New422Error("Invalid Bank Name")
+	}
+
+	return nil
+}
+
+func isValidName(name string) bool {
+	logger.Error("1")
+	if len(name) > 2 && len(name) < 20 {
+		logger.Error("GOD NAME")
+	} else {
+		logger.Error("BADD NAME")
+	}
+	return len(name) > 2 && len(name) < 20
+}
+
+func isValidPhone(phone string) bool {
+	return len(phone) == 11
+}
+
+func isValidAccNumber(accNum string) bool {
+	return len(accNum) == 10 || len(accNum) == 11
+}
+
+func isValidBank(bank string) bool {
+	return len(bank) > 5 && strings.Contains(bank, "Bank")
+}
+
+func isValidEmail(email string) bool {
+	_, err := mail.ParseAddress(email)
+	return err == nil
+}
+
+func isValidPword(pword string) bool {
+	return len(pword) >= 6
 }

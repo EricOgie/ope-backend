@@ -169,6 +169,11 @@ func (s UserService) ChangePassword(userReq requestdto.LoginRequest) (*responsed
 }
 
 func (s UserService) ProfileUpdate(req requestdto.UserDetailsRequest) (*responsedto.UserProfileDTO, *ericerrors.EricError) {
+	vErr := req.ValidateRequest()
+	if vErr != nil {
+		return nil, ericerrors.New422Error(vErr.Message)
+	}
+
 	qUser := req.BuildQueryUser()
 	result, err := s.repo.UpdateProfile(qUser)
 

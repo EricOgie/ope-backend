@@ -30,6 +30,14 @@ func NewLoanRepo(client *sqlx.DB, env utils.Config) LoanRepo {
  */
 
 func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerrors.EricError) {
+	// First check that loan amount is <= 60% of user Portfolior position
+	isPassed60PercentCheck := Check60PercentMark(db, loan.Amount, loan.UserId)
+
+	if !isPassed60PercentCheck {
+		logger.Error("Failed 60% Check")
+		eErro := ericerrors.NewError(http.StatusNotAcceptable, "Loan can not exceed 60% of total Investment")
+		return nil, eErro
+	}
 	//Prapare SQL statement
 	query := "INSERT INTO loans (user_id, amount, package, duration) values(?, ?, ?, ?)"
 
@@ -104,7 +112,7 @@ func (db LoanRepo) PayLoan(pay models.LoanPayment) (*responsedto.RepaymentResDTO
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 	// Update Loan state
-	loanStatsu, uErr := updateLoan(loan.Id, db, loan, correctPay)
+	loanStatsu, uErr := updateLoan(db, loan, correctPay)
 	if uErr != nil {
 		logger.Error("Loan Update Err" + uErr.Message)
 		return nil, ericerrors.New500Error(konstants.MSG_500)

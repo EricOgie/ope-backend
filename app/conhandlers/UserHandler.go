@@ -134,7 +134,6 @@ func (s *UserHandler) ChangePassword(res http.ResponseWriter, req *http.Request)
 func (s *UserHandler) UpdateUserProfile(res http.ResponseWriter, req *http.Request) {
 	idAsInt := getUserId(req)
 	var request requestdto.UserDetailsRequest
-
 	reqErr := json.NewDecoder(req.Body).Decode(&request)
 
 	if reqErr != nil {

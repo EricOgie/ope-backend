@@ -2,6 +2,7 @@ package repositories
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
@@ -9,8 +10,9 @@ import (
 	"github.com/EricOgie/ope-be/logger"
 )
 
+//
 func getLoan(loanId int, db LoanRepo) (*models.Loan, *error) {
-	query := "SELECT * FROM loans WHER loan_id = ?"
+	query := "SELECT * FROM loans WHER id = ?"
 
 	var loan models.Loan
 	err := db.Client.Get(loan, query, loanId)
@@ -24,7 +26,7 @@ func getLoan(loanId int, db LoanRepo) (*models.Loan, *error) {
 }
 
 //
-func updateLoan(loanId int, db LoanRepo, l *models.Loan, pay float64) (string, *ericerrors.EricError) {
+func updateLoan(db LoanRepo, l *models.Loan, pay float64) (string, *ericerrors.EricError) {
 	loanBal := l.Amount - l.Paid
 	var error error
 	var status string
@@ -50,6 +52,7 @@ func updateLoan(loanId int, db LoanRepo, l *models.Loan, pay float64) (string, *
 	return status, &ericErr
 }
 
+//
 func getCorrectPaymnet(loan *models.Loan, pay models.LoanPayment) float64 {
 	// Check id User is sending in more than is required to close th loan
 	var correactPay float64
@@ -90,4 +93,19 @@ func CheckWallet(db LoanRepo, amount float64, userId int) bool {
 	}
 
 	return walletFund > amount
+}
+
+//
+func Check60PercentMark(db LoanRepo, amount float64, userId int) bool {
+	var potfolioPosition float64
+	query := "SELECT SUM(equity_value) FROM stocks WHERE user_id = ?"
+	qErr := db.Client.Select(potfolioPosition, query, userId)
+
+	if qErr != nil {
+		logger.Error(konstants.QUERY_ERR + qErr.Error())
+		return false
+	}
+
+	logger.Info("Position: " + strconv.Itoa(int(potfolioPosition)))
+	return (0.6 * potfolioPosition) >= amount
 }
