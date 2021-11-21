@@ -31,6 +31,8 @@ type Config struct {
 	MailEncryption  string `mapstructure:"MAIL_ENCRYPTION"`
 	MailFromAddress string `mapstructure:"MAIL_FROM_ADDRESS"`
 	MailFromName    string `mapstructure:"MAIL_FROM_NAME"`
+
+	FlutterWaveAuth string `mapstructure:"FLUTTERWAVE_AUTH"`
 }
 
 // LoadConfig reads/loads environment variables into config struct.
@@ -69,6 +71,7 @@ func getConfigFromOs() Config {
 		MailEncryption:  os.Getenv("MAIL_ENCRYPTION"),
 		MailFromAddress: os.Getenv("MAIL_FROM_ADDRESS"),
 		MailFromName:    os.Getenv("MAIL_FROM_NAME"),
+		FlutterWaveAuth: os.Getenv("FLUTTERWAVE_AUTH"),
 	}
 
 }

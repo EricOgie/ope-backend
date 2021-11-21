@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"fmt"
 	"html/template"
-	"strconv"
 
+	// "github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/domain/models"
 	responsedto "github.com/EricOgie/ope-be/dto/responseDto"
 	"github.com/EricOgie/ope-be/konstants"
@@ -15,28 +15,28 @@ import (
 
 // SendVerificationMail is callable when a verification mail mail needs to be sent
 // It require an instance of responsedto.OneUserDtoWithOtp, and a token string to construct the required mailable
-func SendVerificationMail(data responsedto.OneUserDtoWithOtp, token string) {
-	executeMailing(data, token, konstants.MAIL_PURPOSE_VERIFY, konstants.MAIL_BTN_VET, konstants.MAIL_VET_PATH)
+func SendVerificationMail(data responsedto.CompleteUserDTO) {
+	executeMailing(data, konstants.MAIL_PURPOSE_VERIFY, konstants.MAIL_BTN_VET, konstants.MAIL_VET_PATH)
 }
 
 // SendOTP is callable when OTP needs to be sent either for a 2FA fulfillment or
 // It require an instance of responsedto.OneUserDtoWithOtp to construct the required mailable
-func SendOTP(data responsedto.OneUserDtoWithOtp) {
-	executeMailing(data, "", konstants.MAIL_PURPOSE_OTP, "", konstants.MAIL_OTP_PATH)
+func SendOTP(data responsedto.CompleteUserDTO) {
+	executeMailing(data, konstants.MAIL_PURPOSE_OTP, "", konstants.MAIL_OTP_PATH)
 }
 
 // SendRequestMail is callable when a password change is to be requested.
 // It require an instance of responsedto.OneUserDtoWithOtp to construct the required mailable
-func SendRequestMail(data responsedto.OneUserDtoWithOtp) {
-	executeMailing(data, "", konstants.MAIL_PURPOSE_REQ, konstants.MAIL_BTN_PWORD, konstants.MAIL_VET_PATH)
+func SendRequestMail(data responsedto.CompleteUserDTO) {
+	executeMailing(data, konstants.MAIL_PURPOSE_REQ, konstants.MAIL_BTN_PWORD, konstants.MAIL_VET_PATH)
 }
 
 // ---------------- PRIVATE METHODS ---------------------//
 
-func executeMailing(data responsedto.OneUserDtoWithOtp, token string,
+func executeMailing(data responsedto.CompleteUserDTO,
 	purpose string, btnTxt string, TemplatePATH string) {
 	env := LoadConfig(".")
-	emailStruct := makeMailable(data, token, purpose, btnTxt)
+	emailStruct := makeMailable(data, purpose, btnTxt)
 	client := getEmailClient(env)
 	email := makeEmail(emailStruct, env, TemplatePATH)
 	err := email.Send(client)
@@ -67,8 +67,8 @@ func makeEmail(emailStruct models.Emailable, env Config, temPath string) *mail.E
 	return email
 }
 
-func makeMailable(data responsedto.OneUserDtoWithOtp, token string,
-	purpose string, btnTxt string) models.Emailable {
+func makeMailable(data responsedto.CompleteUserDTO, purpose string, btnTxt string) models.Emailable {
+
 	redirURL := ""
 	subject := ""
 	body := ""
@@ -76,7 +76,7 @@ func makeMailable(data responsedto.OneUserDtoWithOtp, token string,
 	caption := ""
 
 	if purpose == "verification" {
-		redirURL += konstants.ROOT_ADD + "verify?k=" + token
+		redirURL += konstants.ROOT_ADD + "verify-account?k=" + data.Token
 		subject += konstants.SUBJECT_VERIFY_ACC
 		body += konstants.MAIL_BODY_VERIFY
 		tail += konstants.MAIL_TAIL_VERIFY
@@ -105,6 +105,6 @@ func makeMailable(data responsedto.OneUserDtoWithOtp, token string,
 		IsWithButton:   true,
 		ButtonText:     btnTxt,
 		RedirectUrl:    redirURL,
-		OTP:            strconv.Itoa(data.OTP),
+		OTP:            data.Otp,
 	}
 }

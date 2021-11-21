@@ -8,6 +8,7 @@ const (
 	TYPE_XML     string = "application/xml"
 	TYPE_JSON    string = "application/json"
 	MSG_500      string = "Unexpected Server Error!"
+	MSG_403      string = "User Already Exist"
 	MSG_START    string = "Starting Appliction ...."
 	LOGGER_TYPE  string = "logger-type"
 	TIME         string = "timestamp"
@@ -19,6 +20,8 @@ const (
 	KEY_DB_ADD   string = "DB_ADDR"
 	KEY_DB_NAME  string = "DB_NAME"
 	AUTH         string = "Authorization"
+
+	MSG_REG string = "Check Email To Verify Account"
 
 	REQ_VALIDITY_ERR string = "422 Validiity Error"
 
@@ -82,17 +85,19 @@ const (
 
 	ERR_SANITY_CHECK string = "Sanity check Err: "
 
-	VERIFY_URL string = "http://localhost:8080/verify" //
+	VERIFY_URL string = "https://be-ope.herokuapp.com/verified" //
 	HOME_URL   string = "https://loaner-two.vercel.app/"
 	ROOT_ADD   string = "https://be-ope.herokuapp.com/"
-	LOGIN_URL  string = "https://loaner-two.vercel.app/login"
+	// ROOT_ADD  string = "http://localhost:8080/"
+	LOGIN_URL string = "https://loaner-two.vercel.app/login"
 
 	FLUTTERWAVE_URL string = "https://api.flutterwave.com/v3/payments"
 
 	DT_KEY    string = "props"
 	CLAIM_ERR string = "ERROR while trying to extract claims from request context. Err: "
 
-	MAIL_VET_PATH string = "mailables/verification.html"
+	// MAIL_VET_PATH string = "mailables/verification.html"
+	MAIL_VET_PATH string = "mailables/vet.html"
 	MAIL_OTP_PATH string = "mailables/twofaemail.html"
 
 	MAIL_PURPOSE_VERIFY string = "verification"
@@ -114,7 +119,18 @@ const (
 	CAPTION_HELLO   string = "Hello"
 
 	SUBJECT_WELCOME         string = "Welcome To Ope"
-	SUBJECT_VERIFY_ACC      string = "Verify Yout Ope Account"
+	SUBJECT_VERIFY_ACC      string = "Verify Your Ope Account"
 	SUBJECT_OTP             string = "OTP"
 	SUBJECT_PASSWORD_CHANGE string = "Change Password"
+
+	PAY_VALIDATION_ERR_MSG string = "Amount >= 5000 & PaymentOption = Card & Curreny = NG"
+
+	ERR_FLOAT_CONV string = "Couldn't Make float64"
+	ERR_FRAUD      string = "Fraudulent transaction"
+	ERR_TRANS_REC  string = "DID NOT SAVE TRANSACTION"
+
+	ERR_INSURFICIENCY string = "Insurficient Funds"
+
+	LOAN_OPEN     string = "open"
+	LOAN_INACTIVE string = "This loan has been closed"
 )

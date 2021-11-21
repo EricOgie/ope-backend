@@ -63,14 +63,16 @@ func (s *UserHandler) VerifyUserAcc(res http.ResponseWriter, req *http.Request) 
 	// construct a verifyRequest from models.Claim
 	verifyRequest := makeVerifyReqDTO(claim)
 	//make request along the wiring chain
-	result, err := s.Service.VerifyAcc(verifyRequest)
+	_, err := s.Service.VerifyAcc(verifyRequest)
 
 	if err != nil {
 		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
 		response.ServeResponse(konstants.ERR, "", res, eError)
 	}
 
-	response.ServeResponse(konstants.USER, result, res, nil)
+	// response.ServeResponse(konstants.USER, result, res, nil)
+
+	response.RedirectToVerified(res, req)
 }
 
 func (s *UserHandler) CompleteLoginProcess(res http.ResponseWriter, req *http.Request) {
@@ -113,32 +115,60 @@ func (s *UserHandler) RequestPasswordChange(res http.ResponseWriter, req *http.R
 	}
 }
 
-func makeVerifyReqDTO(claim models.Claim) requestdto.VerifyRequest {
-	return requestdto.VerifyRequest{
-		Id:         claim.Id,
-		FirstName:  claim.Firstname,
-		Lastname:   claim.Lastname,
-		Email:      claim.Email,
-		Created_at: claim.When,
-		When:       claim.When,
+func (s *UserHandler) ChangePassword(res http.ResponseWriter, req *http.Request) {
+	var pword PWord
+	err1 := json.NewDecoder(req.Body).Decode(&pword)
+	if err1 != nil {
+		// User did not enter a valid password
+		// end process and send 400 error code to client
+		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
+		response.ServeResponse(konstants.ERR, "", res, eError)
 	}
+	// User email will be gotten from claim extracted from token
+	claim, _ := req.Context().Value(konstants.DT_KEY).(models.Claim)
+	UserCrendentials := requestdto.LoginRequest{Email: claim.Email, Password: pword.Password}
+	newUser, eError := s.Service.ChangePassword(UserCrendentials)
+	response.ServeResponse("Plain Response", newUser, res, eError)
 }
 
-func IsOTPTheSame(req *http.Request, claim models.Claim) bool {
-	var reqOTP requestdto.OTPDto
-	err := json.NewDecoder(req.Body).Decode(&reqOTP)
+func (s *UserHandler) UpdateUserProfile(res http.ResponseWriter, req *http.Request) {
+	idAsInt := getUserId(req)
+	var request requestdto.UserDetailsRequest
+	reqErr := json.NewDecoder(req.Body).Decode(&request)
 
-	logger.Info("Claim/Req = " + strconv.Itoa(claim.Otp) + "/" + strconv.Itoa(reqOTP.OTP))
-
-	if err != nil {
-		logger.Error(konstants.ERR + err.Error())
+	if reqErr != nil {
+		logger.Error(konstants.ERR_DECODE + reqErr.Error())
+		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
+		response.ServeResponse(konstants.ERR, "", res, eError)
+	} else {
+		// Define the Id attribute of the request
+		request.Id = idAsInt
+		result, eError := s.Service.ProfileUpdate(request)
+		response.ServeResponse(konstants.USER, result, res, eError)
 	}
-
-	return reqOTP.OTP == claim.Otp
 
 }
 
-func IsOtpValid(otp int) bool {
-	stV := strconv.Itoa(otp)
-	return len(stV) == 6
+func (s *UserHandler) UpdateUserBank(res http.ResponseWriter, req *http.Request) {
+	userId := getUserId(req)
+	var request requestdto.BankRequest
+	jErr := json.NewDecoder(req.Body).Decode(&request)
+
+	if jErr != nil {
+		handleMarshallingErr(res, jErr)
+	} else {
+		request.UserId = strconv.Itoa(userId)
+		result, ericErr := s.Service.SetBankDetails(request)
+		response.ServeResponse("Account", result, res, ericErr)
+	}
+
+}
+
+func (s *UserHandler) FindOneUser(res http.ResponseWriter, req *http.Request) {
+	// Extract claim from request and get user email
+	claim := req.Context().Value(konstants.DT_KEY).(models.Claim)
+	userEmail := claim.Email
+
+	result, err := s.Service.FetchOneUser(userEmail)
+	response.ServeResponse(konstants.USER, result, res, err)
 }

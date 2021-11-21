@@ -22,7 +22,7 @@ type UserRepositoryDB struct {
 
 // Helper function to instantiate DB
 func NewUserRepoDB(dbClient *sqlx.DB, env utils.Config) UserRepositoryDB {
-	return UserRepositoryDB{dbClient}
+	return UserRepositoryDB{client: dbClient}
 }
 
 /**
@@ -53,7 +53,14 @@ func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricEr
 * METHOD implemetation of UserRepositoryPort as an interface
 * To be called upon REGISTER user Request
  */
-func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.EricError) {
+
+func (db UserRepositoryDB) Create(u models.User) (*models.CompleteUser, *ericerrors.EricError) {
+	// First check if User is registered prior
+	if userIsRegistered(u.Email, db) {
+		logger.Info("User with email, " + u.Email + " is registered prior ")
+		return nil, &ericerrors.EricError{Code: 403, Message: konstants.MSG_403}
+	}
+
 	// Define Query
 	insertQuery := "INSERT INTO users (firstname, lastname, email, phone, password, created_at) " +
 		"values(?, ?, ?, ?, ?, ?)"
@@ -77,10 +84,18 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 
+	// Create wallet for user
+	wallet, ericErr := createUserWallet(db, u.FirstName, newId)
+	if ericErr != nil {
+		logger.Error("Wallet Err: " + ericErr.Message)
+	}
+
 	// merge ID from Db with UserObject
 	u.Id = strconv.Itoa(int(newId))
+	// construct user with wallet and bank struck
+	userWithWallet := u.MakeCompleteUser(wallet)
 	// return newly created user
-	return &u, nil
+	return &userWithWallet, nil
 
 }
 
@@ -89,13 +104,18 @@ func (db UserRepositoryDB) Create(u models.User) (*models.User, *ericerrors.Eric
 * To be called upon Login Request
  */
 
-func (db UserRepositoryDB) Login(u models.UserLogin) (*models.User, *ericerrors.EricError) {
+func (db UserRepositoryDB) Login(u models.UserLogin) (*models.CompleteUser, *ericerrors.EricError) {
 	return runUserQueryWithEmail(u.Email, db)
 }
 
+/**
+* @VERIFYUSERACCOUNT
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called upon verification of user
+ */
+
 func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User, *ericerrors.EricError) {
-	logger.Info("WE WAN VERIFY " + v.FirstName)
-	query := "UPDATE users SET verified = ? WHERE email = ?"
+	query := "UPDATE users SET is_verified = ? WHERE email = ?"
 	_, err := db.client.Exec(query, "true", v.Email)
 	if err != nil {
 		logger.Error(konstants.VET_ACC_ERR + err.Error())
@@ -103,54 +123,120 @@ func (db UserRepositoryDB) VerifyUserAccount(v models.VerifyUser) (*models.User,
 	}
 
 	user := v.GetUserFromVerify()
-
 	return &user, nil
 
 }
 
+/**
+* @CHANGEPASSWORD
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called to commplete login workflow
+ */
 func (db UserRepositoryDB) CompleteLogin(claim models.Claim) (*models.CompleteUser, *ericerrors.EricError) {
 	userId, err := strconv.Atoi(claim.Id)
 
 	if err != nil {
 		logger.Error(konstants.STRING_INT_ERR + err.Error())
 	}
-
-	sqlQuery := "SELECT id, symbol, image, total_quantity, unit_price, equity_value, fluctuation FROM stocks WHERE user_id = ?"
+	sqlQuery := "SELECT id, symbol, image, total_quantity, unit_price, equity_value, percentage_change FROM stocks WHERE user_id = ?"
 	userStocks := make([]models.Stock, 0)
 	// Query and marshal to slice of stock-struct
 	qErr := db.client.Select(&userStocks, sqlQuery, userId)
+
 	// Handle possible query error
 	if qErr != nil {
 		logger.Error(konstants.QUERY_ERR + qErr.Error())
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 
-	// Cretate a complete-user by merging the user struct in the claim passed into function with
+	// Cretate a completeuser struct by merging the user struct in the claim passed into function with
 	// the slice of user stocks gotten from the DB. This will serve a user with his/her stock portfolio
 	completeUser := models.MakeCompleteUser(claim, userStocks)
 	return &completeUser, nil
 }
 
-func (db UserRepositoryDB) RequestPasswordChange(userEmail models.UserEmail) (*models.User, *ericerrors.EricError) {
+/**
+* @REQUESTPASSWORDCHANGE
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called upon password change request
+ */
+func (db UserRepositoryDB) RequestPasswordChange(userEmail models.UserEmail) (*models.CompleteUser, *ericerrors.EricError) {
 	return runUserQueryWithEmail(userEmail.Email, db)
 }
 
-// ---------------------- PRIVATE METHODS ------------------------//
-
-func runUserQueryWithEmail(userEmail string, db UserRepositoryDB) (*models.User, *ericerrors.EricError) {
-	querySQL := "SELECT id, firstname, lastname, email, phone, password, created_at FROM users WHERE email = ?"
-	var user models.User
-	err := db.client.Get(&user, querySQL, userEmail)
-	// Check error state and responde accordingly
+/**
+* @CHANGEPASSWORD
+* METHOD implemetation of UserRepositoryPort as an interface
+* To be called to commplete password change workflow
+ */
+func (db UserRepositoryDB) ChangePassword(u models.UserLogin) (*responsedto.PlainResponseDTO, *ericerrors.EricError) {
+	hashedPword := security.GenHashedPwd(u.Password)
+	query := "UPDATE users SET password = ? WHERE email = ?"
+	_, err := db.client.Exec(query, hashedPword, u.Email)
 	if err != nil {
-		if err.Error() == konstants.DB_NO_ROW {
-			// user does not exist
-			logger.Error(konstants.DB_ERROR + konstants.CREDENTIAL_ERR)
-			return nil, ericerrors.NewError(http.StatusUnauthorized, konstants.CREDENTIAL_ERR)
-		} else {
-			logger.Error(konstants.QUERY_ERR + err.Error())
-			return nil, ericerrors.New500Error(konstants.MSG_500)
-		}
+		logger.Error("Edit Error" + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
+
+	res := u.GetPlainResponseDTO(http.StatusOK, "Password Changed")
+	return &res, nil
+}
+
+func (db UserRepositoryDB) UpdateProfile(u models.QueryUser) (*models.CompleteUser, *ericerrors.EricError) {
+	userId, cErr := strconv.Atoi(u.Id)
+	if cErr != nil {
+		logger.Error(konstants.STRING_INT_ERR)
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+	query := "UPDATE users SET firstname = ?, lastname = ?, email = ?, phone = ?, account_no = ?, account_name = ? WHERE id = ?"
+	_, err := db.client.Exec(query, u.FirstName, u.LastName, u.Email, u.Phone, u.AccountNo, u.AccountName, userId)
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	// Construct CompleteUser
+	user := makeCompleteUser(u)
 	return &user, nil
+}
+
+func (db UserRepositoryDB) UpdateBankAccount(req models.BankAccount) (*responsedto.BankAccountDTO, *ericerrors.EricError) {
+	userId, cErr := strconv.Atoi(req.UserId)
+	if cErr != nil {
+		logger.Error(konstants.STRING_INT_ERR)
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	query := "UPDATE users SET account_no = ?, account_name = ? WHERE id = ?"
+	_, err := db.client.Exec(query, req.AccountNumber, req.AccountName, userId)
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	bank := responsedto.BankAccountDTO{AccountNo: req.AccountNumber, AccountName: req.AccountName}
+	return &bank, nil
+
+}
+
+func (db UserRepositoryDB) GetUser(email string) (*models.CompleteUser, *ericerrors.EricError) {
+	userWithoutStocks, ericErr := runUserQueryWithEmail(email, db)
+
+	if ericErr != nil {
+		logger.Error(konstants.QUERY_ERR + ericErr.Message)
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	userId, _ := strconv.Atoi(userWithoutStocks.Id)
+	// Fetch user stocks
+	userStocks, eErr := fetcStocks(userId, db)
+
+	if eErr != nil {
+		logger.Error(konstants.QUERY_ERR + eErr.Message)
+		return nil, ericerrors.New500Error(konstants.MSG_500)
+	}
+
+	// Merge stocks to completeUser
+	userWithoutStocks.Portfolio = *userStocks
+	return userWithoutStocks, nil
 }
