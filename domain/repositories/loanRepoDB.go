@@ -45,8 +45,9 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 		return nil, ericerrors.NewError(http.StatusNotAcceptable, konstants.ERR_OPEN_LOAN)
 	}
 	//Prapare SQL statement
-	query := "INSERT INTO loans (user_id, amount, package, duration) values(?, ?, ?, ?)"
-	result, qErr := db.Client.Exec(query, loan.UserId, loan.Amount, loan.Package, loan.Duration)
+	query := "INSERT INTO loans (user_id, amount, package, duration, created_at) values(?, ?, ?, ?, ?)"
+	logger.Info("CREATED AT= " + loan.CreatedAt)
+	result, qErr := db.Client.Exec(query, loan.UserId, loan.Amount, loan.Package, loan.Duration, loan.CreatedAt)
 	// Hndle Error ase
 	if qErr != nil {
 		logger.Error(konstants.QUERY_ERR + qErr.Error())
@@ -143,7 +144,7 @@ func (db LoanRepo) GetInstallments(loanId int) (*[]models.Querypayment, *ericerr
 	query := "SELECT repayments.id, repayments.payment, repayments.balance, loans.amount, repayments.created_at" +
 		" FROM repayments INNER JOIN loans ON repayments.loan_id = loans.id WHERE repayments.loan_id = ?"
 
-	qErr := db.Client.Select(installments, query, loanId)
+	qErr := db.Client.Select(&installments, query, loanId)
 	if qErr != nil {
 		logger.Error(konstants.QUERY_ERR + qErr.Error())
 		return nil, ericerrors.New500Error(konstants.MSG_500)

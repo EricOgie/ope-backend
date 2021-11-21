@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -12,10 +13,10 @@ import (
 
 //
 func getLoan(loanId int, db LoanRepo) (*models.Loan, *error) {
-	query := "SELECT * FROM loans WHER id = ?"
+	query := "SELECT * FROM loans WHERE id = ?"
 
 	var loan models.Loan
-	err := db.Client.Get(loan, query, loanId)
+	err := db.Client.Get(&loan, query, loanId)
 
 	if err != nil {
 		logger.Error(konstants.QUERY_ERR + err.Error())
@@ -30,7 +31,7 @@ func updateLoan(db LoanRepo, l *models.Loan, pay float64) (string, *ericerrors.E
 	loanBal := l.Amount - l.Paid
 	var error error
 	var status string
-	if loanBal < pay {
+	if loanBal > pay {
 		query := "UPDATE loans SET paid = paid + ? WHERE id = ?"
 		_, e := db.Client.Exec(query, pay, l.Id)
 		error = e
@@ -48,8 +49,13 @@ func updateLoan(db LoanRepo, l *models.Loan, pay float64) (string, *ericerrors.E
 
 	}
 
-	ericErr := ericerrors.EricError{Code: 500, Message: error.Error()}
-	return status, &ericErr
+	if error == nil {
+		return status, nil
+	} else {
+		ericErr := ericerrors.EricError{Code: 500, Message: error.Error()}
+		return status, &ericErr
+	}
+
 }
 
 //
@@ -123,12 +129,13 @@ func Check60PercentMark(db LoanRepo, amount float64, userId int) bool {
 
 func checkOpenLoans(db LoanRepo, userId int) bool {
 	var amount float64
-	query := "SELECT amount FROM loans WHERE status = ? AND user_id = ?"
-	err := db.Client.Get(amount, query, "open", userId)
-
-	if amount <= 0.000000 || err != nil {
-		logger.Error("NO OPEN LOAN")
+	query := "SELECT SUM(amount) FROM loans WHERE status = ? AND user_id = ?"
+	err := db.Client.Get(&amount, query, "open", userId)
+	if amount <= 0.000000 {
+		logger.Error("NO OPEN LOAN err = " + fmt.Sprintf("%#v", err))
 		return false
 	}
+
+	logger.Info("")
 	return true
 }

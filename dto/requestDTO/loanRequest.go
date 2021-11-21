@@ -1,12 +1,12 @@
 package requestdto
 
 import (
-	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
+	"github.com/EricOgie/ope-be/konstants"
 )
 
 type LoanPayRequest struct {
@@ -29,21 +29,21 @@ func (req LoanPayRequest) ConvertToLoanPayment() models.LoanPayment {
 		LoanId:    loadId,
 		UserId:    userId,
 		Payment:   req.Payment,
-		CreatedAt: time.Now().String(),
+		CreatedAt: time.Now().Format(konstants.T_FORMAT),
 	}
 }
 
 func (req LoanRequest) ConvertToLoan() models.Loan {
 	userId, _ := strconv.Atoi(req.UserId)
-	pakageFloat := (req.Amount / req.Duration)
-	loanPackage := fmt.Sprintf("%f", pakageFloat) + " Per Month"
-	duration := fmt.Sprintf("%f", req.Duration)
+	pakageFloat := int(req.Amount / req.Duration)
+	loanPackage := strconv.Itoa(pakageFloat) + " Per Month"
+	duration := strconv.Itoa(int(req.Duration))
 	return models.Loan{
 		UserId:    userId,
 		Amount:    req.Amount,
 		Package:   loanPackage,
 		Duration:  duration,
-		CreatedAt: time.Now().String(),
+		CreatedAt: time.Now().Format(konstants.T_FORMAT),
 	}
 }
 
