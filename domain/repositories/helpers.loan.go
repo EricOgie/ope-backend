@@ -13,10 +13,10 @@ import (
 
 //
 func getLoan(loanId int, db LoanRepo) (*models.Loan, *error) {
-	query := "SELECT * FROM loans WHER id = ?"
+	query := "SELECT * FROM loans WHERE id = ?"
 
 	var loan models.Loan
-	err := db.Client.Get(loan, query, loanId)
+	err := db.Client.Get(&loan, query, loanId)
 
 	if err != nil {
 		logger.Error(konstants.QUERY_ERR + err.Error())
@@ -31,7 +31,7 @@ func updateLoan(db LoanRepo, l *models.Loan, pay float64) (string, *ericerrors.E
 	loanBal := l.Amount - l.Paid
 	var error error
 	var status string
-	if loanBal < pay {
+	if loanBal > pay {
 		query := "UPDATE loans SET paid = paid + ? WHERE id = ?"
 		_, e := db.Client.Exec(query, pay, l.Id)
 		error = e
@@ -49,8 +49,13 @@ func updateLoan(db LoanRepo, l *models.Loan, pay float64) (string, *ericerrors.E
 
 	}
 
-	ericErr := ericerrors.EricError{Code: 500, Message: error.Error()}
-	return status, &ericErr
+	if error == nil {
+		return status, nil
+	} else {
+		ericErr := ericerrors.EricError{Code: 500, Message: error.Error()}
+		return status, &ericErr
+	}
+
 }
 
 //

@@ -29,7 +29,7 @@ func (req LoanPayRequest) ConvertToLoanPayment() models.LoanPayment {
 		LoanId:    loadId,
 		UserId:    userId,
 		Payment:   req.Payment,
-		CreatedAt: time.Now().String(),
+		CreatedAt: time.Now().Format(konstants.T_FORMAT),
 	}
 }
 
