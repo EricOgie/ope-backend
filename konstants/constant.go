@@ -133,6 +133,7 @@ const (
 
 	ERR_INSURFICIENCY string = "Insurficient Funds"
 	ERR_60PER_CHECK   string = "Loan request can not exceed 60% of total Investment"
+	ERR_OPEN_LOAN     string = "All Pending Loans must be closed before another loan can be granted"
 
 	LOAN_OPEN     string = "open"
 	LOAN_INACTIVE string = "This loan has been closed"
