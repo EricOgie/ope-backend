@@ -1,6 +1,6 @@
 # OPE API Documentation
 
-[Introduction](#introduction) | [Register](#register) | [Profile Update](#to-update-user-profile) | [Bank Details](#update-bank-details) | [Login](#login) | [Wallet Funding](#fund-user-wallet-flow) | [Investments](#investments) | [Loan Management](#loan-management-api)
+[Introduction](#introduction) | [Register](#register) | [Profile Update](#to-update-user-profile) | [Bank Details](#update-bank-details) | [Login](#login) | [Wallet Funding](#fund-user-wallet-flow) | [Investments](#investment) | [Loan Management](#loan-management-api) | [Register API](#register-api) | [Profile Update API](#profile-update-api) | [Update Bank Details API](#update-bank-details-api) | [Login API](#login-api)| [Complete-Login API](#complete-login-api) |[Login Sample Response](#login-sample-response) | [Funding API](#funding-api) | [Payment Response](#payment-response) | [Complete Funding API](#complete-funding-api) | [Investment API](#investment-api) | [Request Loan API](#request-loan-api) | [Fetch Loans API](#fetch-loans-api) | [Repayment Api](#repayment-api)
 
 ## Introduction
 
@@ -12,18 +12,21 @@ To interract with the application core resources, a user is required to register
 
 To register a user, the client should make a request as detailed below. AFter complete registration, users are sent verification link via email which can be used to verify user's account by a click.
 
+### Register API
+
 ```
+
 - RGISTER API
-URL : https://be-ope.herokuapp.com/register
-METHODE TYPE: Post
-PAYLOAD:
-{
-    "firstname": "User first name",
-    "lastname" :"last name",
-	"email":"email formatted",
-	"phone":"phone nuber as string",
-	"password":"string",
-}
+  URL : https://be-ope.herokuapp.com/register
+  METHODE TYPE: Post
+  PAYLOAD:
+  {
+     "firstname": "User first name",
+     "lastname" :"last name",
+     "email":"email formatted",
+     "phone":"phone nuber as string",
+     "password":"string",
+  }
 
 ```
 
@@ -31,34 +34,42 @@ PAYLOAD:
 
 Client should send request as follows
 
+### Profile Update API
+
 ```
+
 URL : https://be-ope.herokuapp.com/update-profile/{userId}
 METHODE TYPE: Patch
 Authorization: Bearer token (Valid user token that is not PAYMENT TOKEN)
 PAYLOAD:
 {
-"firstname":"string",
-"lastname":"strin",
-"email": "string",
-"phone": "string",
-"account_no": "string",
-"bank_name": "Zenith Bank"
+    "firstname":"string",
+    "lastname":"strin",
+    "email": "string",
+    "phone": "string",
+    "account_no": "string",
+    "bank_name": "Zenith Bank"
 }
+
 ```
 
 ### UPDATE BANK DETAILS
 
 Users can decide to add their bank details to ease wallet funds withdrawer. To do this, clent should send request as below
 
+### Update Bank Details API
+
 ```
+
 URL: https://be-ope.herokuapp.com/user/bankupdate/{userId}
 METHOD TYPE: Patch
 Authorization: Bearer token (Valid user token that is not PAYMENT TOKEN)
 PAYLOAD:
 {
-"bank_name":"Zenith Bank",
-"account_no":"2085xxxxxx"
+    "bank_name":"Zenith Bank",
+    "account_no":"2085xxxxxx"
 }
+
 ```
 
 ### LOGIN
@@ -67,7 +78,10 @@ The application login flow include a miniature 2FA that involves an OTP being se
 
 To initiate a Loin process, the client should request as below
 
+### Login API
+
 ```
+
 URL : https://be-ope.herokuapp.com/login
 METHODE TYPE: Post
 PAYLOAD:
@@ -83,7 +97,7 @@ SAMPLE RESPONSE:
     "collection": "Login Token",
     "data": {
         "message": "Check Mail For Login OTP",
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6I.eyJiYW5rX2FjY291bnQiOnsiYWNjb3VudF9uYW1l ..."
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW5rX2FjY291bnQiOnsi ..."
     }
 }
 
@@ -91,7 +105,10 @@ SAMPLE RESPONSE:
 
 This will trigger an OTP emailing to the user. the user can then use the otp to complete login as follows
 
+### Complete Login API
+
 ```
+
 URL : https://be-ope.herokuapp.com/complete-login
 METHODE TYPE: Post
 AUTHORIZATION: Bearer token (Token recieved for login)
@@ -104,46 +121,57 @@ PAYLOAD:
 
 Upon successfull Login, client should get details of users activities as shown in SAMPLE RESPONSE below.
 
-SAMPLE RESPONSE
+### Login Sample Response
 
 ```
+
 {
     "status": "success",
     "collection": "User",
     "data": {
         "user_id": "5",
-        "firstname": "Aghahowa",
-        "lastname": "Ogie",
+        "firstname": "Ogie",
+        "lastname": "xxxxx",
         "email": "gulephil44@gmail.com",
         "created_at": "2021-11-15 00:52:42",
+        "Holdings": "",
         "bank_account": {
-            "account_no": "2085xxxxxx",
-            "bank_name": "Zenith Bank"
+            "account_no": "Zenith Bank",
+            "bank_name": "208xxxxxxx"
         },
-        "otp": "",
+        "otp": "803634",
         "wallet": {
-            "amount": 54000,
+            "amount": 34046.758,
             "address": "$2a$06$WRKRFEsAP/meZbjMP1lkOuzyu7jtZ66cu8uH0dQZPKP3pwzDwYRvi"
         },
-        "token": "",
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJiYW5rX2FjY291bnQiOnsi...",
         "portfolio": [
             {
                 "id": "5",
-                "symbol": "AWS",
-                "image_url": "https://buyshares.co.uk/wp-content/uploads/2020/07/Screenshot-2020-07-04-at-16.49.55.png",
-                "quantity": "120",
-                "unit_price": "1200",
-                "equity_value": "144000",
-                "percentage_change": "-9"
+                "symbol": "TM",
+                "image_url": "https://st2.depositphotos.com/5943796/11433/v/600/gold.jpg",
+                "quantity": "241",
+                "unit_price": "179.28",
+                "equity_value": "17553.932",
+                "percentage_change": "5.84"
             },
             {
                 "id": "15",
-                "symbol": "TSLA",
-                "image_url": "https://g.foolcdn.com/art/companylogos/square/tsla.png",
-                "quantity": "25",
-                "unit_price": "800",
-                "equity_value": "20000",
-                "percentage_change": "-1"
+                "symbol": "TYO",
+                "image_url": "https://global.toyota/pages/global_toyota/mobility/toyota-brand/emblem_ogp_001.png",
+                "quantity": "31",
+                "unit_price": "17.94",
+                "equity_value": "879.33",
+                "percentage_change": "-3.39"
+            },
+            {
+                "id": "45",
+                "symbol": "FB",
+                "image_url": "https://cdn3.vectorstock.com/i/1000x1000/02/37/logo-facebook-vector-31060237.jpg",
+                "quantity": "2",
+                "unit_price": "341.13",
+                "equity_value": "682.26",
+                "percentage_change": "1.57"
             }
         ]
     }
@@ -175,12 +203,15 @@ Stage TWO
 
 #### DETAILS:
 
+### Funding API
+
 ```
+
 FUND-WALLET ENDPOINT : "https://be-ope.herokuapp.com/fund-wallet"
 METHOD TYPE: POST
 Authorization: login token or any active non-payment token
 Payload:
-     {
+{
     "amount":"18000",
     "currency":"NGN",
     "payment_option":"card"
@@ -188,9 +219,10 @@ Payload:
 
 ```
 
-PAYMENT RESPONSE
+### PAYMENT RESPONSE
 
 ```
+
 {
     "status": "success",
     "collection": "FultterWave",
@@ -219,7 +251,11 @@ PAYMENT RESPONSE
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbW91bnQiOiIxODAwMCIsImiwiY ..."
     }
 }
+
+
 ```
+
+### Complete Funding API
 
 ```
 COMPLETE-FUNDING ENDPOINT : "https://be-ope.herokuapp.com/complete-funding"
@@ -231,6 +267,7 @@ Payload:
     "amount": "18000",
     "wallet": "$2a$06$WRKRFEsAP/meZbjMP1lkOuzyu7jtZ66cu8uH0dQZPKP3pwzDwYRvi"
 }
+
 
 ```
 
@@ -248,7 +285,10 @@ Once a user's wallet has been successfully funded, it can then be used to buy in
 
 To buy investment, the client should call the endpoint as detailed below.
 
+### Investment Payload
+
 ```
+
 URL : https://be-ope.herokuapp.com/buy-stock/{userId}
 METHODE TYPE: POST
 Authorization: Bearer token (Any valid TOKEN of user that is not PAYMENT TOKEN)
@@ -260,6 +300,8 @@ PAYLOAD:
 	"unit_price" : 341.13,
 	"percentage_change": 1.57
 }
+
+
 
 ```
 
@@ -285,6 +327,8 @@ CHECKERS
 
 To request a loan, the client should make request as detailed below
 
+### Request Loan Payload
+
 ```
 URL : https://be-ope.herokuapp.com/loan/request
 METHODE TYPE: POST
@@ -299,18 +343,24 @@ PAYLOAD:
 
 To Fetch user's loans, both open and closed, client should request as below
 
+### Fetch Loans Api
+
 ```
+
 URL : https://be-ope.herokuapp.com/loans
 METHODE TYPE: GET
 Authorization: Bearer token (Any valid TOKEN of user that is not PAYMENT TOKEN)
 
 ```
 
-## - Repayment API
+## - Repayment
 
 To repay a loan in installments, the client should send a request as detailed below
 
+### Repayment Api
+
 ```
+
 URL : https://be-ope.herokuapp.com/payment/loan/{loanId}
 METHODE TYPE: POST
 Authorization: Bearer token (Any valid user token that is not PAYMENT TOKEN)
