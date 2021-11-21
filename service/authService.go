@@ -152,6 +152,7 @@ func (s UserService) RequestPasswordChange(req requestdto.PasswordChangeRequest)
 
 }
 
+
 // Call Changepassword when user password is to change
 func (s UserService) ChangePassword(userReq requestdto.LoginRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError) {
 	err := userReq.ValidateRequest()
