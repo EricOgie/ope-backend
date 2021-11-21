@@ -1,6 +1,6 @@
 # OPE API Documentation
 
-[Introduction](#introduction) | [Register](#register) | [Profile Update](#to-update-user-profile) | [Bank Details](#update-bank-details) | [Login](#login) | [Wallet Funding](#fund-user-wallet-flow) | [Investments](#investment) | [Loan Management](#loan-management-api) | [Register API](#register-api) | [Profile Update API](#profile-update-api) | [Update Bank Details API](#update-bank-details-api) | [Login API](#login-api)| [Complete-Login API](#complete-login-api) |[Login Sample Response](#login-sample-response) | [Funding API](#funding-api) | [Payment Response](#payment-response) | [Complete Funding API](#complete-funding-api) | [Investment API](#investment-api) | [Request Loan API](#request-loan-api) | [Fetch Loans API](#fetch-loans-api) | [Repayment Api](#repayment-api)
+[Introduction](#introduction) | [Register](#register) | [Profile Update](#to-update-user-profile) | [Bank Details](#update-bank-details) | [Login](#login) | [Wallet Funding](#fund-user-wallet-flow) | [Investments](#investment) | [Loan Management](#loan-management-api) | [Register API](#register-api) | [Profile Update API](#profile-update-api) | [Change Password API](#change-password-api) [Update Bank Details API](#update-bank-details-api) | [Login API](#login-api)| [Complete-Login API](#complete-login-api) |[Login Sample Response](#login-sample-response) | [Funding API](#funding-api) | [Payment Response](#payment-response) | [Complete Funding API](#complete-funding-api) | [Investment API](#investment-api) | [Request Loan API](#request-loan-api) | [Fetch Loans API](#fetch-loans-api) | [Repayment Api](#repayment-api)
 
 ## Introduction
 
@@ -49,6 +49,32 @@ PAYLOAD:
     "phone": "string",
     "account_no": "string",
     "bank_name": "Zenith Bank"
+}
+
+```
+
+### Change Password API
+
+To change user's password, users need to first request for password on the application. This will trigger a change password-link mail to their registered email address.
+
+Following the link, the user can then change their password.
+
+```
+REQUEST PASSWORD CHANGE
+URL : https://be-ope.herokuapp.com/request-password-change
+METHODE TYPE: Post
+PAYLOAD:
+{
+    "email": "string",
+}
+
+CHANGE PASSWORD
+URL : https://be-ope.herokuapp.com/change-password
+METHODE TYPE: Patch
+AUTHORIZATION: Bearer Token
+PAYLOAD:
+{
+    "password":"new password"
 }
 
 ```
