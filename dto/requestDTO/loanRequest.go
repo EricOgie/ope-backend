@@ -50,7 +50,7 @@ func (req LoanRequest) ConvertToLoan() models.Loan {
 // -------------------------- VALIDATIONS ------------------------------- //
 
 func (req LoanRequest) isValidAmount() bool {
-	return req.Amount > 10000.0
+	return req.Amount >= 2000.0
 }
 
 func (req LoanRequest) isValidDuration() bool {

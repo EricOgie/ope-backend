@@ -38,9 +38,14 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 		eErro := ericerrors.NewError(http.StatusNotAcceptable, konstants.ERR_60PER_CHECK)
 		return nil, eErro
 	}
+
+	hasOpenLoan := checkOpenLoans(db, loan.UserId)
+	if hasOpenLoan {
+		logger.Error("Open Loan Err")
+		return nil, ericerrors.NewError(http.StatusNotAcceptable, konstants.ERR_OPEN_LOAN)
+	}
 	//Prapare SQL statement
 	query := "INSERT INTO loans (user_id, amount, package, duration) values(?, ?, ?, ?)"
-
 	result, qErr := db.Client.Exec(query, loan.UserId, loan.Amount, loan.Package, loan.Duration)
 	// Hndle Error ase
 	if qErr != nil {
@@ -55,11 +60,16 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 		return nil, ericerrors.New500Error(konstants.MSG_500)
 	}
 
+	// Add Borrowed amount to users wallet
+	addErr := addToWallet(db, loan.UserId, loan.Amount)
+	if addErr != nil {
+		logger.Error("DID NOT CREDIT USER WALLET")
+	}
+
 	// Use last inserted id as loan id
 	loan.Id = int(loanId)
 	response := loan.ConvertToLoanResDTO()
 	return &response, nil
-
 }
 
 //

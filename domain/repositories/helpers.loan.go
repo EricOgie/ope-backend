@@ -81,6 +81,17 @@ func minusFromWallet(db LoanRepo, userId int, pay float64) *ericerrors.EricError
 	return nil
 }
 
+func addToWallet(db LoanRepo, userId int, amount float64) *ericerrors.EricError {
+	query := "UPDATE wallet SET amount = amount + ? WHERE user_id = ?"
+	_, err := db.Client.Exec(query, amount, userId)
+	if err != nil {
+		logger.Error(konstants.QUERY_ERR + err.Error())
+		ericErr := ericerrors.NewError(http.StatusInternalServerError, konstants.MSG_500)
+		return ericErr
+	}
+	return nil
+}
+
 //
 func CheckWallet(db LoanRepo, amount float64, userId int) bool {
 	var walletFund float64
@@ -108,4 +119,16 @@ func Check60PercentMark(db LoanRepo, amount float64, userId int) bool {
 
 	logger.Info("Position: " + strconv.Itoa(int(potfolioPosition)))
 	return (0.6 * potfolioPosition) >= amount
+}
+
+func checkOpenLoans(db LoanRepo, userId int) bool {
+	var amount float64
+	query := "SELECT amount FROM loans WHERE status = ? AND user_id = ?"
+	err := db.Client.Get(amount, query, "open", userId)
+
+	if amount <= 0.000000 || err != nil {
+		logger.Error("NO OPEN LOAN")
+		return false
+	}
+	return true
 }
