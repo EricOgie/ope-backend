@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -123,12 +124,13 @@ func Check60PercentMark(db LoanRepo, amount float64, userId int) bool {
 
 func checkOpenLoans(db LoanRepo, userId int) bool {
 	var amount float64
-	query := "SELECT amount FROM loans WHERE status = ? AND user_id = ?"
-	err := db.Client.Get(amount, query, "open", userId)
-
-	if amount <= 0.000000 || err != nil {
-		logger.Error("NO OPEN LOAN")
+	query := "SELECT SUM(amount) FROM loans WHERE status = ? AND user_id = ?"
+	err := db.Client.Get(&amount, query, "open", userId)
+	if amount <= 0.000000 {
+		logger.Error("NO OPEN LOAN err = " + fmt.Sprintf("%#v", err))
 		return false
 	}
+
+	logger.Info("")
 	return true
 }
