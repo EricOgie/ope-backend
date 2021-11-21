@@ -99,7 +99,7 @@ func CheckWallet(db LoanRepo, amount float64, userId int) bool {
 func Check60PercentMark(db LoanRepo, amount float64, userId int) bool {
 	var potfolioPosition float64
 	query := "SELECT SUM(equity_value) FROM stocks WHERE user_id = ?"
-	qErr := db.Client.Select(potfolioPosition, query, userId)
+	qErr := db.Client.Get(&potfolioPosition, query, userId)
 
 	if qErr != nil {
 		logger.Error(konstants.QUERY_ERR + qErr.Error())

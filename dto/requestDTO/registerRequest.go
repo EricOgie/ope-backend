@@ -9,7 +9,6 @@ import (
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/konstants"
-	"github.com/EricOgie/ope-be/logger"
 )
 
 type RegisterRequest struct {
@@ -111,23 +110,17 @@ func (req UserDetailsRequest) ValidateRequest() *ericerrors.EricError {
 	}
 
 	if !isValidAccNumber(req.AccountNo) {
-		return ericerrors.New422Error("Invalid Account Number")
+		return ericerrors.New422Error(konstants.BANK_NO_ERR)
 	}
 
 	if !isValidBank(req.BankName) {
-		return ericerrors.New422Error("Invalid Bank Name")
+		return ericerrors.New422Error(konstants.BANK_NAME_ERR)
 	}
 
 	return nil
 }
 
 func isValidName(name string) bool {
-	logger.Error("1")
-	if len(name) > 2 && len(name) < 20 {
-		logger.Error("GOD NAME")
-	} else {
-		logger.Error("BADD NAME")
-	}
 	return len(name) > 2 && len(name) < 20
 }
 

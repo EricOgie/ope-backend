@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/EricOgie/ope-be/domain/models"
 	requestdto "github.com/EricOgie/ope-be/dto/requestDTO"
 	"github.com/EricOgie/ope-be/konstants"
 	"github.com/EricOgie/ope-be/logger"
@@ -18,7 +19,7 @@ type LoanHandler struct {
 //
 //
 func (h LoanHandler) RequestLoan(res http.ResponseWriter, req *http.Request) {
-	id := getUserIdAsString(req)
+	id := getUserIdFromClaim(req)
 	var request requestdto.LoanRequest
 
 	mErr := json.NewDecoder(req.Body).Decode(&request)
@@ -35,7 +36,7 @@ func (h LoanHandler) RequestLoan(res http.ResponseWriter, req *http.Request) {
 //
 //
 func (h LoanHandler) GetAllUserLoans(res http.ResponseWriter, req *http.Request) {
-	id := getUserId(req)
+	id := convertStringToInt(getUserIdFromClaim(req))
 	result, err := h.Service.GetLoans(id)
 	response.ServeResponse("Loan Collection", result, res, err)
 }
@@ -43,8 +44,8 @@ func (h LoanHandler) GetAllUserLoans(res http.ResponseWriter, req *http.Request)
 //
 //
 func (h LoanHandler) RePayInInstallment(res http.ResponseWriter, req *http.Request) {
-	userId := getUserIdAsString(req)
 	loanId := getLoanIdAsString(req)
+	claim := req.Context().Value(konstants.DT_KEY).(models.Claim)
 	var request requestdto.LoanPayRequest
 
 	mErr := json.NewDecoder(req.Body).Decode(&request)
@@ -52,7 +53,7 @@ func (h LoanHandler) RePayInInstallment(res http.ResponseWriter, req *http.Reque
 		logger.Error(konstants.ERR + mErr.Error())
 		handleBadRequest(res)
 	} else {
-		request.UserId = userId
+		request.UserId = claim.Id
 		request.LoanId = loanId
 
 		result, err := h.Service.PayInPart(request)

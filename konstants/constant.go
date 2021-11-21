@@ -31,6 +31,8 @@ const (
 	INVALID_EMAIL  string = "Invalid Email Addrees. Email should follow correct email format"
 	INVALID_PWORD  string = "Password must be 6 or more charracters long"
 	PHONE_ERR      string = "Phone number must be 11 numbers long"
+	BANK_NO_ERR    string = "Invalid Account Number"
+	BANK_NAME_ERR  string = "Invalid Bank Name"
 	NAME_TOO_SHORT string = "One or two of your names is too short. Name should be 3 or more char long"
 
 	EXP_TIME = int64(time.Hour)
@@ -130,6 +132,7 @@ const (
 	ERR_TRANS_REC  string = "DID NOT SAVE TRANSACTION"
 
 	ERR_INSURFICIENCY string = "Insurficient Funds"
+	ERR_60PER_CHECK   string = "Loan request can not exceed 60% of total Investment"
 
 	LOAN_OPEN     string = "open"
 	LOAN_INACTIVE string = "This loan has been closed"
