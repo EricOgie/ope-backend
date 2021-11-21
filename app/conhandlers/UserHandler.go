@@ -123,12 +123,14 @@ func (s *UserHandler) ChangePassword(res http.ResponseWriter, req *http.Request)
 		// end process and send 400 error code to client
 		eError := &ericerrors.EricError{Code: http.StatusBadRequest, Message: konstants.BAD_REQ}
 		response.ServeResponse(konstants.ERR, "", res, eError)
+	} else {
+		// User email will be gotten from claim extracted from token
+		claim, _ := req.Context().Value(konstants.DT_KEY).(models.Claim)
+		UserCrendentials := requestdto.LoginRequest{Email: claim.Email, Password: pword.Password}
+		newUser, eError := s.Service.ChangePassword(UserCrendentials)
+		response.ServeResponse("Plain Response", newUser, res, eError)
 	}
-	// User email will be gotten from claim extracted from token
-	claim, _ := req.Context().Value(konstants.DT_KEY).(models.Claim)
-	UserCrendentials := requestdto.LoginRequest{Email: claim.Email, Password: pword.Password}
-	newUser, eError := s.Service.ChangePassword(UserCrendentials)
-	response.ServeResponse("Plain Response", newUser, res, eError)
+
 }
 
 func (s *UserHandler) UpdateUserProfile(res http.ResponseWriter, req *http.Request) {

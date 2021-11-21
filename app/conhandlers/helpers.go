@@ -18,6 +18,17 @@ type PWord struct {
 	Password string
 }
 
+func getUserIdFromClaim(req *http.Request) string {
+	claim := req.Context().Value(konstants.DT_KEY).(models.Claim)
+	return claim.Id
+}
+
+// This should only bbe used when certain that the string is numeric
+func convertStringToInt(userId string) int {
+	val, _ := strconv.Atoi(userId)
+	return val
+}
+
 func getUserIdAsString(req *http.Request) string {
 	urlVars := mux.Vars(req)
 	return urlVars["userId"]

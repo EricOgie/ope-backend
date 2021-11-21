@@ -34,8 +34,8 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 	isPassed60PercentCheck := Check60PercentMark(db, loan.Amount, loan.UserId)
 
 	if !isPassed60PercentCheck {
-		logger.Error("Failed 60% Check")
-		eErro := ericerrors.NewError(http.StatusNotAcceptable, "Loan can not exceed 60% of total Investment")
+		logger.Error(konstants.ERR_60PER_CHECK)
+		eErro := ericerrors.NewError(http.StatusNotAcceptable, konstants.ERR_60PER_CHECK)
 		return nil, eErro
 	}
 	//Prapare SQL statement

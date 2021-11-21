@@ -23,11 +23,13 @@ func (handler FundHandler) FundUserWallet(res http.ResponseWriter, req *http.Req
 	err := json.NewDecoder(req.Body).Decode(&request)
 	if err != nil {
 		handleBadRequest(res)
+	} else {
+		// call service
+		result, rErr := handler.Service.FundWallet(request, claim)
+		// Pass response to response layer to serve the appropriate response
+		response.ServeResponse("FultterWave", result, res, rErr)
 	}
-	// call service
-	result, rErr := handler.Service.FundWallet(request, claim)
-	// Pass response to response layer to serve the appropriate response
-	response.ServeResponse("FultterWave", result, res, rErr)
+
 }
 
 //
@@ -40,18 +42,20 @@ func (handler FundHandler) CompleteFundingFlow(res http.ResponseWriter, req *htt
 
 	if err != nil {
 		handleBadRequest(res)
-	}
-	// vallidate request
-	isvalidRe := request.IsValidAmount(claim) && request.IsValidAmount(claim) && request.IsValidTxRef(claim)
-	if !isvalidRe {
-		handleBadRequest(res)
-		return
+	} else {
+		// vallidate request
+		isvalidRe := request.IsValidAmount(claim) && request.IsValidAmount(claim) && request.IsValidTxRef(claim)
+		if !isvalidRe {
+			handleBadRequest(res)
+			return
+		}
+
+		result, eErr := handler.Service.CompleteFunding(request)
+		if eErr != nil {
+			response.ServeResponse(konstants.ERR, "", res, eErr)
+		}
+
+		response.ServeResponse("Wallet", result, res, eErr)
 	}
 
-	result, eErr := handler.Service.CompleteFunding(request)
-	if eErr != nil {
-		response.ServeResponse(konstants.ERR, "", res, eErr)
-	}
-
-	response.ServeResponse("Wallet", result, res, eErr)
 }

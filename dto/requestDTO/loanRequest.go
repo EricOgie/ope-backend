@@ -1,6 +1,7 @@
 package requestdto
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -17,8 +18,7 @@ type LoanPayRequest struct {
 type LoanRequest struct {
 	UserId   string  `json:"user_id"`
 	Amount   float64 `json:"amount"`
-	Package  string  `json:"package"`
-	Duration string  `json:"duration"`
+	Duration float64 `json:"duration"`
 }
 
 func (req LoanPayRequest) ConvertToLoanPayment() models.LoanPayment {
@@ -35,11 +35,14 @@ func (req LoanPayRequest) ConvertToLoanPayment() models.LoanPayment {
 
 func (req LoanRequest) ConvertToLoan() models.Loan {
 	userId, _ := strconv.Atoi(req.UserId)
+	pakageFloat := (req.Amount / req.Duration)
+	loanPackage := fmt.Sprintf("%f", pakageFloat) + " Per Month"
+	duration := fmt.Sprintf("%f", req.Duration)
 	return models.Loan{
 		UserId:    userId,
 		Amount:    req.Amount,
-		Package:   req.Package + " Per Month",
-		Duration:  req.Duration,
+		Package:   loanPackage,
+		Duration:  duration,
 		CreatedAt: time.Now().String(),
 	}
 }
@@ -50,23 +53,14 @@ func (req LoanRequest) isValidAmount() bool {
 	return req.Amount > 10000.0
 }
 
-func (req LoanRequest) isValidPackage() bool {
-	intValue, _ := strconv.Atoi(req.Package)
-	return isDigit(req.Package) && intValue >= 500
-}
-
 func (req LoanRequest) isValidDuration() bool {
-	intValue, _ := strconv.Atoi(req.Duration)
-	return isDigit(req.Duration) && intValue >= 6
+	return req.Duration >= 6
 }
 
 func (req LoanRequest) Validate() *ericerrors.EricError {
 
 	if !req.isValidAmount() {
 		return ericerrors.New422Error("Invalid Loan Amount")
-	}
-	if !req.isValidPackage() {
-		return ericerrors.New422Error("Invalid Laon Package")
 	}
 
 	if !req.isValidDuration() {

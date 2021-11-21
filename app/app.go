@@ -75,8 +75,8 @@ func StartApp() {
 
 	//  ---- Loan Related Routes
 	router.HandleFunc("/loan/request", loanH.RequestLoan).Methods(http.MethodPost).Name("Request-Loan")
-	router.HandleFunc("/loans/{userId:[1-9]+}", loanH.GetAllUserLoans).Methods(http.MethodGet).Name("Loans")
-	router.HandleFunc("/payment/loan/{loanId:[1-9]+}/user/{userId:[1-9]+}/", loanH.RePayInInstallment).Methods("POST").Name("Repay")
+	router.HandleFunc("/loans", loanH.GetAllUserLoans).Methods(http.MethodGet).Name("Loans")
+	router.HandleFunc("/payment/loan/{loanId:[1-9]+}", loanH.RePayInInstallment).Methods("POST").Name("Repay")
 	router.HandleFunc("/payment/{loanId:[1-9]+}", loanH.GetLoanPayments).Methods(http.MethodGet).Name("Get-Payments")
 
 	// Start server and log error should ther be one
