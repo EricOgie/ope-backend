@@ -1,5 +1,7 @@
 # OPE API Documentation
 
+[Introduction](#introduction) | [Register](#register) | [Profile Update](#to-update-user-profile) | [Bank Details](#update-bank-details) | [Login](#login) | [Wallet Funding](#fund-user-wallet-flow) | [Investments](#investments) | [Loan Management](#loan-management-api)
+
 ## Introduction
 
 This is the backend infrastructure build for [Ope App](https://loaner-two.vercel.app/), a stock portfolio web application with loan management features.
@@ -44,7 +46,7 @@ PAYLOAD:
 }
 ```
 
-### TO UPDATE ONLY BANK DETAILS
+### UPDATE BANK DETAILS
 
 Users can decide to add their bank details to ease wallet funds withdrawer. To do this, clent should send request as below
 
@@ -155,7 +157,7 @@ NB:
 
 - The bank attribute will read default state, "none" for both account_no and bank_name if the user is yet to update her bank detals
 
-### FUNDWALLET FLOW
+### FUND USER WALLET FLOW
 
 The process of funding a user's wallet include a series of processes. These processes are categorized nto two stages, viz.
 
@@ -214,7 +216,7 @@ PAYMENT RESPONSE
                 "logo": "www.mylogo.com"
             }
         },
-        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbW91bnQiOiIxODAwMCIsImN1cnJlbmN5IjoiTkdOIiwiY ..."
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbW91bnQiOiIxODAwMCIsImiwiY ..."
     }
 }
 ```
@@ -232,7 +234,7 @@ Payload:
 
 ```
 
-### PLEASE NOTE:
+### NB:
 
 1 - tx-ref is transaction reference. It will be the first attribute of the PAYMENT_BODY sent to you when you call FUND_WALLET endpoint
 
@@ -269,15 +271,15 @@ For context, the user can take a loan as long as he/she doesn't have any open/ac
 
 Depeending if loan has been fully repaid, a loan could be open or closed. It is open when the user is yet to conclude repayments on the loan and closed when repayment has been completed on the loan. Repayments are only possible for loans with open status.
 
-Upon taking a loan, the user can then make REPAYMENTS in installments. These installments are called REPAYMENTS and gonverned by the REPAYMENT API
+Upon taking a loan, the user can then make REPAYMENTS in installments, called REPAYMENTS. T
 
 On Successful loan request, the user wallet is credited with the requested amount which can then be withdrawn to the user registered bank account.
 
 CHECKERS
 
-In the course of repayment in installements, if a user attempt to pay an amount greater than the loan balance, the system checker will ensure that only the loan balanced is lessed from the user's wallet balance.
+- In the course of repayment in installements, if a user attempt to pay an amount greater than the loan balance, the system checker will ensure that only the loan balanced is lessed from the user's wallet balance.
 
-If the user request a loan greater than 60% of her investment in stocks, the checker program will flag the transaction attempt with a 406 error code along with a detailed message.
+- If the user request a loan greater than 60% of her investment in stocks, the checker program will flag the transaction attempt with a 406 error code along with a detailed message.
 
 ## - Loan API
 
