@@ -28,7 +28,6 @@ func NewLoanRepo(client *sqlx.DB, env utils.Config) LoanRepo {
 * adapter to UserRepositoryPort
 * Callable n service layer to register a loan
  */
-
 func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerrors.EricError) {
 	// First check that loan amount is <= 60% of user Portfolior position
 	isPassed60PercentCheck := Check60PercentMark(db, loan.Amount, loan.UserId)
@@ -41,9 +40,9 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 
 	hasOpenLoan := checkOpenLoans(db, loan.UserId)
 	if hasOpenLoan {
-		logger.Error("Open Loan Err")
 		return nil, ericerrors.NewError(http.StatusNotAcceptable, konstants.ERR_OPEN_LOAN)
 	}
+
 	//Prapare SQL statement
 	query := "INSERT INTO loans (user_id, amount, package, duration, created_at) values(?, ?, ?, ?, ?)"
 	logger.Info("CREATED AT= " + loan.CreatedAt)
@@ -64,7 +63,7 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 	// Add Borrowed amount to users wallet
 	addErr := addToWallet(db, loan.UserId, loan.Amount)
 	if addErr != nil {
-		logger.Error("DID NOT CREDIT USER WALLET")
+		logger.Error(konstants.ERR_WALLET_CREDIT)
 	}
 
 	// Use last inserted id as loan id
