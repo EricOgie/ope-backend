@@ -31,7 +31,6 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 		return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 
 			routeInFocus := mux.CurrentRoute(req)
-
 			if !needsAuthorization(routeInFocus.GetName()) {
 				// Check if token in url, It might just be a case of email verification
 				if isTokenInURL(req) {
@@ -99,3 +98,5 @@ func (authMid AuthMiddlewareService) AuthMiddleware(envs utils.Config) func(http
 		})
 	}
 }
+
+

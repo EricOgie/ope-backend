@@ -48,9 +48,11 @@ func StartApp() {
 	// PUBLIC ROUTES
 	router.HandleFunc("/", controllers.Greet).Methods(http.MethodGet).Name("Home")
 	router.HandleFunc("/ping", controllers.Ping).Methods(http.MethodGet).Name("Ping")
+
 	router.HandleFunc("/verify-account", authH.VerifyUserAcc).Methods(http.MethodGet).Name("Verify-Acc")
 	router.HandleFunc("/verified", controllers.ServeHTMLTemplate).Methods(http.MethodGet).Name("Verified")
 	router.HandleFunc("/request-password-change", authH.RequestPasswordChange).Methods(http.MethodPost).Name("Request-Password-Change")
+
 	router.HandleFunc("/register", authH.CreateUser).Methods(http.MethodPost).Name("RegisterUser")
 	router.HandleFunc("/login", authH.Login).Methods(http.MethodPost).Name("Login")
 

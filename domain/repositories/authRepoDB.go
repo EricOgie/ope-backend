@@ -53,6 +53,7 @@ func (db UserRepositoryDB) FindAll() (*[]responsedto.UserDto, *ericerrors.EricEr
 * METHOD implemetation of UserRepositoryPort as an interface
 * To be called upon REGISTER user Request
  */
+
 func (db UserRepositoryDB) Create(u models.User) (*models.CompleteUser, *ericerrors.EricError) {
 	// First check if User is registered prior
 	if userIsRegistered(u.Email, db) {
