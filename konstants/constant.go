@@ -130,6 +130,9 @@ const (
 	ERR_FLOAT_CONV string = "Couldn't Make float64"
 	ERR_FRAUD      string = "Fraudulent transaction"
 	ERR_TRANS_REC  string = "DID NOT SAVE TRANSACTION"
+	ERR_USER_ID    string = "Invalid user Id"
+	ERR_ACC_NO     string = "Invalid Account Number"
+	ERR_BANK_NAME  string = "Invalid Bank Name"
 
 	ERR_INSURFICIENCY string = "Insurficient Funds"
 	ERR_60PER_CHECK   string = "Loan request can not exceed 60% of total Investment"

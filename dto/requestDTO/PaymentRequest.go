@@ -8,6 +8,7 @@ import (
 
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
+	"github.com/EricOgie/ope-be/konstants"
 )
 
 // To Fund wallet or any other payment, the input from client will be unmashalled into UserPayRequest
@@ -71,15 +72,15 @@ func (userPayReq UserPayRequest) IsValidateRequest() bool {
 func (req BankRequest) ValidateBankRequest() *ericerrors.EricError {
 
 	if !req.isValidId() {
-		return ericerrors.New422Error("Invalid user Id")
+		return ericerrors.New422Error(konstants.ERR_USER_ID)
 	}
 
 	if !req.isValidAccountNumber() {
-		return ericerrors.New422Error("Invalid Account Number")
+		return ericerrors.New422Error(konstants.ERR_ACC_NO)
 	}
 
 	if !req.isValidBankName() {
-		return ericerrors.New422Error("Invalid Bank Name")
+		return ericerrors.New422Error(konstants.ERR_BANK_NAME)
 	}
 
 	return nil
