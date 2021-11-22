@@ -14,6 +14,8 @@ import (
 )
 
 // Create client side port for User related resource
+
+//go:generate mockgen -source=authService.go -destination=../tests/mocks/service/mockUserServicePort.go -package=service github.com/EricOgie/ope-be/service UserServicePort
 type UserServicePort interface {
 	GetAllUsers() (*[]responsedto.UserDto, error)
 	RegisterUser(requestdto.RegisterRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError)
@@ -151,7 +153,6 @@ func (s UserService) RequestPasswordChange(req requestdto.PasswordChangeRequest)
 	return &oneUser, nil
 
 }
-
 
 // Call Changepassword when user password is to change
 func (s UserService) ChangePassword(userReq requestdto.LoginRequest) (*responsedto.PlainResponseDTO, *ericerrors.EricError) {
