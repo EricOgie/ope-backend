@@ -8,6 +8,7 @@ import (
 	"github.com/EricOgie/ope-be/konstants"
 )
 
+// This will test validation for for each field of register request
 func Test_name_validation_returns_422_error_when_firstname_or_lastname_is_invalid(t *testing.T) {
 	//Set-up
 	req := requestdto.RegisterRequest{FirstName: "a", LastName: ""}
