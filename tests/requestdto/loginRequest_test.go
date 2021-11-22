@@ -1,4 +1,4 @@
-package requestdto
+package tests
 
 import (
 	"net/http"
