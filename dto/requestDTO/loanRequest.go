@@ -62,11 +62,11 @@ func (req LoanRequest) isValidDuration() bool {
 func (req LoanRequest) Validate() *ericerrors.EricError {
 
 	if !req.isValidAmount() {
-		return ericerrors.New422Error("Invalid Loan Amount")
+		return ericerrors.New422Error(konstants.ERR_LOAN_AMT)
 	}
 
 	if !req.isValidDuration() {
-		return ericerrors.New422Error("Invalid Loan Duration")
+		return ericerrors.New422Error(konstants.ERR_LOAN_DUR)
 	}
 
 	return nil
@@ -76,11 +76,11 @@ func (req LoanRequest) Validate() *ericerrors.EricError {
 func (req LoanPayRequest) Validate() *ericerrors.EricError {
 
 	if !req.isValidLoadId() {
-		return ericerrors.New422Error("Invalid Laon Id")
+		return ericerrors.New422Error(konstants.ERR_LOAN_ID)
 	}
 
 	if !req.isValidPayment() {
-		return ericerrors.New422Error("Invalid Payment Amount")
+		return ericerrors.New422Error(konstants.ERR_PAY_AMT)
 	}
 
 	return nil
