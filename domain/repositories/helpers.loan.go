@@ -139,3 +139,19 @@ func checkOpenLoans(db LoanRepo, userId int) bool {
 	logger.Info("")
 	return true
 }
+
+// Principal PLus INterest Calculation
+func getLoanPlusInterest(amt float64, duration string) float64 {
+	du, _ := strconv.Atoi(duration)
+	return (amt * calInterest(du))
+}
+
+func calInterest(du int) float64 {
+	if du == 6 {
+		return 1.12
+	} else if du > 6 && du < 8 {
+		return 1.18
+	} else {
+		return 1.25
+	}
+}

@@ -1,6 +1,7 @@
 package requestdto
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -18,7 +19,7 @@ type LoanPayRequest struct {
 type LoanRequest struct {
 	UserId   string  `json:"user_id"`
 	Amount   float64 `json:"amount"`
-	Duration float64 `json:"duration"`
+	Duration int     `json:"duration"`
 }
 
 func (req LoanPayRequest) ConvertToLoanPayment() models.LoanPayment {
@@ -35,8 +36,9 @@ func (req LoanPayRequest) ConvertToLoanPayment() models.LoanPayment {
 
 func (req LoanRequest) ConvertToLoan() models.Loan {
 	userId, _ := strconv.Atoi(req.UserId)
-	pakageFloat := int(req.Amount / req.Duration)
-	loanPackage := strconv.Itoa(pakageFloat) + " Per Month"
+	pkgAmount := interestFactor(req.Duration) * req.Amount
+	pakageFloat := pkgAmount / float64(req.Duration)
+	loanPackage := fmt.Sprintf("%f", pakageFloat) + " Per Month"
 	duration := strconv.Itoa(int(req.Duration))
 	return models.Loan{
 		UserId:    userId,
@@ -93,4 +95,14 @@ func (req LoanPayRequest) isValidLoadId() bool {
 //
 func (req LoanPayRequest) isValidPayment() bool {
 	return req.Payment >= 500.0
+}
+
+func interestFactor(duration int) float64 {
+	if duration == 6 {
+		return 1.12
+	} else if duration > 6 && duration < 8 {
+		return 1.18
+	} else {
+		return 1.25
+	}
 }

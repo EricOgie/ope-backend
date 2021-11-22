@@ -43,10 +43,11 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 		return nil, ericerrors.NewError(http.StatusNotAcceptable, konstants.ERR_OPEN_LOAN)
 	}
 
-	//Prapare SQL statement
+	// Compute loan plus interest as the actual loan.
+	// User will pay loaned amount plus interest but their wallet will be credited with the loan entered by user
+	actualLoan := getLoanPlusInterest(loan.Amount, loan.Duration)
 	query := "INSERT INTO loans (user_id, amount, package, duration, created_at) values(?, ?, ?, ?, ?)"
-	logger.Info("CREATED AT= " + loan.CreatedAt)
-	result, qErr := db.Client.Exec(query, loan.UserId, loan.Amount, loan.Package, loan.Duration, loan.CreatedAt)
+	result, qErr := db.Client.Exec(query, loan.UserId, actualLoan, loan.Package, loan.Duration, loan.CreatedAt)
 	// Hndle Error ase
 	if qErr != nil {
 		logger.Error(konstants.QUERY_ERR + qErr.Error())
@@ -68,6 +69,7 @@ func (db LoanRepo) TakeLoan(loan models.Loan) (*responsedto.LoanResDTO, *ericerr
 
 	// Use last inserted id as loan id
 	loan.Id = int(loanId)
+	loan.Amount = actualLoan
 	response := loan.ConvertToLoanResDTO()
 	return &response, nil
 }
