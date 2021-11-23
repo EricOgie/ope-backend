@@ -8,6 +8,7 @@ import (
 	"github.com/EricOgie/ope-be/domain/models"
 	"github.com/EricOgie/ope-be/ericerrors"
 	"github.com/EricOgie/ope-be/konstants"
+	"github.com/EricOgie/ope-be/logger"
 )
 
 type LoanPayRequest struct {
@@ -94,7 +95,12 @@ func (req LoanPayRequest) isValidLoadId() bool {
 
 //
 func (req LoanPayRequest) isValidPayment() bool {
-	return req.Payment >= 100.0
+	if req.Payment >= 100 {
+		logger.Error("CORRECT AMT == " + fmt.Sprintf("%f", req.Payment))
+	} else {
+		logger.Error("BAD AMT == " + fmt.Sprintf("%f", req.Payment))
+	}
+	return req.Payment >= 100
 }
 
 func interestFactor(duration int) float64 {
