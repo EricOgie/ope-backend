@@ -9,6 +9,7 @@ import (
 	"github.com/EricOgie/ope-be/logger"
 )
 
+//go:generate mockgen -source=loanService.go -destination=../tests/mocks/service/mockLoanServicePort.go -package=service github.com/EricOgie/ope-be/service LoanServicePort
 type LoanServicePort interface {
 	Borrow(requestdto.LoanRequest) (*responsedto.LoanResDTO, *ericerrors.EricError)
 	GetLoans(int) (*[]models.QueryLoan, *ericerrors.EricError)
