@@ -94,7 +94,7 @@ func (req LoanPayRequest) isValidLoadId() bool {
 
 //
 func (req LoanPayRequest) isValidPayment() bool {
-	return req.Payment >= 500.0
+	return req.Payment >= 100
 }
 
 func interestFactor(duration int) float64 {
